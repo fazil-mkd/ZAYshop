@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Management System</title>
+    <link rel="stylesheet" href="/assets/css/admin/coupenMangement.css">
+</head>
+<body>
+    <%- include('./layout/sidenav.ejs') %>
+    <div class="container">
+        <div class="header">
+            <h1>Coupon Management System</h1>
+        </div>
+
+        <div class="add-coupon-form">
+            <h2>Add New Coupon</h2>
+            <form id="couponForm">
+                <div class="form-group">
+                    <label for="code">Coupon Code</label>
+                    <input type="text" id="code" >
+                    <div class="error-message" id="code-error"></div> 
+                </div>
+                <div class="form-group">
+                    <label for="discount">Discount Amount (%)</label>
+                    <input type="number" id="discount" min="0" max="100" >
+                    <div class="error-message" id="discount-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="expiry">Expiry Date</label>
+                    <input type="date" id="expiry" >
+                    <div class="error-message" id="expiry-error"></div> 
+                </div>
+                <div class="form-group">
+                    <label for="type">Coupon Type</label>
+                    <select id="type">
+                        <option value="percentage">Percentage Discount</option>     
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="maxDiscount">Maximum Discount</label>
+                    <input type="text" id="maxDiscount" >
+                    <div class="error-message" id="maxDiscount-error"></div> 
+                </div>
+                <button type="submit" class="btn">Add Coupon</button>
+            </form>
+        </div>
+
+        <div class="coupons-grid" id="couponsGrid">
+        
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        
+        document.getElementById('couponForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('code').value;
+            const discount = document.getElementById('discount').value;
+            const expiry = document.getElementById('expiry').value;
+            const type = document.getElementById('type').value;
+            const maxDiscount = document.getElementById('maxDiscount').value;
+            const name = `Coupon for ${code}`;
+
+            const response = await fetch('/admin/coupon/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, discountValue: discount, discountType: type, expireOn: expiry, name,maxDiscount })
+            });
+           
+            const result = await response.json();
+            if (response.ok) {
+                alert('Coupon added successfully!');
+                loadCoupons(); 
+                e.target.reset(); 
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        });
+
+        
+        async function loadCoupons() {
+            const response = await fetch('/admin/coupon/view');
+            const coupons = await response.json();
+
+            const couponsGrid = document.getElementById('couponsGrid');
+            couponsGrid.innerHTML = ''; 
+
+            coupons.forEach(coupon => {
+                const couponCard = document.createElement('div');
+                couponCard.className = 'coupon-card';
+
+                const isExpired = new Date(coupon.expireOn) < new Date();
+                const statusClass = isExpired ? 'status-expired' : 'status-active';
+                const statusText = isExpired ? 'Expired' : 'Active';
+
+                couponCard.innerHTML = `
+                    <div class="coupon-code">${coupon.code}</div>
+                    <div class="coupon-details">
+                        <p>Discount: ${coupon.discountType === 'percentage' ? coupon.discountAmount + '%' : '$' + coupon.discountAmount}</p>
+                        <p>Expires: ${new Date(coupon.expireOn).toLocaleDateString()}</p>
+                        <p>Type: ${coupon.discountType === 'percentage' ? 'Percentage Discount' : 'Fixed Amount'}</p>
+                        <p>Status: <span class="${statusClass}">${statusText}</span></p>
+                        <p>Users:${ coupon.userId.length}</p>
+                    </div>
+                  
+                    <button class='update-btn'>Update</button>
+                `;
+
+
+                couponCard.querySelector('.update-btn').addEventListener('click', function () {
+                showUpdateForm(coupon);
+            })
+
+
+                couponsGrid.appendChild(couponCard);
+            });
+        }
+
+     
+
+        function showUpdateForm(coupon) {
+        const updateFormHTML = `
+            <form id="updateForm" class="update-form">
+                <h3>Update Coupon</h3>
+                <label for="updateCode">Code:</label>
+                <input type="text" id="updateCode" value="${coupon.code}" readonly />
+
+                <label for="updateDiscount">Discount Value:</label>
+                <input type="number" id="updateDiscount" value="${coupon.discountAmount}" />
+
+                <label for="updateExpiry">Expiry Date:</label>
+                <input type="date" id="updateExpiry" value="${coupon.expireOn.split('T')[0]}" />
+
+                <label for="updateType">Discount Type:</label>
+                <select id="updateType">
+                    <option value="percentage" ${coupon.discountType === 'percentage' ? 'selected' : ''}>Percentage</option> 
+                </select>
+
+                <label for="updateMaxDiscount">Max Discount:</label>
+                <input type="number" id="updateMaxDiscount" value="${coupon.maxDiscount || ''}" />
+
+                <button type="button" id="cancelUpdate">Cancel</button>
+                <button type="submit">Update</button>
+            </form>
+        `;
+
+        const updateFormContainer = document.createElement('div');
+        updateFormContainer.id = 'updateFormContainer';
+        updateFormContainer.innerHTML = updateFormHTML;
+        document.body.appendChild(updateFormContainer);
+
+        document.getElementById('cancelUpdate').addEventListener('click', function () {
+            document.getElementById('updateFormContainer').remove();
+        });
+
+        document.getElementById('updateForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const updatedDiscount = document.getElementById('updateDiscount').value;
+            const updatedExpiry = document.getElementById('updateExpiry').value;
+            const updatedType = document.getElementById('updateType').value;
+            const updatedMaxDiscount = document.getElementById('updateMaxDiscount').value;
+
+            const response = await fetch(`/admin/coupons/${coupon._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    discountAmount: updatedDiscount,
+                    expireOn: updatedExpiry,
+                    discountType: updatedType,
+                    maxDiscount: updatedMaxDiscount
+                })
+            });
+
+            if (response.ok) {
+                Swal.fire('Coupon updated successfully!');
+                loadCoupons();
+                document.getElementById('updateFormContainer').remove();
+            } else {
+                Swal.fire('Error updating coupon');
+            }
+        });
+    }
+
+
+
+
+        window.onload = loadCoupons;
+
+
+
+
+        document.getElementById('couponForm').addEventListener('submit', function(event) {
+
+    event.preventDefault();
+
+    clearErrorMessages();
+
+    const code = document.getElementById('code').value;
+    const discount = document.getElementById('discount').value;
+    const expiry = document.getElementById('expiry').value;
+    const type = document.getElementById('type').value;
+    const maxDiscount = document.getElementById('maxDiscount').value;
+
+
+    const codePattern = /^[A-Za-z0-9]+$/;  
+    const discountPattern = /^\d{1,2}(\.\d{1,2})?$/;  
+    const maxDiscountPattern = /^\d+$/;  
+
+
+    let isValid = true;
+
+
+    if (!code.match(codePattern)) {
+        displayErrorMessage('code', 'Coupon Code should contain only letters and numbers (no spaces or periods).');
+        isValid = false;
+    }
+    if (!discount.match(discountPattern) || discount < 0 || discount > 100) {
+        displayErrorMessage('discount', 'Discount Amount must be a valid number between 0 and 100.');
+        isValid = false;
+    }
+
+    if (!expiry) {
+        displayErrorMessage('expiry', 'Please select an expiry date.');
+        isValid = false;
+    }
+
+    if (!maxDiscount.match(maxDiscountPattern)) {
+        displayErrorMessage('maxDiscount', 'Maximum Discount should be a positive integer.');
+        isValid = false;
+    }
+
+});
+
+function displayErrorMessage(inputId, message) {
+    const errorMessageElement = document.getElementById(inputId + '-error');
+    errorMessageElement.textContent = message;
+}
+
+function clearErrorMessages() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(function (element) {
+        element.textContent = '';
+    });
+}
+    </script>
+</body>
+</html>

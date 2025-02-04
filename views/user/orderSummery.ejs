@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.5.0/dist/sweetalert2.min.css">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 60px 20px;
+
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+    }
+
+    .header p {
+        color: #666;
+        font-size: 1.125rem;
+    }
+
+    .order-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .order-header {
+        padding: 24px;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .order-details p {
+        margin: 8px 0;
+    }
+
+    .order-id {
+        color: #4f46e5;
+        font-weight: 500;
+    }
+
+    .track-button {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .track-button:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+    }
+
+    .product-item {
+        padding: 24px;
+        border-bottom: 1px solid #e5e5e5;
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 24px;
+    }
+
+    .product-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .product-details h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 16px;
+        color: #666;
+        margin-top: 12px;
+    }
+
+    .product-meta div {
+        padding-right: 16px;
+        border-right: 1px solid #e5e5e5;
+    }
+
+    .product-meta div:last-child {
+        border-right: none;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-ready {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-dispatched {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .order-footer {
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .payment-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .cancel-button {
+        background: none;
+        border: none;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        padding: 8px 16px;
+        transition: color 0.3s ease;
+    }
+
+    .cancel-button:hover {
+        color: #4f46e5;
+    }
+
+    .total-price {
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+
+    .price-highlight {
+        color: #4f46e5;
+    }
+
+    @media (max-width: 768px) {
+        .product-item {
+            grid-template-columns: 1fr;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .product-info {
+            grid-template-columns: 1fr;
+        }
+
+        .order-footer {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .payment-info {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    /* Wrapper for Return Reason and Button */
+    .return-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    /* Label Styling */
+    label {
+        font-size: 1rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* Dropdown Styles */
+    .form-select {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #4ade80;
+        /* Greenish color on focus */
+        box-shadow: 0 0 0 2px rgba(72, 231, 99, 0.2);
+        /* Light green focus shadow */
+    }
+
+    .form-select:disabled {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        cursor: not-allowed;
+    }
+
+    /* Return Button Styles */
+    .return-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background-color: #10b981;
+        /* Green background */
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .return-button:hover {
+        background-color: #059669;
+        /* Darker green on hover */
+        transform: scale(1.05);
+    }
+
+    .return-button:disabled {
+        background-color: #d1d5db;
+        cursor: not-allowed;
+    }
+
+    .return-button svg {
+        margin-right: 0.5rem;
+    }
+
+    /* Success Message Styling */
+    .text-success {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #22c55e;
+        /* Green text color */
+        margin-top: 1rem;
+    }.cancel-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.cancel-modal.active {
+    display: block;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modal-overlay.active {
+    display: block;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.reason-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background: #f5f5f5;
+}
+
+.confirm-btn {
+    background: #dc3545;
+    border: none;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background: #c82333;
+}
+
+.cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+    background: #f5f5f5;
+} /* Card Container */
+        .card {
+            max-width: 500px;
+            margin: 2rem auto;
+            border-radius: 12px;
+            transition: transform 0.3s ease-in-out;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Card Body */
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Card Title */
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #198754 !important;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Success Icon */
+        .bi-check-circle-fill {
+            font-size: 1.75rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        /* Card Text */
+        .card-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        /* Order Details */
+        .text-muted {
+            color: #6c757d !important;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .text-muted strong {
+            color: #495057;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        /* Success Animation */
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .card {
+                margin: 1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .card-title {
+                font-size: 1.25rem;
+            }
+            
+            .card-text {
+                font-size: 1rem;
+            }
+        }
+
+        /* Optional: Add a subtle border effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #198754, #20c997);
+            opacity: 0.8;
+        }
+
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Successful</h1>
+            <p>Thanks for making a purchase. You can check your order summary below.</p>
+        </div>
+
+        <div class="order-container">
+            <div class="order-header">
+                <div class="order-details">
+                    <p>Order Id: <span class="order-id">
+                            <%= order._id %>
+                        </span></p>
+                    <p>Order Date: <span>
+                            <%= order.createdAt %>
+                        </span></p>
+                </div>
+                
+            </div>
+            <% if (successMessage.length > 0) { %>
+                <div class="alert alert-success">
+                  <%= successMessage %>
+                </div>
+              <% } %>
+              
+             
+            <% order.orderedItems.forEach(item=> { %>
+                <div class="product-item">
+                    <img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>" class="product-image">
+                    <div class="product-info">
+                        <div class="product-details">
+                            <p style="display: none">Product ID: <%= item.product.id %>
+                            </p>
+                            <h3>
+                                <%= item.product.name %>
+                            </h3>
+                            <p>By: <%= item.product.brand %>
+                            </p>
+                            <div class="product-meta">
+                                <div>Color: <span>
+                                        <%= item.color %>
+                                    </span></div>
+                                <div>Size: <span>
+                                        <%= item.size %>
+                                    </span></div>
+                                <div>Qty: <span>
+                                        <%= item.quantity %>
+                                    </span></div>
+                                    <div>Product Price : <span>
+                                        <%= item.price %>
+                                    </span></div>
+                                        <% if(item.price!==item.totalPrice){%>
+                                             <div>Price After Coupen Applied: <span>
+                                        <%= item.totalPrice %>
+                                    </span></div>
+                                    <% } %>
+                            </div>
+                            <% if(item.isReturnApproved) { %>
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-success">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Return Request Approved
+                                        </h5>
+                                        <p class="card-text">Your return request has been approved.</p>
+                                       <p  style="color: #4f46e5;" href="/knowMore"class="card-text">Know more</p>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
+                            <% if(item.isReturnRejected) { %>
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-danger">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Return Request Rejected
+                                        </h5>
+                                        <p class="card-text">Your return request has been rejected.</p>
+                                        <p style="color: #4f46e5;" href="/knowMore"class="card-text">Know more</p>
+                                    </div>
+                                </div>
+                            <% } %>
+
+
+                        </div>
+                        <% if(order.status!=="Delivered"&& order.status!=="Returned"){ %>
+                            <% if(!item.isCancelled){%>
+                        <button class="cancel-button" data-stock-id="<%= item.quantity %>"
+                            data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
+                            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                <path d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5" stroke="currentColor" stroke-width="1.6"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Cancel Product
+                        </button>
+                        <% }} %>
+                        <div> <span>
+                                <%= item.isCancelled?'Cancelled':'' %>
+                            </span></div>
+                        <% if(order.status==="Delivered"&&!item.isReturned){ %>
+
+
+                            <label for="returnReason-<%= item.product._id %>">Reason for Return:</label>
+                            <select id="returnReason-<%= item.product._id %>" class="form-select" <%=order.status
+                                !=="Delivered" || item.isReturned ? "disabled" : "" %>>
+                                <option value="" disabled selected>Select a reason</option>
+                                <option value="Defective Product">Defective Product</option>
+                                <option value="Wrong Item Delivered">Wrong Item Delivered</option>
+                                <option value="Quality Issues">Quality Issues</option>
+                                <option value="Changed Mind">Changed Mind</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <button class="return-button"   data-order-id="<%= order.orderId %>"
+                                data-product-id="<%= item.product._id %>"
+                                onclick="markAsReturned('<%= order.orderId %>', '<%= item.product._id %>')"
+                                <%=order.status !=='Delivered' || item.isReturned ? 'disabled' : '' %>>
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <path d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5" stroke="currentColor"
+                                        stroke-width="1.6" stroke-linecap="round" />
+                                </svg>
+                            
+                                Return Product
+                            </button>
+                            <p  style="display: none;" id="stock-for-return"><%= item.quantity %></p>
+
+                            <% if (item.isReturned) { %>
+                                <p class="text-success">Requested For return Successfully</p>
+                                <% }} %>
+                               
+                    </div>
+                </div>
+            
+                         <% }); %>
+
+                    <% if(order.orderedItems.length!==0){ %>
+                        <div class="order-footer">
+                            <div class="payment-info">
+                                <p>
+                                    <%= order.status %>
+                                </p>
+                                <% if(order.status!=="Delivered"&& order.status!=="Returned"&&order.status!=="Cancelled"){ %>
+                                    <button class="cancel-button" onclick="cancelOrder('<%= order.orderId %>')">
+                                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                            <path d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5" stroke="currentColor"
+                                                stroke-width="1.6" stroke-linecap="round" />
+                                        </svg>
+                                        Cancel Order
+                                    </button>
+                                    <% } %>
+                                        <p>Paid using <%= order.paymentMethod %>
+                                        </p>
+                            </div>
+                            <p class="total-price">Total Price: <span class="price-highlight">
+                                <%= overAllPrice %>
+                            </span></p>
+                            <p class="total-price">Total Price(R/C): <span class="price-highlight">
+                                    <%= order.totalPrice %>
+                                </span></p>
+                        </div>
+                        <% } %>
+        </div>
+    </div>
+
+
+
+
+    <script>
+
+document.querySelectorAll('.cancel-button').forEach(button => {
+    button.addEventListener('click', async function () {
+        const orderId = this.getAttribute('data-order-id');
+        const productId = this.getAttribute('data-product-id');
+        const stock = this.getAttribute('data-stock-id');
+
+        console.log('Received Order ID:', orderId);
+
+        if (!orderId || !productId) {
+            console.error('Order ID or Product ID is missing!');
+            return;
+        }
+
+
+        const reasonResult = await Swal.fire({
+            title: 'Select Cancellation Reason',
+            input: 'select',
+            inputOptions: {
+                'wrong_item': 'Wrong item ordered',
+                'delivery_time': 'Delivery time too long',
+                'found_better_price': 'Found better price elsewhere',
+                'changed_mind': 'Changed my mind',
+                'duplicate_order': 'Duplicate order',
+                'payment_issue': 'Payment related issue',
+                'other': 'Other reason'
+            },
+            inputPlaceholder: 'Select a reason',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please select a reason!'
+                }
+            }
+        });
+
+        if (reasonResult.isDismissed) {
+            return;
+        }
+
+        const confirmCancel = await Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: `Do you want to cancel this product?`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Cancel it!',
+            cancelButtonText: 'No, Keep it',
+        });
+
+        if (confirmCancel.isConfirmed) {
+            try {
+                const response = await fetch('/product/cancel', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        orderId, 
+                        productId, 
+                        stock,
+                        cancelReason: reasonResult.value 
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    await Swal.fire('Cancelled!', 'Your product has been successfully cancelled.', 'success');
+                    location.reload();
+                } else {
+                    await Swal.fire('Error!', data.error || 'Failed to cancel the product.', 'error');
+                }
+            } catch (error) {
+                await Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+            }
+        }
+    });
+});
+
+
+
+
+       async  function cancelOrder(orderId) {
+
+            const reasonResult = await Swal.fire({
+            title: 'Select Cancellation Reason',
+            input: 'select',
+            inputOptions: {
+        'order_mistake': 'Ordered by mistake',
+        'delivery_delay': 'Delivery is taking too long',
+        'better_price': 'Found a better price elsewhere',
+        'no_longer_needed': 'No longer needed',
+        'duplicate_order': 'Accidentally placed duplicate order',
+        'payment_issue': 'Payment issues (failed transaction, unauthorized charge)',
+        'service_issue': 'Unsatisfactory service or experience',
+        'other': 'Other reason'
+    },
+            inputPlaceholder: 'Select a reason',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please select a reason!'
+                }
+            }
+        });
+
+        if (reasonResult.isDismissed) {
+            return;
+        }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to cancel this order?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+
+                    try {
+                        const response = await fetch('/user/orders/cancel', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ orderId, cancelReason: reasonResult.value }),
+                        });
+
+                        const data = await response.json();
+
+                        if (response) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: data.message || 'Order has been cancelled.',
+                                icon: 'success',
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } 
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
+                }
+            });
+        }
+
+
+        function markAsReturned(orderId, productId) {
+  
+    const returnReason = document.getElementById(`returnReason-${productId}`).value;
+    const stock = document.getElementById('stock-for-return').textContent;
+
+
+    if (!returnReason) {
+        Swal.fire("Please select a reason for the return.");
+        return;
+    }
+    Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to return this order?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then(()=>{
+                location.reload();
+            })
+
+                fetch('/product/return', {
+        method: 'PATCH', 
+        headers: {
+            'Content-Type': 'application/json',
+        },  
+        body: JSON.stringify({
+            orderId: orderId,
+            productId: productId,
+            returnReason: returnReason,
+            stock:stock,
+        }),
+    })
+    .then((data) => {
+        location.reload();
+    if (data) {
+        Swal.fire('Product marked as returned.')
+            .then(() => {
+                location.reload(); 
+            });
+    } else {
+        Swal.fire(data.message || 'An error occurred while marking the product as returned.');
+    }
+})
+.catch((err) => {
+    console.error('Error:', err);
+    Swal.fire('Something went wrong. Please try again later.');
+});
+ }
+
+
+
+
+
+
+
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.5.0/dist/sweetalert2.min.js"></script>
+
+</body>
+
+</html>

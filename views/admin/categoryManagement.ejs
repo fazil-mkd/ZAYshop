@@ -6,9 +6,9 @@
     <title>Category Management Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/admin/categoryManagement.css">
+  <link rel="stylesheet" href="/assets/css/admin/categoryManagement.css">
 </head>
-<body>
+<body ">
 
        <!--------------------------------------------------->
 
@@ -16,7 +16,7 @@
        <%- include('./layout/sidenav.ejs') %>
 
        <!--------------------------------------------------->
-    <div class="main-content">
+    <div style="margin-right:130px ;" class="main-content">
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -56,13 +56,16 @@
                                         <td><%= new Date(category.updatedAt).toLocaleDateString() %></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn btn-custom btn-create" onclick="location.href='/admin/category/update/<%= category._id %>'">
-                                                    <i class="fas fa-edit me-1"></i> Update
+                                                <button class="btn btn-custom btn-create" onclick="window.location.href='/admin/categoryUpdate/<%= category._id %>'">
+                                                    Update Category
                                                 </button>
-                                                <button class="btn btn-custom btn-unlist unlist" data-id="<%= category._id %>">
-                                                    <i class="fas fa-unlink me-1"></i> del
+
                                                 </button>
-                                            </div>
+                                                <div>
+                                                    <button  id="actionButton"   class="btn btn-custom btn-unlist unlist" data-id="<%= category._id %>" onclick="unlistCategory('<%= category._id %>')">
+                                                        <i class="fas fa-unlink me-1"></i> Unlist
+                                                    </button>
+                                                </div>
                                         </td>
                                     </tr>
                                     <% }); %>
@@ -75,10 +78,10 @@
             </div>
 
             <div class="action-panel mt-4">
-              <button class="btn btn-custom btn-create me-2" id="btn-add-cat">
+              <button  onclick="window.location.href='/admin/category/add'" class="btn btn-custom btn-create me-2" id="btn-add-cat">
                     <i class="fas fa-plus me-1"></i> Create New Category
                 </button>
-                <button class="btn btn-custom btn-unlist" id="btn-del-cat">
+                <button onclick="window.location.href='/admin/category/del'" class="btn btn-custom btn-unlist" id="btn-del-cat">
                     <i class="fas fa-archive me-1"></i> Unlisted Categories
                 </button>
             </div>
@@ -88,7 +91,125 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/admin/categoryManagement.js"></script>
+
     
+<script>
+async function unlistCategory(categoryId) {
+   
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to unlist this category?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, unlist it!',
+        cancelButtonText: 'No, cancel!',
+    });
+
+    
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch('/admin/category/unlink', {
+                method: 'PUT',  
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: categoryId }),  
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Unlisted!',
+                    text: data.message || 'Category has been unlisted successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                   
+                    document.querySelector(`[data-id="${categoryId}"]`).closest('div').remove();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to unlist category.',
+                    icon: 'error',
+                    confirmButtonText: 'Close'
+                });
+            }
+        } catch (error) {
+            console.error('Error unlisting category:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again later.',
+                icon: 'error',
+                confirmButtonText: 'Close'
+            });
+        }
+    } else {
+       
+        return;
+    }
+}
+
+
+async function fetchUnlistedCategories() {
+    try {
+        const response = await fetch('/admin/category/del');  
+       
+        const contentType = response.headers.get('Content-Type');
+
+        if (response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+            
+                const data = await response.json();
+                console.log('Unlisted Categories:', data);
+
+                
+                displayCategories(data);
+
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Unlisted categories fetched successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+             
+                const errorText = await response.text();
+                console.error('Expected JSON but received:', errorText);
+                
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The response was not in JSON format. Please check the server.',
+                    icon: 'error',
+                    confirmButtonText: 'Close'
+                });
+            }
+        } else {
+            console.error('Error fetching unlisted categories');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to fetch unlisted categories.',
+                icon: 'error',
+                confirmButtonText: 'Close'
+            });
+        }
+    } catch (error) {
+        console.error('Request failed:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An error occurred while fetching unlisted categories.',
+            icon: 'error',
+            confirmButtonText: 'Close'
+        });
+    }
+}
+
+
+
+
+</script>
+
+
 </body>
 </html>

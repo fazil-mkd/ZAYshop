@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile </title>
+    <style>
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.edit-profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #4a90e2;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Edit Profile Form Section */
+.edit-form {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #333;
+}
+
+.edit-form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.edit-form input:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+.edit-form .form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.submit-btn, .cancel-btn {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 48%;
+}
+
+.submit-btn {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #ccc;
+    color: #333;
+}
+
+.submit-btn:hover {
+    background-color: #357ab7;
+}
+
+.cancel-btn:hover {
+    background-color: #aaa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-profile-container {
+        padding: 20px;
+        margin: 30px;
+    }
+
+    .edit-form label {
+        font-size: 14px;
+    }
+
+    .edit-form input {
+        font-size: 15px;
+    }
+
+    .submit-btn, .cancel-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 24px;
+    }
+
+    .edit-form input {
+        font-size: 14px;
+    }
+
+    .submit-btn, .cancel-btn {
+        font-size: 14px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    
+    <div class="edit-profile-container">
+        <h2>Edit Profile</h2>
+    
+        <!-- Edit Profile Form -->
+        <!-- Profile Update Form -->
+<form id="profileUpdateForm" class="edit-form">
+    <label for="editName">Name:</label>
+    <input type="text" id="editName" name="name" required />
+  
+    <label for="editEmail">Email:</label>
+    <input type="email" id="editEmail" name="email" required />
+  
+    <label for="editPhone">Phone:</label>
+    <input type="tel" id="editPhone" name="phone" required />
+  
+    <div class="form-actions">
+      <button type="submit" class="submit-btn">Save Changes</button>
+      <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+    </div>
+    
+    <script>
+        // Cancel editing mode
+
+        function cancelEdit() {
+  // Reset the form to its original values
+  document.getElementById('editProfileForm').reset();
+
+ 
+  const userId = '<%= user._id %>'; 
+
+
+  window.location.href = `/profile/${userId}`; 
+}
+
+       // Handle form submission
+document.getElementById('profileUpdateForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // Get form data
+  const name = document.getElementById('editName').value;
+  const email = document.getElementById('editEmail').value;
+  const phone = document.getElementById('editPhone').value;
+
+  try {
+    // Send a PUT request to the server
+    const response = await fetch('/update-profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // Show success alert
+      Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated',
+        text: result.msg,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        // Reload the page to reflect changes
+        location.reload();
+        const userId = '<%= user._id %>'; 
+        window.location.href = `/profile/${userId}`;
+      });
+    } else {
+      // Show error alert
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: result.msg || 'Failed to update profile.',
+      });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    // Show error alert
+    Swal.fire({
+      icon: 'error',
+      title: 'Server Error',
+      text: 'An unexpected error occurred. Please try again.',
+    });
+  }
+});
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+:root {
+  --primary-brown: #8B4513;
+  --light-brown: #DEB887;
+  --lighter-brown: #F5DEB3;
+  --dark-brown: #654321;
+}
+
+body {
+  background-color: #FAF9F6;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0 20px rgba(139, 69, 19, 0.1);
+  border-radius: 15px;
+}
+
+.card-header {
+  background-color: white;
+  border-bottom: 2px solid var(--lighter-brown);
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.card-title {
+  color: var(--primary-brown);
+}
+
+.btn-primary {
+  background-color: var(--primary-brown);
+  border-color: var(--primary-brown);
+}
+
+.btn-primary:hover {
+  background-color: var(--dark-brown);
+  border-color: var(--dark-brown);
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+}
+
+.table thead th {
+  background-color: var(--lighter-brown);
+  color: var(--dark-brown);
+  font-weight: 600;
+  border: none;
+}
+
+.table tbody tr:hover {
+  background-color: #FFF8DC;
+}
+
+.bullet {
+  color: var(--primary-brown);
+  margin: 0 5px;
+}
+
+.btn-action {
+  padding: 5px 15px;
+  border-radius: 20px;
+}
+
+.btn-delete {
+  background-color: #fff;
+  border: 1px solid var(--primary-brown);
+  color: var(--primary-brown);
+}
+
+.btn-delete:hover {
+  background-color: var(--primary-brown);
+  color: white;
+}
+
+#addressForm {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+  box-shadow: 0 0 20px rgba(139, 69, 19, 0.1);
+}
+
+#addressForm input,
+#addressForm select {
+  border: 1px solid var(--light-brown);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+}
+
+#addressForm input:focus,
+#addressForm select:focus {
+  border-color: var(--primary-brown);
+  box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
+}
+
+#addressForm label {
+  color: var(--dark-brown);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.address-btn {
+  background-color: var(--primary-brown);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.address-btn:hover {
+  background-color: var(--dark-brown);
+  transform: translateY(-2px);
+}
+
+.addressDetail {
+  line-height: 1.6;
+  color: #666;
+}
+
+.table-responsive {
+  border-radius: 0 0 15px 15px;
+}
+
+.text-muted {
+  color: var(--light-brown) !important;
+}
+/* Form Wrapper */
+#addressForm {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Heading Style */
+#addressForm h6 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Form Labels */
+#addressForm label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+/* Form Inputs */
+#addressForm input, #addressForm select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s;
+}
+
+/* Focus Effect */
+#addressForm input:focus, #addressForm select:focus {
+  border-color: #5c6bc0;
+  outline: none;
+}
+
+/* Button Styles */
+#addressForm button {
+  padding: 12px 20px;
+  margin-top: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#addressForm button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#addressForm button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+#addressForm button[type="button"] {
+  background-color: #f44336;
+  color: white;
+  margin-left: 10px;
+}
+
+#addressForm button[type="button"]:hover {
+  background-color: #e53935;
+}
+
+/* Input Field for Phone Number */
+#addressForm input[type="tel"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Optional Field Styling */
+#addressForm input[placeholder="Apartment or Unit Number"] {
+  color: #888;
+}
+
+/* General Form Spacing */
+#addressForm input, #addressForm select, #addressForm button {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #addressForm {
+      padding: 15px;
+      width: 100%;
+  }
+
+  #addressForm h6 {
+      font-size: 1.1rem;
+  }
+
+  #addressForm button {
+      width: 100%;
+      margin-top: 10px;
+  }
+
+  #addressForm button[type="button"] {
+      margin-left: 0;
+      margin-top: 10px;
+  }
+}

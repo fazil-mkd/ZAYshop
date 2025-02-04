@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Zay Shop - Product Detail Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+    <!-- Slick -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/slick.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/slick-theme.css">
+
+    <link rel="apple-touch-icon" href="/assets/img/apple-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/templatemo.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
+
+    <!-- Load fonts style after rendering the layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="/assets/css/fontawesome.min.css">
+   <link rel="stylesheet"  href="/assets/css/productDetails.css">
+   <link href="
+   https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.min.css
+   " rel="stylesheet">
+<!--
+    
+TemplateMo 559 Zay Shop
+
+https://templatemo.com/tm-559-zay-shop
+
+-->
+
+
+
+<style>
+
+
+
+</style>
+
+</head>
+<body>
+    
+    <%-include("../../views/partials/user/header")%>
+
+    <!-- Close Header -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Product Details</li>
+        </ol>
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="w-100 pt-1 mb-5 text-right">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="get" class="modal-content modal-body border-0 p-0">
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                    <button type="submit" class="input-group-text bg-success text-light">
+                        <i class="fa fa-fw fa-search text-white"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <section class="bg-light" style="color: #000000;">
+        <div class="container pb-5">
+            <div class="row">
+                <!-- Product Images Section -->
+                <div class="col-lg-5 mt-5">
+                    <!-- Main product image with rotating and zoom -->
+                    <div class="card mb-3" style="position: relative;">
+                        <img 
+                          id="mainImage" 
+                          class="card-img img-fluid product-rotate zoom" 
+                          src="<%= product.images[0] %>" 
+                          alt="Main product image" 
+                          style="cursor: zoom-in; transition: transform 0.3s ease, filter 0.3s ease;" 
+                        >
+                      </div>
+                  
+                    <!-- Thumbnails carousel with navigation -->
+                    <div class="row">
+                      
+                        <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item" data-bs-ride="carousel">
+                            <div class="carousel-inner product-links-wap" role="listbox">
+                              <div class="carousel-item active">
+                                <div class="row">
+                                  <% product.images.forEach((image, index) => { %>
+                                    <div class="col-3">
+                                      <div class="card mb-2">
+                                        
+                                        <img 
+                                          class="card-img img-fluid thumbnail" 
+                                          src="<%= image %>" 
+                                          alt="Thumbnail" 
+                                          data-image-index="<%= index %>"
+                                          style="cursor: pointer;" 
+                                          onclick="zoomImage('<%= image %>')"
+                                        >
+                                      </div>
+                                    </div>
+                                  <% }); %>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                  </div>
+                <!-- Product Details Section -->
+                <div class="col-lg-7 mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="h2"><%= product.name %></h1>
+                            <% 
+                            const currentDate = new Date(); 
+                            const offerEndDate = new Date(product.offerEndDate); 
+                            const offerStartDate = new Date(product.offerStartDate)
+                            const isOfferActive = product.offerPrice && offerEndDate > currentDate&&offerStartDate<=currentDate&&product.offerPrice!=product.price;
+                         %>
+                         
+                         <p class="h3 py-2">
+                             ₹<%= isOfferActive ? product.offerPrice : product.price %>
+                         </p>
+                         
+                         <% if (isOfferActive&&product.isOffer) { %>
+                             <span class="text-muted text-decoration-line-through">₹<%= product.price %></span>
+                         <% } %>
+                            <p class="py-2">
+                                <% for (let i = 0; i < 5; i++) { %>
+                                    <i class="fa fa-star <%= i < Math.floor(product.rating) ? 'text-warning' : 'text-secondary' %>"></i>
+                                <% } %>
+                                <span class="list-inline-item text-dark">Rating <%= product.rating %> | <%= product.reviews.length %> Comments</span>
+                            </p>
+    
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <h6>Brand:</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <p class="text-muted"><strong><%= product.brand %></strong></p>
+                                </li>
+                            </ul>
+    
+                            <h6>Description:</h6>
+                            <p><%= product.description %></p>
+    
+                            
+    
+                            <h6>Specification:</h6>
+                            <ul class="list-unstyled pb-3">
+                                <% product.tags.forEach(tag => { %>
+                                    <li><%= tag %></li>
+                                <% }) %>
+                            </ul>
+    
+                           
+                            <form action="/cart/add" method="POST" class="product-form">
+                                <input type="hidden" name="product-title" value="<%= product.name %>">
+                                <input type="hidden" name="product-id" value="<%= product._id %>">
+    
+                            
+                                <div class="row pb-3">
+                                    <div class="col-auto">
+                                        <ul class="list-inline">
+                                            <li class="list-inline-item text-right">Color:</li>
+                                            <li class="list-inline-item">
+                                                <select name="product-color" id="product-color" class="form-control" required>
+                                                    <option value="">Select Color</option>
+                                                    <% if (Array.isArray(colors) && colors.length > 0) { %>
+                                                        <% colors.forEach(color => { %>
+                                                           
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="" disabled>No colors available</option>
+                                                    <% } %>
+                                                </select>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="color-size-stock-map" data-stock-map='<%= colorSizeStockMap %>'></div>
+                                <div class="row pb-3">
+                                    <div class="col-auto">
+                                        <ul class="list-inline">
+                                            <li class="list-inline-item text-right">Size:</li>
+                                            <li class="list-inline-item">
+                                                <select id="product-size"  name="product-size"  class="form-control" required>
+                                                    <option value="">Select Size</option>
+                                                </select>
+                                                <h4 id="size-stock-display" class="text-muted mt-2" style="display:none; ">Stock: <span id="size-stock-count">0</span></h4>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row pb-3">
+                                    <div class="col-auto">
+                                        <ul class="list-inline">
+                                            <li class="list-inline-item text-right">Quantity:</li>
+                                            <li class="list-inline-item">
+                                                <input type="number" name="product-quantity" id="product-quantity" value="1" min="1" required>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <span id="stock-badge" class="badge bg-secondary"></span> <!-- Display stock count -->
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                       
+                                <!-- Action Buttons -->
+                                <div class="row pb-3">
+                                    <div class="col d-grid">
+                                        <button  style="background: darkgreen; color: #fff;"   id="add-to-cart-btn"  type="submit" class="btn btn-warning btn-lg" name="action" value="addtocart">Add to Cart</button>
+                                    </div>
+                                </div>
+                            </form>
+    
+                            <!-- Stock and Category -->
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <h6>Category:</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <p class="text-muted text-success"><strong><%= product.category.name %></strong></p>
+                                </li>
+                            </ul>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="related-products">
+        <div class="container">
+            <h2 class="related-products-title">Related Products</h2>
+            <div class="row" id="related-products-list">
+                <% otherProductsInCategory.forEach(function(product) { %>
+                <div class="col-md-3">
+                    <div class="related-product-card">
+                        <img src="<%= product.images[0] %>" class="card-img-top related-product-img" alt="Related Product">
+                        <div class="card-body">
+                            <h5 class="related-product-title"><%= product.name %></h5>
+                            <p class="related-product-price">₹<%= product.price %></p>
+                            <a href="/product/<%= product._id %>" class="btn btn-outline-success btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Start Footer -->
+    <footer class="bg-dark" id="tempaltemo_footer">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-4 pt-5">
+                    <h2 class="h2 text-success border-bottom pb-3 border-light logo">Zay Shop</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li>
+                            <i class="fas fa-map-marker-alt fa-fw"></i>
+                            123 Consectetur at ligula 10660
+                        </li>
+                        <li>
+                            <i class="fa fa-phone fa-fw"></i>
+                            <a class="text-decoration-none" href="tel:010-020-0340">010-020-0340</a>
+                        </li>
+                      
+                    </ul>
+                </div>
+
+                <div class="col-md-4 pt-5">
+                    <h2 class="h2 text-light border-bottom pb-3 border-light">Products</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li><a class="text-decoration-none" href="#">Luxury</a></li>
+                        <li><a class="text-decoration-none" href="#">Sport Wear</a></li>
+                        <li><a class="text-decoration-none" href="#">Men's Shoes</a></li>
+                        <li><a class="text-decoration-none" href="#">Women's Shoes</a></li>
+                        <li><a class="text-decoration-none" href="#">Popular Dress</a></li>
+                        <li><a class="text-decoration-none" href="#">Gym Accessories</a></li>
+                        <li><a class="text-decoration-none" href="#">Sport Shoes</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 pt-5">
+                    <h2 class="h2 text-light border-bottom pb-3 border-light">Further Info</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li><a class="text-decoration-none" href="#">Home</a></li>
+                        <li><a class="text-decoration-none" href="#">About Us</a></li>
+                        <li><a class="text-decoration-none" href="#">Shop Locations</a></li>
+                        <li><a class="text-decoration-none" href="#">FAQs</a></li>
+                        <li><a class="text-decoration-none" href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="row text-light mb-4">
+                <div class="col-12 mb-3">
+                    <div class="w-100 my-3 border-top border-light"></div>
+                </div>
+                <div class="col-auto me-auto">
+                    <ul class="list-inline text-left footer-icons">
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="http://facebook.com/"><i class="fab fa-facebook-f fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="https://www.instagram.com/"><i class="fab fa-instagram fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="https://twitter.com/"><i class="fab fa-twitter fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="https://www.linkedin.com/"><i class="fab fa-linkedin fa-lg fa-fw"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <label class="sr-only" for="subscribeEmail">Email address</label>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control bg-dark border-light" id="subscribeEmail" placeholder="Email address">
+                        <div class="input-group-text btn-success text-light">Subscribe</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-100 bg-black py-3">
+            <div class="container">
+                <div class="row pt-2">
+                    <div class="col-12">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+    </footer>
+
+    <script src="
+    https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.all.min.js
+    "></script>
+   
+    <script>
+
+const addToCartButton = document.getElementById('add-to-cart-btn');
+
+document.addEventListener("DOMContentLoaded", function () {
+    const stockDisplay = document.getElementById("size-stock-display");
+
+    setTimeout(() => {
+        stockDisplay.classList.remove("hidden");
+        stockDisplay.classList.add("visible");
+    }, 1000);
+});
+
+
+
+window.addEventListener('DOMContentLoaded', (event) => {
+
+    const stockMapString = document.getElementById('color-size-stock-map').getAttribute('data-stock-map');
+    
+    
+    let colorSizeStockMap = {};
+    try {
+       
+        colorSizeStockMap = JSON.parse(stockMapString);
+ 
+    } catch (e) {
+        console.error('Error parsing colorSizeStockMap:', e);  
+    }
+
+
+    const colorSelect = document.getElementById('product-color');
+const sizeSelect = document.getElementById('product-size');
+const sizeStockDisplay = document.getElementById('size-stock-display');
+const sizeStockCount = document.getElementById('size-stock-count');
+
+
+for (const color in colorSizeStockMap) {
+    const option = document.createElement('option');
+    option.value = color;
+    option.textContent = color;
+    colorSelect.appendChild(option);
+}
+
+
+colorSelect.addEventListener('change', (e) => {
+    const selectedColor = e.target.value;
+    const sizes = colorSizeStockMap[selectedColor];
+    
+
+    sizeSelect.innerHTML = '<option value="">Select Size</option>';
+
+    for (const size in sizes) {
+        const option = document.createElement('option');
+        option.value = size;
+        option.textContent = size;
+        sizeSelect.appendChild(option);
+    }
+    
+    
+    sizeStockDisplay.style.display = 'none'; 
+});
+
+sizeSelect.addEventListener('change', (e) => {
+    const selectedColor = colorSelect.value;
+    const selectedSize = e.target.value;
+    
+    if (selectedColor && selectedSize) {
+        const stockCount = colorSizeStockMap[selectedColor][selectedSize];
+        sizeStockCount.textContent = stockCount;
+        sizeStockDisplay.style.display = 'block'; 
+    }
+});
+
+
+
+});
+
+        document.getElementById('btn-minus').addEventListener('click', function () {
+    var value = document.getElementById('var-value').textContent;
+    if (value > 1) {
+        document.getElementById('var-value').textContent = value - 1;
+    }
+});
+
+document.getElementById('btn-plus').addEventListener('click', function () {
+    var value = document.getElementById('var-value').textContent;
+    document.getElementById('var-value').textContent = parseInt(value) + 1;
+});
+
+const addToCart = async () => {
+  try {
+    const response = await fetch('/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'product-id': productId,
+        'product-title': productTitle,
+        'product-size': productSize,
+        'product-color': productColor,
+        'product-quantity': productQuantity,
+      }),
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Item Added to Cart',
+        text: `item has been added to your cart successfully.`,
+      });
+
+    //    setTimeout(() => {
+    //     window.location.href = '/cart'; 
+    //  }, 2000);
+    } else {
+
+      const errorData = await response.json();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorData.message || 'Something went wrong. Please try again.',
+      });
+    }
+  } catch (error) {
+   
+    Swal.fire({
+      icon: 'error',
+      title: 'Network Error',
+      text: 'There was an issue with your request. Please try again later.',
+    });
+  }
+};
+
+addToCartButton.addEventListener('click', () => {
+  addToCart();
+});
+
+
+
+
+function zoomImage(imageSrc) {
+
+    const zoomedImageContainer = document.createElement('div');
+    zoomedImageContainer.className = 'zoom-container';
+
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'zoom-image-wrapper';
+
+    const zoomedImage = document.createElement('img');
+    zoomedImage.src = imageSrc;
+    zoomedImage.className = 'zoom-image';
+
+    const zoomControls = document.createElement('div');
+    zoomControls.className = 'zoom-controls';
+
+    const zoomInButton = document.createElement('button');
+    zoomInButton.innerHTML = '+';
+    zoomInButton.className = 'zoom-btn zoom-in';
+    zoomInButton.setAttribute('aria-label', 'Zoom in');
+
+    const zoomOutButton = document.createElement('button');
+    zoomOutButton.innerHTML = '-';
+    zoomOutButton.className = 'zoom-btn zoom-out';
+    zoomOutButton.setAttribute('aria-label', 'Zoom out');
+
+    const zoomResetButton = document.createElement('button');
+    zoomResetButton.innerHTML = '↺';
+    zoomResetButton.className = 'zoom-btn zoom-reset';
+    zoomResetButton.setAttribute('aria-label', 'Reset zoom');
+
+    const backButton = document.createElement('button');
+    backButton.innerText = 'Back';
+    backButton.className = 'zoom-back-btn';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'zoom-close-btn';
+    closeButton.setAttribute('aria-label', 'Close');
+
+    imageWrapper.appendChild(zoomedImage);
+    zoomControls.appendChild(zoomOutButton);
+    zoomControls.appendChild(zoomResetButton);
+    zoomControls.appendChild(zoomInButton);
+    
+    zoomedImageContainer.appendChild(imageWrapper);
+    zoomedImageContainer.appendChild(zoomControls);
+    zoomedImageContainer.appendChild(backButton);
+    zoomedImageContainer.appendChild(closeButton);
+
+
+    document.body.appendChild(zoomedImageContainer);
+    document.body.style.overflow = 'hidden'; 
+
+    let currentZoom = 1;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+
+    const updateImageTransform = () => {
+        zoomedImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+    };
+
+    const zoomIn = () => {
+        if (currentZoom < 5) {
+            currentZoom = Math.min(5, currentZoom + 0.5);
+            updateImageTransform();
+        }
+    };
+
+    const zoomOut = () => {
+        if (currentZoom > 1) {
+            currentZoom = Math.max(1, currentZoom - 0.5);
+            updateImageTransform();
+        }
+    };
+
+    const resetZoom = () => {
+        currentZoom = 1;
+        translateX = 0;
+        translateY = 0;
+        updateImageTransform();
+    };
+
+
+    imageWrapper.addEventListener('mousedown', (e) => {
+        if (currentZoom > 1) {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            imageWrapper.style.cursor = 'grabbing';
+        }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging && currentZoom > 1) {
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateImageTransform();
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        imageWrapper.style.cursor = currentZoom > 1 ? 'grab' : 'auto';
+    });
+
+    const closeZoom = () => {
+        zoomedImageContainer.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(zoomedImageContainer);
+            document.body.style.overflow = ''; 
+        }, 300);
+    };
+
+    backButton.addEventListener('click', closeZoom);
+    closeButton.addEventListener('click', closeZoom);
+    zoomedImageContainer.addEventListener('click', closeZoom);
+    imageWrapper.addEventListener('click', (e) => e.stopPropagation());
+    zoomControls.addEventListener('click', (e) => e.stopPropagation());
+
+    zoomInButton.addEventListener('click', zoomIn);
+    zoomOutButton.addEventListener('click', zoomOut);
+    zoomResetButton.addEventListener('click', resetZoom);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeZoom();
+    });
+
+
+    imageWrapper.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomIn();
+        } else {
+            zoomOut();
+        }
+    });
+}
+
+
+const style = document.createElement('style');
+style.textContent = `
+.zoom-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.zoom-image-wrapper {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+}
+
+.zoom-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease-out;
+}
+
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 20px;
+    z-index: 1001;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.zoom-btn:hover {
+    background: #f0f0f0;
+}
+
+.zoom-back-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.zoom-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.zoom-close-btn::before,
+.zoom-close-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 2px;
+    background: black;
+}
+
+.zoom-close-btn::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.zoom-close-btn::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+`;
+
+document.head.appendChild(style);
+</script>
+
+</body>
+
+</html>

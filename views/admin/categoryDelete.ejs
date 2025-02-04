@@ -7,55 +7,41 @@
     <title>Product Management</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/admin/productDelete.css">
+    <link rel="stylesheet" href="/assets/css/admin/productDelete.css">
 </head>
 
 <body>
     <%- include('./layout/sidenav.ejs') %>
-
-    <div class="container mt-5">
-        <h2 class="mb-4">Soft Deleted Products</h2>
-    
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered">
-                <thead>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Recover</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% deletedProducts.forEach(product => { %>
                     <tr>
-                        <th>Name</th>
-                        <th>Recover</th>
-                        <th>Permanent Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% deletedProducts.forEach(product => { %>
-                    <tr>
-                        <td><%= product.name %></td>
+                        <td style="color: black;"><%= product.name %></td>
                         <td>
                             <button class="btn btn-success btn-recover w-100" data-id="<%= product._id %>" data-bs-toggle="tooltip" title="Recover this product">
                                 Recover
                                 <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                             </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-delete w-100" data-id="<%= product._id %>" data-bs-toggle="tooltip" title="Delete permanently">
-                                Permanent Delete
-                                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                            </button>
-                        </td>
-                          
-                        
+                        </td> 
                     </tr>
-                    <% }) %>
-                    <% if (deletedProducts.length === 0) { %>
+                <% }) %>
+                <% if (deletedProducts.length === 0) { %>
                     <tr class="empty-state">
                         <td colspan="3" class="text-center">
-                            <h3>No Products Found</h3>
-                            <p>There are no soft-deleted products in the database. Add new products to manage them here.</p>
+                            <h3 style="color: black;" >No Category Found</h3>
+                            <p >There are no soft-deleted Category in the database. Add new products to manage them here.</p>
                         </td>
                     </tr>
-                    <% } %>
-                </tbody>
-            </table>
-        </div>
+                <% } %>
+            </tbody>
+        </table>
     </div>
     
 
@@ -63,7 +49,76 @@
     <!-- Bootstrap & jQuery Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/js/admin/categoryDelete.js"></script>
+    
+<script>
+document.querySelectorAll('.btn-recover').forEach(button => {
+    button.addEventListener('click', async function() {
+        const productId = this.getAttribute('data-id');
+        const spinner = this.querySelector('.spinner-border');
+
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to recover this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, recover it!',
+            cancelButtonText: 'No, cancel!',
+        });
+
+        
+        if (result.isConfirmed) {
+            
+            spinner.classList.remove('d-none');
+
+            try {
+                const response = await fetch(`/admin/category/recover/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                
+                spinner.classList.add('d-none');
+
+                if (response.ok) {
+                    const data = await response.json();
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product recovered successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+
+                   
+                    document.location.reload(); 
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to recover product.',
+                        icon: 'error',
+                        confirmButtonText: 'Close'
+                    });
+                }
+            } catch (error) {
+                spinner.classList.add('d-none');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while recovering the product.',
+                    icon: 'error',
+                    confirmButtonText: 'Close'
+                });
+            }
+        } else {
+            
+            return;
+        }
+    });
+});
+
+</script>
+
 
 </body>
 </html>

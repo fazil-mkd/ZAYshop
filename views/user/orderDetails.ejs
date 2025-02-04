@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Orders</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/user/orders.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+ /* Basic container styling */
+/* Color Variables */
+:root {
+    --primary-brown: #8B4513;
+    --light-brown: #DEB887;
+    --dark-brown: #3E2723;
+    --off-white: #FAFAFA;
+    --pure-white: #FFFFFF;
+    --soft-black: #1A1A1A;
+}
+
+/* Container Styles */
+.container {
+    max-width: 1400px;
+    min-height: 800px;
+    padding: 3rem;
+    margin: 0 auto;
+    background-color: var(--off-white);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Styles */
+h2.text-center {
+    color: var(--dark-brown);
+    font-size: 2.8rem;
+    font-weight: 600;
+    margin-bottom: 3rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+h2.text-center::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-brown), var(--light-brown));
+    border-radius: 2px;
+}
+
+/* Table Styles */
+.table-responsive {
+    background: var(--pure-white);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.1);
+    overflow: hidden;
+    margin-bottom: 3rem;
+    border: 1px solid var(--light-brown);
+}
+
+.table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Table Header */
+.table-dark {
+    background: linear-gradient(135deg, var(--dark-brown), var(--primary-brown));
+}
+
+.table thead th {
+    color: var(--pure-white);
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 1.5rem 1.2rem;
+    border: none;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+/* Table Body */
+.table tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(222, 184, 135, 0.1);
+    transform: translateY(-2px);
+}
+
+.table tbody td {
+    padding: 1.2rem;
+    vertical-align: middle;
+    color: var(--soft-black);
+    font-size: 1rem;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger {
+    background-color: var(--soft-black);
+    border: none;
+    color: var(--pure-white);
+}
+
+.btn-danger:hover {
+    background-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background-color: var(--primary-brown);
+    border: none;
+    color: var(--pure-white);
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-brown);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+/* Order Details Styles */
+#orderDetails {
+    background: linear-gradient(145deg, var(--pure-white), var(--off-white));
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
+    max-width: 800px;
+    min-height: 400px;
+    margin: 3rem auto;
+    border: 1px solid var(--light-brown);
+}
+
+#orderDetails p {
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    background: var(--pure-white);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--soft-black);
+    border: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+#orderId {
+    font-size: 1.6rem !important;
+    font-weight: bold;
+    color: var(--dark-brown) !important;
+    border-bottom: 2px solid var(--light-brown) !important;
+    margin-bottom: 2rem !important;
+}
+
+#totalPrice {
+    color: var(--primary-brown) !important;
+    font-size: 1.4rem !important;
+    font-weight: bold;
+    background: rgba(139, 69, 19, 0.05) !important;
+}
+
+#orderStatus {
+    color: var(--dark-brown) !important;
+    font-weight: 600;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#orderDetails[style*="block"] {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 95%;
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+        min-height: 600px;
+    }
+
+    h2.text-center {
+        font-size: 2.2rem;
+    }
+
+    .table thead th {
+        padding: 1rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .table tbody td {
+        padding: 1rem 0.8rem;
+    }
+
+    #orderDetails {
+        padding: 1.5rem;
+        margin: 2rem auto;
+        min-height: 300px;
+    }
+}
+  </style>
+
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">My Orders</h2>
+
+    <!-- Orders Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Status</th>
+            <th>   </th>
+            <th>View Details</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody id="orderList">
+          <% orders.forEach(order => { %>
+            <tr>
+              <td><%= order.orderId %></td>
+              <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+              <td><%= order.status %></td>
+              <td>
+                
+              </td>
+              <td>
+                <button class="btn btn-primary" onclick="viewOrderDetails('<%= order.orderId %>')">View Details</button>
+              </td>
+              <td>
+                <button class="btn btn-primary" onclick=" window.location.href = `/order/<%= order.orderId %>`">Order Summery</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div id="orderDetails" style="display: none;">
+      <h3>Order Details</h3>
+      <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+      <p><strong>Status:</strong> <span id="orderStatus"></span></p>
+      <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
+      <p><strong>Total Price:</strong> <span id="totalPriceog"></span></p>
+      <p><strong>Total Price(R/C):</strong> <span id="totalPrice"></span></p>
+      <p><strong>Order Notes:</strong> <span id="orderNotes"></span></p>
+      <p><strong>Created At:</strong> <span id="createdAt"></span></p>
+      <p><strong>Address:</strong> <span id="Address"></span></p>
+  
+  
+      <button id="backButton" onclick="goBack()" class="btn btn-secondary">Back</button>
+  </div>
+  
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+
+function goBack() {
+        window.location.href='/orderDetails' 
+    }
+
+
+
+ function viewOrderDetails(orderId) {
+  fetch(`/user/orders/${orderId}`)
+    .then(response => {
+      console.log('Response Status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(orderArray => {
+    
+
+      if (Array.isArray(orderArray) && orderArray.length > 0) {
+        const order = orderArray[0]; 
+
+        if (order.orderId) {
+          document.getElementById('orderId').innerText = `Order ID: ${order.orderId}`;
+        }
+        if (order.status) {
+          document.getElementById('orderStatus').innerText = ` ${order.status}`;
+        }
+        if (order.paymentMethod) {
+          document.getElementById('paymentMethod').innerText = `${order.paymentMethod}`;
+        }
+        if (order.totalPrice) {
+          document.getElementById('totalPrice').innerText = `${order.totalPrice}`;
+        } 
+        if (order.orderNotes) {
+          document.getElementById('orderNotes').innerText = ` ${order.orderNotes}`;
+        }
+        if (order.createdAt) {
+          document.getElementById('createdAt').innerText = ` ${new Date(order.createdAt).toLocaleDateString()}`;
+        }if (order.address) {
+    document.getElementById('Address').innerHTML = `
+        <strong>Full Name:</strong> ${order.address.fullName} <br>
+        <strong>Street:</strong> ${order.address.streetAddress} ${order.address.aptNumber} <br>
+        <strong>City:</strong> ${order.address.city} <br>
+        <strong>State:</strong> ${order.address.state} <br>
+        <strong>Pincode:</strong> ${order.address.pincode} <br>
+        <strong>country:</strong> ${order.address.country} <br>
+        <strong>Phone:</strong> ${order.address.phone} <br>
+        <strong>Alt Phone:</strong> ${order.address.altPhone} <br>
+        <strong>Address Type:</strong> ${order.address.addressType}
+    `;
+}
+
+
+
+        document.getElementById('orderDetails').style.display = 'block';
+      } else {
+        Swal.fire('No order details found.');
+        console.error('Empty order array:', orderArray);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching order details:', error);
+      Swal.fire('Failed to fetch order details.');
+    });
+}
+
+
+
+
+function cancelOrder(orderId) {
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to cancel this order?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it!',
+      cancelButtonText: 'No, keep it'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+
+        try {
+          const response = await fetch('/user/orders/cancel', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId }), 
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            Swal.fire({
+              title: 'Success!',
+              text: data.message || 'Order has been cancelled.',
+              icon: 'success',
+            }).then(() => {
+          location.reload();
+             });
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              text: data.error || 'Something went wrong. Please try again.',
+              icon: 'error',
+            });
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Something went wrong. Please try again later.',
+            icon: 'error',
+          });
+        }
+      }
+    });
+  }
+
+
+
+
+
+  
+
+
+  </script>
+  
+ </body>
+
+</html>

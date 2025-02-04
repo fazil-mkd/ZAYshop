@@ -1,0 +1,261 @@
+/* Reset and Base Styles */
+.shopping-cart {
+    background-color: #faf6f3;
+    padding: 40px 0 80px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+
+}
+
+.shopping-cart .container {
+    background-color: #ffffff;
+    box-shadow: 0 12px 32px rgba(139, 69, 19, 0.06);
+    padding: 32px;
+    border-radius: 24px;
+    max-width: 1200px;
+    margin: -60px auto 0;
+    position: relative;
+    margin-top: 20px;
+}
+
+/* Enhanced Table Container */
+.shopping__cart__table {
+    margin: 24px 0;
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(139, 69, 19, 0.04);
+}
+
+/* Improved Table Structure */
+.shopping__cart__table table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 16px;
+}
+
+/* Modern Table Header */
+.shopping__cart__table thead tr {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 0.5fr;
+    padding: 16px 24px;
+    gap: 16px;
+    margin-bottom: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.shopping__cart__table th {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: left;
+}
+
+/* Enhanced Table Body */
+.shopping__cart__table tbody tr {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 0.5fr;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(222, 184, 135, 0.2);
+}
+
+.shopping__cart__table tbody tr:hover {
+    background-color: #fdfbf9;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(139, 69, 19, 0.08);
+}
+
+/* Refined Product Column */
+.product__cart__item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.product__cart__item__pic img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 6px 12px rgba(139, 69, 19, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.product__cart__item__pic img:hover {
+    transform: scale(1.05);
+}
+
+.product__cart__item__text h6 {
+    font-size: 16px;
+    color: #8B4513;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.product__cart__item__text p {
+    font-size: 14px;
+    color: #A0522D;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Improved Price Column */
+.cart__price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #8B4513;
+}
+
+/* Enhanced Quantity Controls */
+.quantity__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pro-qty-2 {
+    display: flex;
+    align-items: center;
+    background-color: #faf6f3;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 8px;
+}
+
+.qty-btn {
+    background-color: #ffffff;
+    border: 1px solid #DEB887;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #8B4513;
+    font-weight: 500;
+}
+
+.qty-btn:hover {
+    background-color: #8B4513;
+    color: #ffffff;
+    border-color: #8B4513;
+}
+
+/* Modernized Remove Button */
+.remove button {
+    background-color: transparent;
+    border: 2px solid #DEB887;
+    color: #8B4513;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.remove button:hover {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(139, 69, 19, 0.15);
+}
+
+.remove button:active {
+    transform: translateY(0);
+}
+
+/* Enhanced Cart Total Section */
+.cart__total {
+    background: linear-gradient(to bottom right, #faf6f3, #ffffff);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(139, 69, 19, 0.06);
+    margin-top: 40px;
+    border: 1px solid rgba(222, 184, 135, 0.2);
+    position: relative;
+    left: 700px;
+   
+}
+
+/* Improved Responsive Design */
+@media screen and (max-width: 1024px) {
+    .shopping-cart .container {
+        margin: -40px 16px 0;
+        padding: 24px;
+    }
+
+    .shopping__cart__table thead tr,
+    .shopping__cart__table tbody tr {
+        grid-template-columns: 2fr 1fr 1fr 0.5fr;
+        padding: 16px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .shopping-cart {
+        padding: 24px 0 60px;
+    }
+
+    .shopping-cart .container {
+        margin: -30px 12px 0;
+        padding: 20px;
+    }
+
+    .shopping__cart__table thead {
+        display: none;
+    }
+
+    .shopping__cart__table tbody tr {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .shopping__cart__table td {
+        padding: 0;
+    }
+
+    .shopping__cart__table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #8B4513;
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product__cart__item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .remove button {
+        width: 100%;
+    }
+
+    .cart__total {
+        padding: 24px;
+        margin-top: 32px;
+       
+    }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/userProfile.css">
+</head>
+<body>
+
+<div class="container emp-profile">
+    <form method="post">
+        <!-- Profile Header -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                   
+                   
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="profile-head">
+                    <h5><%= user.name%></h5>
+                    <button  onclick="window.location.href='/update-profile/<%= user._id %>'"type="button" class="profile-edit-btn">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="true">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="address-tab" data-toggle="tab"  onclick="window.location.href='/address'" role="button" aria-controls="address" aria-selected="false">Address</a>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link btn  btn-link" id="orders-tab" data-toggle="tab" onclick="window.location.href='/orderDetails'" role="button" aria-controls="orders" aria-selected="false">Orders</button>
+            </li>
+          
+            <li class="nav-item">
+                <a class="nav-link" id="password-tab" data-toggle="tab" onclick="window.location.href='/changepassword'" role="button" aria-controls="password" aria-selected="false">Change Password</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="password-tab" data-toggle="tab" onclick="window.location.href='/wallet'" role="button" aria-controls="password" aria-selected="false">Wallet</a>
+            </li>
+        </ul>
+
+        
+        <div class="tab-content profile-tab" id="myTabContent">
+       
+            <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>User Id</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p><%= user.id%></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p><%= user.name%></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p><%= user.email%></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Phone</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p><%= user.phone%></p>
+                    </div>
+                </div>
+
+               
+            
+            </div>
+
+         
+         
+        </div>
+    </form>
+    <div class="referral-box">
+        <div  style="gap: 20px;" class="code-display">
+            <span class="code"><%= user.referalCode %></span> 
+            <button class="copy-btn" onclick="copyCode()">Copy Code</button> 
+        </div>
+        <div class="success-message" style="display:none;">Code copied to clipboard!</div> 
+    </div>
+</div>
+
+
+
+<script>
+function copyCode() {
+    const code = document.querySelector('.code').textContent; 
+    navigator.clipboard.writeText(code).then(() => {
+        const button = document.querySelector('.copy-btn');
+        const alert = document.querySelector('.success-message');
+        const buttonText = button;  
+        
+        buttonText.textContent = 'Copied!';
+        alert.classList.add('show');
+        
+        setTimeout(() => {
+            buttonText.textContent = 'Copy Code';
+            alert.classList.remove('show');
+        }, 5000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+    });
+}
+</script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

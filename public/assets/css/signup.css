@@ -1,0 +1,214 @@
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  background-color: #f2f2f2;
+  font-family: 'Arial', sans-serif; /* Apply a consistent font family */
+}
+
+.container {
+  display: flex;
+  width: 85%;
+  max-width: 1200px;
+  height: 85%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.image-box {
+  width: 50%;
+  background-image: url('https://pbs.twimg.com/media/GTSpiYfXMAA7xGA.jpg:large'); /* Replace with your image URL */
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+}
+
+.login-box {
+  width: 35%;
+  padding: 40px;
+  background: #fff;
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  margin-left: -40px;
+  position: relative;
+  z-index: 2;
+}
+
+.login-box h2 {
+  margin: 0 0 30px;
+  color: #4e3b31;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 28px; /* Increase heading size */
+}
+
+.login-box .user-box {
+  position: relative;
+}
+
+.login-box .user-box input {
+  width: 100%;
+  padding: 15px 0; /* Increase input padding for larger text */
+  font-size: 18px; /* Increase font size */
+  color: #4e3b31;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 2px solid #4e3b31;
+  outline: none;
+  background: transparent;
+}
+
+.login-box .user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 18px; /* Increase label font size */
+  color: #000000;
+  pointer-events: none;
+  transition: .5s;
+}
+
+.login-box .user-box input:focus ~ label,
+.login-box .user-box input:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #000000;
+  font-size: 14px;
+}
+
+.login-box form a {
+  position: relative;
+  display: inline-block;
+  padding: 15px 30px; /* Increase padding for larger buttons */
+  color: #fff;
+  font-size: 18px; /* Increase font size */
+  text-decoration: none;
+  text-transform: uppercase;
+  background: #8b4513;
+  border-radius: 25px;
+  overflow: hidden;
+  transition: .5s;
+  margin-top: 40px;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+.button {
+  background-color: #4e3b31;
+  color: white;
+  padding: 15px 30px; /* Increase padding for larger button */
+  font-size: 20px; /* Increase font size */
+  text-transform: uppercase;
+  font-weight: bold;
+  border: 2px solid transparent;
+  border-radius: 25px;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #8b4513;
+  border-color: #8b4513;
+  transform: scale(1.05);
+}
+
+.error.message {
+  color: rgb(255, 0, 0);
+  font-size: 14px; /* Adjust error message font size */
+  margin-top: 5px;
+  display: block;
+}
+
+.error.message.show {
+  display: block;
+  border-color: red;
+}
+
+.user-box {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.user-box input {
+  width: 100%;
+  padding: 15px; /* Increase padding for larger input fields */
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.user-box label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 18px; /* Increase label font size */
+  color: #555;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.user-box input:focus {
+  border-color: #3498db;
+}
+
+.user-box input:focus ~ label,
+.user-box input:not(:placeholder-shown) ~ label {
+  top: 0;
+  font-size: 14px;
+  color: #3498db;
+}
+
+.btn {
+  width: 12vw;
+  height: 12vw;
+  max-width: 80px;
+  max-height: 80px;
+ 
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .image-box {
+    width: 100%;
+    height: 50%;
+  }
+
+  .login-box {
+    width: 80%;
+    margin-left: 0;
+  }
+
+  .btn {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .btn {
+    margin-left: 100px;
+  }
+}

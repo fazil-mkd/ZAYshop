@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+<style>
+
+
+
+
+
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 60px 20px;
+
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+    }
+
+    .header p {
+        color: #666;
+        font-size: 1.125rem;
+    }
+
+    .order-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .order-header {
+        padding: 24px;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .order-details p {
+        margin: 8px 0;
+    }
+
+    .order-id {
+        color: #4f46e5;
+        font-weight: 500;
+    }
+
+    .track-button {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .track-button:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+    }
+
+    .product-item {
+        padding: 24px;
+        border-bottom: 1px solid #e5e5e5;
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 24px;
+    }
+
+    .product-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .product-details h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 16px;
+        color: #666;
+        margin-top: 12px;
+    }
+
+    .product-meta div {
+        padding-right: 16px;
+        border-right: 1px solid #e5e5e5;
+    }
+
+    .product-meta div:last-child {
+        border-right: none;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-ready {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-dispatched {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .order-footer {
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .payment-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .cancel-button {
+        background: none;
+        border: none;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        padding: 8px 16px;
+        transition: color 0.3s ease;
+    }
+
+    .cancel-button:hover {
+        color: #4f46e5;
+    }
+
+    .total-price {
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+
+    .price-highlight {
+        color: #4f46e5;
+    }
+
+    @media (max-width: 768px) {
+        .product-item {
+            grid-template-columns: 1fr;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .product-info {
+            grid-template-columns: 1fr;
+        }
+
+        .order-footer {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .payment-info {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    /* Wrapper for Return Reason and Button */
+    .return-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    /* Label Styling */
+    label {
+        font-size: 1rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* Dropdown Styles */
+    .form-select {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #4ade80;
+        /* Greenish color on focus */
+        box-shadow: 0 0 0 2px rgba(72, 231, 99, 0.2);
+        /* Light green focus shadow */
+    }
+
+    .form-select:disabled {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        cursor: not-allowed;
+    }
+
+    /* Return Button Styles */
+    .return-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background-color: #10b981;
+        /* Green background */
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .return-button:hover {
+        background-color: #059669;
+        /* Darker green on hover */
+        transform: scale(1.05);
+    }
+
+    .return-button:disabled {
+        background-color: #d1d5db;
+        cursor: not-allowed;
+    }
+
+    .return-button svg {
+        margin-right: 0.5rem;
+    }
+
+    /* Success Message Styling */
+    .text-success {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #22c55e;
+        /* Green text color */
+        margin-top: 1rem;
+    }.cancel-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.cancel-modal.active {
+    display: block;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modal-overlay.active {
+    display: block;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.reason-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background: #f5f5f5;
+}
+
+.confirm-btn {
+    background: #dc3545;
+    border: none;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background: #c82333;
+}
+
+.cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+    background: #f5f5f5;
+}
+.admin-action-panel {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.request-status {
+    font-weight: 600;
+    color: #dc3545;
+    margin-bottom: 0.5rem;
+}
+
+.return-reason {
+    font-style: italic;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.approve-button, .reject-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.approve-button {
+    background-color: #198754;
+    color: white;
+}
+
+.reject-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.approve-button:hover {
+    background-color: #157347;
+}
+
+.reject-button:hover {
+    background-color: #bb2d3b;
+}
+
+.status {
+    font-weight: 600;
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.cancelled {
+    background-color: #dc3545;
+    color: white;
+}
+
+.returned {
+    background-color: #0dcaf0;
+    color: white;
+}.return-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.return-accepted {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.return-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.return-status-icon {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.return-accepted .return-status-icon {
+  background-color: #166534;
+}
+
+.return-rejected .return-status-icon {
+  background-color: #991b1b;
+}
+
+</style>
+
+
+
+</head>
+<body>
+    
+
+    <div class="order-container">
+        <div class="order-header">
+            <div class="order-details">
+                <p>Order Id: <span class="order-id"><%= order._id %></span></p>
+                <p>Order Date: <span><%= order.createdAt %></span></p>
+            </div>
+        </div>
+    
+        <% order.orderedItems.forEach(item => { %>
+            <div class="product-item">
+                <img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>" class="product-image">
+                <div class="product-info">
+                    <div class="product-details">
+                        <p style="display: none">Product ID: <%= item.product.id %></p>
+                        <h3><%= item.product.name %></h3>
+                        <p>By: <%= item.product.brand %></p>
+                        <div class="product-meta">
+                            <div>Color: <span><%= item.color %></span></div>
+                            <div>Size: <span><%= item.size %></span></div>
+                            <div>Qty: <span><%= item.quantity %></span></div>
+                            <div>Product Price : <span>
+                                <%= item.price %>
+                            </span></div>
+                                <% if(item.price!==item.totalPrice){%>
+                                     <div>Price After Coupen Applied: <span>
+                                <%= item.totalPrice %>
+                            </span></div>
+                            <% } %>
+                            <div>
+                                <% if(item.isReturnApproved) { %>
+                                  <div class="return-status return-accepted">
+                                    <span class="return-status-icon"></span>
+                                    Return Accepted
+                                  </div>
+                                <% } else if(item.isReturnRejected) { %>
+                                  <div class="return-status return-rejected">
+                                    <span class="return-status-icon"></span>
+                                    Return Rejected
+                                  </div>
+                                <% } %>
+                              </div>
+                        </div>
+                    </div>
+    
+                   
+    
+                    <% if(item.isReturned&&!item.isReturnApproved&&!item.isReturnRejected) { %>
+                        <div class="admin-action-panel">
+                            <p class="request-status">Return Requested</p>
+                            <p class="return-reason">Reason: <%= item.returnReason %></p>
+                            <div class="admin-buttons">
+                                <button class="approve-button"
+                                        data-product-id="<%= item.product._id %>"
+                                        onclick="approveReturn('<%= order.orderId %>', '<%= item.product._id %>')">
+                                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                        <path d="M4 11.5L9 16.5L18 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                    Approve Return
+                                </button>
+                                <button class="reject-button"
+                                        data-product-id="<%= item.product._id %>"
+                                        onclick="rejectReturn('<%= order.orderId %>', '<%= item.product._id %>')">
+                                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                        <path d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                    Reject Return
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+    
+                   
+                    <div class="status-display">
+                        <% if(item.isCancelled) { %>
+                            <p class="status cancelled">Cancelled</p>
+                        <% } else if(item.isReturnApproved) { %>
+                            <p class="status returned">Returned</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    
+        <% if(order.orderedItems.length !== 0) { %>
+            <div class="order-footer">
+                <div class="payment-info">
+                    <p><%= order.status %></p>
+                    <p>Paid using <%= order.paymentMethod %></p>
+                </div>
+                <p class="total-price">Total Price <span class="price-highlight"><%=overAllPrice %></span></p>
+                <p class="total-price">Total Price(after:R/C): <span class="price-highlight"><%= order.totalPrice %></span></p>
+            </div>
+        <% } %>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+
+
+
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <p>${message}</p>
+            <button onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+
+
+
+
+
+function updateOrderItemUI(productId, action, approved) {
+    const productItem = document.querySelector(`[data-product-id="${productId}"]`).closest('.product-item');
+    const actionPanel = productItem.querySelector('.admin-action-panel');
+    const statusDisplay = productItem.querySelector('.status-display');
+
+
+    if (actionPanel) {
+        actionPanel.remove();
+    }
+
+
+    if (approved) {
+        const status = action === 'cancellation' ? 'cancelled' : 'returned';
+        statusDisplay.innerHTML = `<p class="status ${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</p>`;
+    }
+}
+
+
+async function approveCancellation(orderId, productId) {
+    try {
+        const stockId = document.querySelector(`[data-product-id="${productId}"]`).dataset.stockId;
+        
+        const result = await makeRequest('/admin/orders/cancel/approve', 'PATCH', {
+            orderId: orderId,
+            productId: productId,
+            stockId: stockId
+        });
+
+        if (result.success) {
+            showNotification('Cancellation approved successfully', 'success');
+            updateOrderItemUI(productId, 'cancellation', true);
+        }
+    } catch (error) {
+        showNotification('Failed to approve cancellation', 'error');
+    }
+}
+
+
+async function rejectCancellation(orderId, productId) {
+    try {
+        const result = await makeRequest('/admin/orders/cancel/reject', 'PATCH', {
+            orderId: orderId,
+            productId: productId
+        });
+
+        if (result.success) {
+            showNotification('Cancellation rejected successfully', 'success');
+            updateOrderItemUI(productId, 'cancellation', false);
+        }
+    } catch (error) {
+        showNotification('Failed to reject cancellation', 'error');
+    }
+}
+
+
+async function approveReturn(orderId, productId) {
+
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to approve this return?",
+        icon: 'warning',
+        showCancelButton: true, 
+        confirmButtonText: 'Yes, approve it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true 
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch('/admin/orders/return/approve', { 
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId, productId })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification('Return approved successfully', 'success')
+                location.reload();  
+            } else {
+                showNotification(data.message || 'Failed to approve return', 'error');
+            }
+        } catch (error) {
+            console.error('Error approving return:', error);
+        }
+    } else {
+        Swal.fire('Cancelled', 'The return approval was cancelled', 'info');
+    }
+}
+
+
+
+
+async function rejectReturn(orderId, productId) {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to reject this return?",
+        icon: 'warning',
+        showCancelButton: true, 
+        confirmButtonText: 'Yes, reject it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true 
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch('/admin/orders/return/reject', { 
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId, productId })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification('Return rejected successfully', 'success');
+                location.reload();  
+            } else {
+                showNotification(data.message || 'Failed to reject return', 'error');
+            }
+        } catch (error) {
+            console.error('Error rejecting return:', error);
+            showNotification('Failed to reject return', 'error');
+        }
+    } else {
+        Swal.fire('Cancelled', 'The return rejection was cancelled', 'info');
+    }
+}
+
+
+
+
+
+const styles = document.createElement('style');
+styles.textContent = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    .notification-content {
+        padding: 15px 25px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .notification.success .notification-content {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .notification.error .notification-content {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .notification button {
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 5px;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(styles);
+
+                    </script>
+</body>
+</html>

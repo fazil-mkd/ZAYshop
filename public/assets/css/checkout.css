@@ -1,0 +1,560 @@
+/* Checkout Page Container */
+.checkout.spad {
+    padding: 80px 0;
+    background-color: #F5F1ED; /* Light beige background */
+}
+
+/* Main Form Container */
+.checkout__form {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(79, 46, 29, 0.08);
+    padding: 30px;
+}
+
+/* Section Titles */
+.checkout__title, 
+.order__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #3E2723; /* Deep brown */
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #8D6E63; /* Medium brown */
+}
+
+/* Address Cards Styling */
+.card {
+    border: 1px solid #D7CCC8; /* Light brown border */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    background: #FFFFFF;
+}
+
+.card:hover {
+    box-shadow: 0 5px 15px rgba(79, 46, 29, 0.15);
+}
+
+/* Address Radio Button Styling */
+.addressRadio:checked + label {
+    background-color: #EFEBE9; /* Very light brown */
+    border-radius: 8px;
+}
+
+/* Address Card Content */
+.card-title {
+    font-size: 18px;
+    color: #4E342E; /* Dark brown */
+    margin-bottom: 10px;
+}
+
+.card-text {
+    color: #5D4037; /* Medium-dark brown */
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* Order Summary Section */
+.checkout__order {
+    background: #FFFFFF;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(79, 46, 29, 0.08);
+    border: 1px solid #D7CCC8;
+}
+
+.checkout__order__products {
+    padding: 20px 0;
+    border-bottom: 1px solid #BCAAA4; /* Light brown */
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #3E2723; /* Deep brown */
+}
+
+.checkout__total__all li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    color: #3E2723; /* Deep brown */
+}
+
+/* Payment Method Styling */
+.checkout__input__checkbox label {
+    color: #4E342E; /* Dark brown */
+}
+
+/* Form Input Styling */
+.checkout__input p {
+    color: #3E2723; /* Deep brown */
+    font-weight: 500;
+}
+
+.checkout__input p span {
+    color: #BF360C; /* Red-brown for required fields */
+}
+
+.checkout__input input,
+.checkout__input select {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #BCAAA4; /* Light brown */
+    padding: 0 15px;
+    border-radius: 4px;
+    background: #FFFFFF;
+}
+
+.checkout__input input:focus,
+.checkout__input select:focus {
+    outline: none;
+    border-color: #795548; /* Medium brown */
+    box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+}
+
+/* Submit Button */
+.site-btn {
+    width: 100%;
+    height: 50px;
+    background: #5D4037; /* Medium-dark brown */
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.site-btn:hover {
+    background: #4E342E; /* Darker brown on hover */
+}
+
+/* New Address Form */
+#addressForm {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #D7CCC8; /* Light brown */
+}
+
+#addressForm h6 {
+    font-size: 20px;
+    color: #3E2723; /* Deep brown */
+}
+
+#addressForm label {
+    color: #4E342E; /* Dark brown */
+    font-weight: 500;
+}
+
+#addressForm input,
+#addressForm select {
+    border: 1px solid #BCAAA4; /* Light brown */
+    background: #FFFFFF;
+}
+
+#addressForm button {
+    background: #5D4037; /* Medium-dark brown */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+#addressForm button:hover {
+    background: #4E342E; /* Darker brown on hover */
+}
+
+/* Custom Checkmark for Radio Buttons */
+.checkout__input__checkbox .checkmark {
+    border: 2px solid #795548; /* Medium brown */
+}
+
+.checkout__input__checkbox .checkmark:after {
+    background: #5D4037; /* Medium-dark brown */
+}
+
+/* Additional Hover States */
+.card:hover {
+    border-color: #795548; /* Medium brown */
+}
+
+.checkout__input input:hover,
+.checkout__input select:hover {
+    border-color: #795548; /* Medium brown */
+}
+
+/* Error State */
+.checkout__input input:invalid {
+    border-color: #BF360C; /* Red-brown */
+}
+
+/* Success State */
+.checkout__input input:valid {
+    border-color: #4E342E; /* Dark brown */
+}
+/* Add Address Form Card Layout */
+#addressForm {
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(79, 46, 29, 0.08);
+    padding: 30px;
+    margin-top: 40px;
+    border: 1px solid #D7CCC8;
+}
+
+#addressForm h6 {
+    font-size: 22px;
+    color: #3E2723;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #D7CCC8;
+    text-align: center;
+}
+
+/* Form Grid Layout */
+.address-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Full Width Fields */
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+#addressForm label {
+    display: block;
+    color: #4E342E;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+#addressForm input,
+#addressForm select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #BCAAA4;
+    border-radius: 6px;
+    background: #FFFFFF;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#addressForm input:focus,
+#addressForm select:focus {
+    outline: none;
+    border-color: #795548;
+    box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+}
+
+/* Optional Fields Style */
+.optional-field label::after {
+    content: " (optional)";
+    color: #8D6E63;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* Required Fields Style */
+.required-field label::after {
+    content: " *";
+    color: #BF360C;
+}
+
+/* Button Container */
+.form-actions {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #D7CCC8;
+}
+
+#addressForm button {
+    background: #5D4037;
+    color: white;
+    padding: 14px 35px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+#addressForm button:hover {
+    background: #4E342E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 46, 29, 0.15);
+}
+
+#addressForm button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(79, 46, 29, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .address-form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #addressForm {
+        padding: 20px;
+    }
+    
+    #addressForm button {
+        width: 100%;
+    }
+}
+#addressForm {
+    display: none;
+    opacity: 0;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(79, 46, 29, 0.08);
+    padding: 30px;
+    margin-top: 20px;
+    border: 1px solid #D7CCC8;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Shown state */
+#addressForm.show {
+    display: block;
+    opacity: 1;
+    animation: slideDown 0.3s ease forwards;
+}
+
+/* Add Address Button */
+.add-address-btn {
+    background: #5D4037;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.add-address-btn:hover {
+    background: #4E342E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 46, 29, 0.15);
+}
+
+/* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Form Title */
+#addressForm h6 {
+    color: #3E2723;
+    font-size: 24px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #D7CCC8;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+/* Labels */
+#addressForm label {
+    display: block;
+    color: #4E342E;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* Inputs and Select */
+#addressForm input,
+#addressForm select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #BCAAA4;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#addressForm input:focus,
+#addressForm select:focus {
+    outline: none;
+    border-color: #795548;
+    box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+}
+
+/* Submit Button */
+#addressForm button[type="submit"] {
+    background: #5D4037;
+    color: white;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    grid-column: 1 / -1;
+    width: 200px;
+    margin: 20px auto 0;
+    transition: all 0.3s ease;
+}
+
+#addressForm button[type="submit"]:hover {
+    background: #4E342E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 46, 29, 0.15);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #addressForm {
+        margin: 20px;
+        padding: 20px;
+    }
+}
+.cart__discount {
+    margin: 1rem 0;
+}
+
+.cart__discount h6 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.cart__discount form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart__discount input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cart__discount input:focus {
+    border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-2 */
+}
+
+.cart__discount button {
+    padding: 0.5rem 1rem;
+    background-color: #3b82f6; /* blue-500 */
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.375rem; /* rounded-md */
+    transition: background-color 0.2s;
+}
+
+.cart__discount button:hover {
+    background-color: #2563eb; /* blue-600 */
+}
+
+.cart__discount button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-2 */
+}
+
+.cart__discount p {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280; /* gray-500 */
+}
+.flash-message {
+    border-left: 4px solid #f5f5f5; /* Blue left border */
+    padding: 10px 15px; /* Adjust padding for better spacing */
+    margin-bottom: 15px; /* Space between messages */
+    color: #333; /* Standard text color */
+    font-size: 16px; /* Slightly larger text for readability */
+    font-weight: 500; /* Medium-weight font for emphasis */
+    font-family: 'Arial', sans-serif; /* Clean font */
+}.remove-coupon-btn {
+    /* Base styles */
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    
+    /* Add icon space */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    /* Smooth transitions */
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Hover state */
+  .remove-coupon-btn:hover {
+    background-color: #dc2626;
+    color: rgb(255, 255, 255);
+    transform: translateY(-1px);
+  }
+  
+  /* Active/pressed state */
+  .remove-coupon-btn:active {
+    transform: translateY(0px);
+  }
+  
+  /* Focus state for accessibility */
+  .remove-coupon-btn:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+  
+  /* Optional: Add subtle shadow on hover */
+  .remove-coupon-btn:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }

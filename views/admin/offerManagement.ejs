@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="/assets/css/admin/offer.css">
+   
+</head>
+<body>
+    <%- include('./layout/sidenav.ejs') %>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-tags"></i>
+            <h1>Offer</h1>
+        </div>
+   
+        <div class="form-section">
+            <% if (successMessage) { %>
+                <div id="success-alert" class="alert alert-success"><%= successMessage %></div>
+              <% } else { %>
+                <div id="success-alert" class="alert alert-success" style="display:none;"></div>
+              <% } %>
+              <% if (errorMessage) { %>
+                <div id="success-alert" class="alert alert-success"><%= errorMessage %></div>
+              <% } else { %>
+                <div id="success-alert" class="alert alert-success" style="display:none;"></div>
+              <% } %>
+              
+            <div class="offer-type-grid">
+                <div class="offer-type-radio" onclick="selectOfferType('product')">
+                    <input type="radio" name="offerType" id="productType" value="product" checked>
+                    <div >
+                        <i class="fas fa-box-open"></i> Product Offer
+                    </div>
+                </div>
+                <div class="offer-type-radio" onclick="selectOfferType('category')">
+                    <input type="radio" name="offerType" id="categoryType" value="category">
+                    <div>
+                        <i class="fas fa-layer-group"></i> Category Offer
+                    </div>
+                </div>
+            </div>
+            <div id="productError" class="error-message" style="display:none; color:red;"></div>
+            <div id="categoryError" class="error-message" style="display:none; color:red;"></div>
+            <div id="productSection" class="form-control">
+                <label> <h2> Select Product</h2></label>
+                <select id="productSelect">
+                    <option  value="">Choose a Product</option>
+                    <% products.forEach(product => { %>
+                        <option value="<%= product._id %>"><%= product.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div id="categorySection" class="form-control" style="display:none;">
+                <label><h2>Select Category</h2> </label>
+                <select id="categorySelect">
+                    <option value="">Choose a Category</option>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category._id %>"><%= category.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label>Discount Percentage</label>
+                <input type="number" id="discountPercentage" min="0" max="100" placeholder="Enter discount %">
+                <div id="discountError" class="error-message" style="display:none; color:red;"></div>
+            </div>
+
+            <div class="form-control">
+                <label>Offer Duration</label>
+                <div style="display:flex; gap:1rem;">
+                    <input type="date" id="startDate" style="flex:1;">
+                    <input type="date" id="endDate" style="flex:1;">
+                </div>
+                <div id="dateError" class="error-message" style="display:none; color:red;"></div>
+            </div>
+            <div id="offerTypeError" class="error-message" style="display:none; color:red;"></div>
+
+            <button onclick="createOffer(); createOfferVal();" class="btn-create">
+                <i class="fas fa-plus-circle"></i> Create Offer
+            </button>
+
+            <div id="offerResult"></div>
+        </div>
+    </div>
+        <div class="active-offers">
+            <h2>Active Offers</h2>
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showOffers('product')">Product Offers</button>
+                <button class="tab-button" onclick="showOffers('category')">Category Offers</button>
+            </div>
+            
+            <div id="productOffers" class="offers-grid">
+                <% offerAppliedProduct.forEach(product => { %>
+                    <div class="offer-card">
+                        <h3><%= product.name %></h3>
+                        <div class="offer-info">
+                            <span><i class="fas fa-percentage"></i> <%= product.discountPercentage %> OFF</span>
+                            <span><i class="fas fa-calendar"></i> <%= new Date(product.offerStartDate).toLocaleDateString() %> - <%= new Date(product.offerEndDate).toLocaleDateString() %></span>
+                        </div>
+                        <button class="tab-button" onclick="deleteOffer('<%=product._id%>','product' )">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        
+                    </div>
+                <% }); %>
+            </div>
+
+            <div id="categoryOffers" class="offers-grid" style="display: none;">
+                <% offerAppliedCategory.forEach(Category => { %>
+                    <div class="offer-card">
+                        <h3><%= Category.name %></h3>
+                        <div class="offer-info">
+                            <span><i class="fas fa-percentage"></i> <%= Category.discountPercentage %> OFF</span>
+                            <span><i class="fas fa-calendar"></i> <%= new Date(Category.offerStartDate).toLocaleDateString() %> - <%= new Date(Category.offerEndDate).toLocaleDateString() %></span>
+                        </div>
+                        <button class="tab-button" onclick="deleteOffer('<%=Category._id%>','category')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+     function selectOfferType(type) {
+ 
+    const productSection = document.getElementById('productSection');
+    const categorySection = document.getElementById('categorySection');
+
+    if (type === 'product') {
+        productSection.style.display = 'block';
+        categorySection.style.display = 'none';
+    } else if (type === 'category') {
+        productSection.style.display = 'none';
+        categorySection.style.display = 'block';
+    }
+
+    const offerTypeRadio = document.querySelector(`input[name="offerType"][value="${type}"]`);
+    offerTypeRadio.checked = true;
+}
+        
+        
+
+
+        async function createOffer() {
+    const offerType = document.querySelector('input[name="offerType"]:checked').value;
+    const discountPercentage = document.getElementById('discountPercentage').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const resultDiv = document.getElementById('offerResult');
+
+
+
+
+    let selectedItem = offerType === 'product'
+    ? document.getElementById('productSelect').value
+    : document.getElementById('categorySelect').value;
+  
+  if (!selectedItem) {
+    Swal.fire('Please select an item.');
+    return;
+  }
+        console.log(selectedItem,discountPercentage,startDate,endDate)
+    if (!selectedItem || !discountPercentage || !startDate || !endDate) {
+        resultDiv.innerHTML = '<div class="result-success" style="color:red;">Please fill all fields!</div>';
+        return;
+    }
+
+    const offerDetails = {
+        type: offerType,
+        item: selectedItem,
+        discount: discountPercentage ,
+        start: startDate,
+        end: endDate
+    };
+
+    try {
+        const response = await fetch('/admin/offers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(offerDetails),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            resultDiv.innerHTML = `
+                <div class="result-success">
+                    Offer Created Successfully! 
+                </div>
+            `;
+            setTimeout(() => {
+        window.location.reload();
+    }, 2000);
+        } else {
+            resultDiv.innerHTML = `<div class="result-error" style="color:red;">${data.error}</div>`;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `<div class="result-error" style="color:red;">An error occurred: ${error.message}</div>`;
+    }
+}
+
+
+
+
+async function deleteOffer(Id, type) {
+    const { value: confirmed } = await Swal.fire({
+        title: 'Are you sure?',
+        text: `You won't be able to revert this ${type}!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: `Yes, delete the ${type}!`,
+        cancelButtonText: 'Cancel'
+    });
+
+    if (confirmed) {
+        try {
+            const response = await fetch(`/admin/offer/${type}/${Id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+              
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: `${type.charAt(0).toUpperCase() + type.slice(1)} has been deleted.`,
+                    icon: 'success'
+                }).then(() => {
+                    location.reload();  
+                });
+            } else {
+              
+                Swal.fire({
+                    title: 'Error!',
+                    text: `There was an issue deleting the ${type}.`,
+                    icon: 'error'
+                });
+            }
+        } catch (error) {
+         
+            Swal.fire({
+                title: 'Error!',
+                text: `There was an error with the request to delete the ${type}.`,
+                icon: 'error'
+            });
+        }
+    }
+}
+
+
+
+        function showOffers(type) {
+            document.getElementById('productOffers').style.display = type === 'product' ? 'grid' : 'none';
+            document.getElementById('categoryOffers').style.display = type === 'category' ? 'grid' : 'none';
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+
+
+
+
+
+
+
+        function createOfferVal() {
+   
+    resetErrorMessages();
+
+ 
+    const offerType = document.querySelector('input[name="offerType"]:checked').value;
+    const productSelect = document.getElementById('productSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const discountPercentage = document.getElementById('discountPercentage').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    let valid = true;
+
+ 
+    if (!offerType) {
+        valid = false;
+        document.getElementById('offerTypeError').innerText = 'Please select an offer type.';
+        document.getElementById('offerTypeError').style.display = 'block';
+    }
+
+   
+    if (offerType === 'product' && !productSelect.value) {
+        valid = false;
+        document.getElementById('productError').innerText = 'Please select a product.';
+        document.getElementById('productError').style.display = 'block';
+    } else if (offerType === 'category' && !categorySelect.value) {
+        valid = false;
+        document.getElementById('categoryError').innerText = 'Please select a category.';
+        document.getElementById('categoryError').style.display = 'block';
+    }
+
+   
+    const discountRegex = /^[0-9]{1,3}$/;
+    if (!discountRegex.test(discountPercentage) || discountPercentage < 0 || discountPercentage > 100) {
+        valid = false;
+        document.getElementById('discountError').innerText = 'Please enter a valid discount percentage between 0 and 100.';
+        document.getElementById('discountError').style.display = 'block';
+    }
+
+    
+    if (!startDate || !endDate) {
+        valid = false;
+        document.getElementById('dateError').innerText = 'Please select both start and end dates for the offer.';
+        document.getElementById('dateError').style.display = 'block';
+    } else if (new Date(startDate) > new Date(endDate)) {
+        valid = false;
+        document.getElementById('dateError').innerText = 'The start date cannot be later than the end date.';
+        document.getElementById('dateError').style.display = 'block';
+    }
+
+   
+    if (valid) {
+       
+        console.log('Offer created successfully!');
+    }
+
+    return valid; 
+}
+
+
+function resetErrorMessages() {
+    document.getElementById('offerTypeError').style.display = 'none';
+    document.getElementById('productError').style.display = 'none';
+    document.getElementById('categoryError').style.display = 'none';
+    document.getElementById('discountError').style.display = 'none';
+    document.getElementById('dateError').style.display = 'none';
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+function showAlert(type, message) {
+  const alert = document.getElementById(type + '-alert');
+  alert.textContent = message;
+  alert.style.display = 'flex';
+  alert.classList.add('animate-in');
+  
+
+  setTimeout(() => {
+    alert.style.display = 'none';
+  }, 5000);
+}
+
+
+function hideAlert(type) {
+  const alert = document.getElementById(type + '-alert');
+  alert.style.display = 'none';
+}
+});
+
+
+
+
+
+function initializeFlashMessages() {
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+
+            function showAlertIfMessageExists(alertElement) {
+                const message = alertElement.getAttribute('data-message');
+                const contentElement = alertElement.querySelector('.alert-content');
+
+                if (message && message !== 'undefined' && message.trim() !== '') {
+                    contentElement.textContent = message;
+                    alertElement.classList.add('show');
+
+                    setTimeout(() => {
+                        alertElement.classList.remove('show');
+                        alertElement.setAttribute('data-message', '');
+                    }, 5000);
+                }
+            }
+
+            showAlertIfMessageExists(successAlert);
+            showAlertIfMessageExists(errorAlert);
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeFlashMessages);
+
+    </script>
+</body>
+</html>

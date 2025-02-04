@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #6366f1;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .wallet-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .wallet-balance {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .wallet-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .wallet-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .wallet-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .transaction-history {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .transaction-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .icon-credit {
+            background-color: var(--success-color);
+        }
+
+        .icon-debit {
+            background-color: var(--danger-color);
+        }
+
+        .amount-credit {
+            color: var(--success-color);
+        }
+
+        .amount-debit {
+            color: var(--danger-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+        <div class="container">
+            <!-- Wallet Header -->
+            <div class="wallet-header">
+                <div class="wallet-balance">₹<%= wallet.walletBalance.toFixed(2) %></div>
+                <div class="wallet-label">Available Balance</div>
+            </div>
+        
+            <!-- Wallet Actions -->
+            <div class="wallet-actions">
+                <div class="wallet-card">
+                   
+                    <div class="flex flex-col gap-4">
+                        <button onclick="openAddMoneyModal()" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Money
+                        </button>
+                      
+                    </div>
+                </div>
+        
+                <div class="wallet-card">
+                    <h2 class="text-xl font-bold mb-4">Wallet Stats</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-600">This Month Spent</div>
+                            <div class="text-xl font-bold">₹<%= wallet.transactions
+                                .filter(t => t.type === 'debit')
+                                .reduce((sum, t) => sum + t.amount, 0)
+                                .toFixed(2) %>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-600">Last Transaction</div>
+                            <% if (wallet.transactions.length > 0) { %>
+                                <div class="text-xl font-bold">
+                                    ₹<%= wallet.transactions[wallet.transactions.length - 1].amount.toFixed(2) %>
+                                </div>
+                            <% } else { %>
+                                <div class="text-gray-500">No transactions</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Transaction History -->
+            <div class="transaction-history">
+                <h2 class="text-xl font-bold mb-4">Transaction History</h2>
+                <div class="transaction-list">
+                    <% if (wallet.transactions.length > 0) { %>
+                        <% wallet.transactions.forEach(transaction => { %>
+                            <div class="transaction-item">
+                                <div class="transaction-details">
+                                    <div class="transaction-icon <%= transaction.type === 'credit' ? 'icon-credit' : 'icon-debit' %>">
+                                        <i class="fas <%= transaction.type === 'credit' ? 'fa-plus' : 'fa-shopping-cart' %>"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">
+                                            <%= transaction.description || (transaction.type === 'credit' ? 'Added Money' : 'Debit Transaction') %>
+                                        </div>
+                                        <div class="text-sm text-gray-600">
+                                            <%= new Date(transaction.date).toLocaleString() %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="<%= transaction.type === 'credit' ? 'amount-credit' : 'amount-debit' %>">
+                                    <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-transactions text-gray-500">No transactions yet.</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <!-- Add Money Modal -->
+    <div id="addMoneyModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4">Add Money to Wallet</h2>
+            <div class="input-group">
+                <label for="amount">Enter Amount (₹)</label>
+                <input type="number" id="amount" min="100" step="100" placeholder="Minimum ₹100">
+            </div>
+            <div class="flex gap-4">
+                <button onclick="initiatePayment()" class="btn btn-primary">Proceed to Add</button>
+                <button onclick="closeAddMoneyModal()" class="btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+  function openAddMoneyModal() {
+    document.getElementById('addMoneyModal').style.display = 'flex';
+}
+
+function closeAddMoneyModal() {
+    document.getElementById('addMoneyModal').style.display = 'none';
+}
+
+function initiatePayment() {
+    const amount = document.getElementById('amount').value;
+    if (amount < 100) {
+        alert('Minimum amount should be ₹100');
+        return;
+    }
+
+    var options = {
+        key: 'rzp_test_oxcuHe4SxuHiWw', 
+        amount: amount * 100,  
+        currency: "INR",
+        name: "Zay",
+        description: "Add Money to Wallet",
+        handler: function(response) {
+           
+            updateWalletBalance(amount);
+            addTransaction(amount);
+            closeAddMoneyModal();
+
+       
+       fetch('/update-wallet', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        paymentId: response.razorpay_payment_id,
+        amount: parseFloat(amount), 
+    }),
+}).then(response => response.json())
+    .then(data => {
+        console.log('Backend response:', data);
+        if (data.success) {
+            console.log('Wallet updated successfully.');
+        } else {
+            console.error('Failed to update wallet:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error sending payment details to backend:', error);
+    });
+        },
+        prefill: {
+            name: "Fazil",
+            email: "mf645385@gmail.com",
+            contact: "9946484216"
+        },
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+}
+
+function updateWalletBalance(amount) {
+    const balanceElement = document.querySelector('.wallet-balance');
+    const currentBalance = parseFloat(balanceElement.textContent.replace('₹', '').replace(',', ''));
+    const newBalance = currentBalance + parseFloat(amount);
+    balanceElement.textContent = `₹${newBalance.toFixed(2)}`;
+}
+
+function addTransaction(amount) {
+    const transactionList = document.querySelector('.transaction-list');
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const transactionHTML = `
+        <div class="transaction-item">
+            <div class="transaction-details">
+                <div class="transaction-icon icon-credit">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <div class="font-semibold">Added Money</div>
+                    <div class="text-sm text-gray-600">Today, ${timeString}</div>
+                </div>
+            </div>
+            <div class="amount-credit">+₹${parseFloat(amount).toFixed(2)}</div>
+        </div>
+    `;
+    
+    transactionList.insertAdjacentHTML('afterbegin', transactionHTML);
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7f7f7;
+        }
+
+        .payment-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .product-details {
+            margin-bottom: 2rem;
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .product-description {
+            color: #718096;
+            margin-bottom: 2rem;
+        }
+
+        #pay-button {
+            background-color: #5469d4;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #pay-button:hover {
+            background-color: #4a5dc8;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="product-details">
+            <div class="product-name">Premium Subscription</div>
+            <div class="product-price">₹500</div>
+            <div class="product-description">
+                Get access to all premium features for one month
+            </div>
+        </div>
+        <button id="pay-button">Pay Now</button>
+        <div id="error-message" class="error-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('pay-button').onclick = async function() {
+            try {
+                // Fetch order from server
+                const response = await fetch('/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: 500,
+                        currency: 'INR',
+                    }),
+                });
+
+                const { order } = await response.json();
+
+                // Initialize Razorpay Checkout
+                const options = {
+                    key: 'rzp_test_oxcuHe4SxuHiWw', // Replace with your Razorpay Key ID
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: 'Your Company Name',
+                    description: 'Premium Subscription',
+                    order_id: order.id,
+                    handler: function(response) {
+                        // Handle payment success
+                        const successMessage = document.getElementById('error-message');
+                        successMessage.style.display = 'block';
+                        successMessage.style.color = '#48bb78';
+                        successMessage.textContent = 'Payment successful! Transaction ID: ' + response.razorpay_payment_id;
+                    },
+                    prefill: {
+                        name: 'Customer Name',
+                        email: 'customer@example.com',
+                        contact: '9999999999',
+                    },
+                    theme: {
+                        color: '#5469d4'
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (error) {
+                console.error('Error initiating payment:', error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Error initiating payment. Please try again.';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            display: flex;
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .image-section {
+            flex: 1;
+            background: linear-gradient(45deg, #4A90E2, #357ABD);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.8;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(74, 144, 226, 0.9), rgba(53, 122, 189, 0.9));
+            z-index: 1;
+        }
+
+        .image-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .image-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .image-content p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .icon-container {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .lock-icon {
+            font-size: 48px;
+            color: #4A90E2;
+            background: #F0F7FF;
+            padding: 20px;
+            border-radius: 50%;
+        }
+
+        h2 {
+            color: #2C3E50;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 28px;
+        }
+
+        p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94A3B8;
+            font-size: 18px;
+        }
+
+        input[type="email"],
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        input[type="email"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #94A3B8;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 16px;
+            background: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset:hover {
+            background: #357ABD;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-reset:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            display: none;
+            color: #DC2626;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .success-message {
+            display: none;
+            color: #059669;
+            font-size: 16px;
+            margin-top: 16px;
+            text-align: center;
+            padding: 12px;
+            background: #ECFDF5;
+            border-radius: 8px;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .back-to-login a {
+            color: #4A90E2;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-login a:hover {
+            color: #357ABD;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                flex-direction: column;
+            }
+
+            .image-section {
+                padding: 40px 20px;
+                min-height: 300px;
+            }
+
+            .form-section {
+                padding: 40px 20px;
+            }
+
+            .otp-inputs {
+                gap: 8px;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+        .otp-inputs {
+            display: flex;
+            gap: 8px;  
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .otp-input {
+            width: 45px;
+            height: 45px;
+            text-align: center;
+            font-size: 20px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+          
+            .otp-input {
+                width: 35px;  
+                height: 35px;
+                font-size: 18px;
+            }
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="image-section">
+                <div class="image-overlay"></div>
+                <div class="image-content">
+                    <h1>Password Recovery</h1>
+                    <p>We'll help you get back to your account safely and securely.</p>
+                </div>
+            </div>
+            <div class="form-section">
+               
+                <form action="/forget-password" method="POST" id="email-form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                        </div>
+                        <div id="email-error" class="error-message"></div>
+                    </div>
+                    <button type="submit" class="btn-reset">Send Verification Code</button>
+                </form>
+              
+                <div id="otp-step" style="display:none;">
+                    <h2>Enter OTP sent to your email</h2>
+                    <form id="otp-form" action='/verify-forget-otp' method="POST">
+                        <input type="text" id="otp" name="otp" placeholder="Enter OTP"  />
+                        <button type="submit" class="btn-reset">Verify OTP</button>
+                    </form>
+                    <div id="otp-timer"></div>
+                </div>
+    
+                <div class="back-to-login">
+                    <a href="#"><i class="fas fa-arrow-left"></i> Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  
+    <script>
+     
+        document.getElementById('email-form').addEventListener('submit', function (e) {
+            e.preventDefault(); 
+    
+            const email = document.getElementById('email').value;
+    
+          
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                document.getElementById('email-error').textContent = 'Please enter a valid email address.';
+                return; 
+            }
+    
+
+            const form = document.getElementById('email-form');
+            form.submit(); 
+    
+    
+            document.getElementById('email-form').style.display = 'none';
+            document.getElementById('otp-step').style.display = 'block';  
+    
+          
+            startOtpTimer();
+        });
+    
+    
+        function startOtpTimer() {
+            let timer = 100;
+            const otpTimerElement = document.getElementById('otp-timer');
+    
+            const interval = setInterval(() => {
+                let minutes = Math.floor(timer / 60);
+                let seconds = timer % 60;
+                otpTimerElement.textContent = `OTP expires in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
+             
+                if (timer <= 0) {
+                    clearInterval(interval);
+                    otpTimerElement.textContent = 'OTP expired!';
+                    alert('Your OTP has expired. Please request a new one.');
+                    document.getElementById('otp-step').style.display = 'none'; 
+                }
+    
+                timer--; 
+            }, 1000);
+        }
+    </script>
+    
+</body>
+</html>

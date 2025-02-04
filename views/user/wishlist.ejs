@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Whishlist</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+
+    
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="/assets/css/whishlist.css">
+  </head>
+  <body class="goto-here">
+
+    <!-- END nav -->
+
+	<%- include("../../views/partials/user/header") %>
+
+    <div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p  class="breadcrumbs"><span class="mr-2"><a style="text-decoration: none" href="/">Home</a></span> </p>
+            <h1 class="mb-0 bread">My Wishlist</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	<section class="ftco-section ftco-cart">
+		<div class="container">
+		  <div class="row">
+			<div class="col-md-12 ftco-animate">
+			  <div class="cart-list">
+				<table class="table">
+				  <thead class="thead-primary">
+					<tr class="text-center">
+					  <th>&nbsp;</th>
+					  <th>&nbsp;</th>
+					  <th>Product</th>
+					  <th>Price</th>
+					   <th>view Details</th>
+					   <th>Remove</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<% if (items.length === 0) { %>
+					  <tr>
+						<td colspan="6" class="text-center">Your wishlist is empty!</td>
+					  </tr>
+					<% } else { %>
+					  <% items.forEach(product => { %>
+						<tr id="product-<%= product._id %>"  class="text-center">
+							<td class="product-remove">
+								<a href="/wishlist/remove<%= product._id %>">
+								  <span class="icon-trash"></span>  
+								</a>
+							  </td>
+							  <td class="image-prod">
+								<div class="img">
+								  <img src="<%= product.images[0] %>" alt="<%= product.name %>" class="product-image">
+								</div>
+							  </td>
+						  <td class="product-name">
+							<p  id="product"  style="display: none;"> <%= product._id %></p>
+							<h3><%= product.name %></h3>
+							<p><%= product.description %></p>
+						  </td>
+						  <td class="price"><%= product.price %></td>
+						  <td><button class="view" onclick="window.location.href='/product/<%= product._id %>'">Details</button></td>
+						  <td><button class="remove">remove</button></td>
+						</tr>
+		
+					  <% }); %>
+					<% } %>
+				  </tbody>
+				</table>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </section>
+		
+
+		<%- include("../../views/partials/user/footer") %>
+    
+  
+
+  <!-- loader -->
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+		
+
+
+
+		document.querySelector('.remove').addEventListener('click', async () => {
+
+const productId = document.getElementById('product').textContent.trim();
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to remove this item from the wishlist!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, remove it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(`/wishlist/${productId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: data.message || 'Something went wrong!',
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Removed!',
+          text: 'Product removed from wishlist successfully.',
+        });
+
+		const productRow = document.querySelector(`#product-${productId}`);
+      if (productRow) {
+        productRow.remove();
+      }
+    
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to remove product. Please try again later.',
+      });
+    }
+  }
+});
+
+
+	</script>
+    
+  </body>
+</html>

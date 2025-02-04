@@ -1,0 +1,217 @@
+/* Modern Color Palette */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --accent-color: #e74c3c;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --border-color: #ecf0f1;
+  }
+  
+  /* General Styles */
+  body {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  /* Hero Section */
+  .hero-wrap {
+    background-blend-mode: overlay;
+    background-color: rgba(52, 152, 219, 0.1);
+    padding: 6rem 0;
+    margin-bottom: 3rem;
+  }
+  
+  .hero-wrap h1 {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 2.5rem;
+  }
+  
+  /* Cart List Styling */
+  .cart-list {
+    background: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .table {
+    margin-bottom: 0;
+  }
+  
+  .thead-primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .thead-primary th {
+    padding: 1.2rem;
+    font-weight: 600;
+    border: none;
+  }
+  
+  /* Product Card Styling */
+  .image-prod {
+    padding: 1rem;
+  }
+  
+  .image-prod .img {
+    height: 120px;
+    width: 120px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .product-name h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .product-name p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  /* Quantity Input Styling */
+  .quantity .form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+    height: 40px;
+  }
+  
+  /* Cart Total Card */
+  .cart-total {
+    background: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+  }
+  
+  .cart-total h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cart-total p {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+  
+  .cart-total .total-price {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+  }
+  
+  /* Button Styling */
+  .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Remove Button Styling */
+  .product-remove a {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+  
+  .product-remove a:hover {
+    opacity: 1;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .cart-list {
+      padding: 1rem;
+    }
+    
+    .image-prod .img {
+      height: 80px;
+      width: 80px;
+    }
+    
+    .product-name h3 {
+      font-size: 1rem;
+    }
+    
+    .cart-total {
+      padding: 1.5rem;
+    }
+  }
+  
+  #ftco-loader .circular {
+    stroke: var(--primary-color);
+  }
+  
+  #ftco-loader .path {
+    stroke: var(--secondary-color);
+  }
+  .product-image {
+    width: 100px; 
+    height: auto;  
+    object-fit: cover;  
+  }
+  .view {
+    background-color: #007bff; 
+    color: #fff; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .view:hover {
+    background-color: #0056b3;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px); 
+  }
+  
+  .view:active {
+    background-color: #003f8a; 
+    transform: translateY(0); 
+  }
+  .remove {
+    background-color: #e74c3c; 
+    color: white; 
+    font-size: 14px; 
+    padding: 8px 16px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s; 
+  }
+
+  .remove:hover {
+    background-color: #c0392b; 
+    transform: scale(1.1); 
+  }
+
+  .remove:focus {
+    outline: none; 
+    box-shadow: 0 0 5px rgba(255, 99, 71, 0.6); 
+  }

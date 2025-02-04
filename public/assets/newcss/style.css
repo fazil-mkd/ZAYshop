@@ -1,0 +1,346 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f4f4f4;
+	text-decoration: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style-type: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+/* Breadcrumb Section */
+.breadcrumb-option {
+    background: #f8f8f8;
+    padding: 50px 0;
+}
+
+.breadcrumb-option .breadcrumb__text h4 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.breadcrumb__links {
+    font-size: 16px;
+    color: #777;
+}
+
+.breadcrumb__links a {
+    color: #555;
+    margin-right: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.breadcrumb__links span {
+    color: #888;
+}
+
+/* Shopping Cart Section */
+.shopping-cart {
+    padding: 70px 0;
+}
+
+.shopping-cart .shopping__cart__table {
+    margin-bottom: 30px;
+}
+
+.shopping-cart .shopping__cart__table table {
+    width: 100%;
+    border-spacing: 0;
+    display: block;
+}
+
+.shopping-cart .shopping__cart__table th,
+.shopping-cart .shopping__cart__table td {
+    padding: 15px;
+    text-align: left;
+}
+
+.shopping-cart .shopping__cart__table th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #333;
+}
+
+.shopping-cart .shopping__cart__table td {
+    background-color: #fff;
+}
+
+/* Make the table rows look like cards */
+.shopping-cart .shopping__cart__table tbody tr {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.shopping-cart .shopping__cart__table tbody tr:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.shopping-cart .product__cart__item__pic img {
+    max-width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.shopping-cart .product__cart__item__text h6 {
+    font-size: 18px;
+    color: #333;
+}
+
+.shopping-cart .quantity input {
+    width: 50px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.shopping-cart .cart__price {
+    color: #333;
+    font-weight: 600;
+}
+
+.shopping-cart .cart__close {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 20px;
+}
+
+/* Action buttons */
+.shopping-cart .continue__btn a {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.shopping-cart .update__btn a {
+    background-color: #ff4d4d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.cart__discount {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+.cart__discount input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-right: 10px;
+}
+
+.cart__discount button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart__total {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.cart__total h6 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.cart__total ul {
+    list-style-type: none;
+}
+
+.cart__total ul li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart__total a {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+/* Footer Section */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 50px 0;
+}
+
+.footer .footer__about p {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.footer .footer__logo img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.footer .footer__widget h6 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.footer .footer__widget ul li {
+    font-size: 14px;
+    color: #ccc;
+    padding: 5px 0;
+}
+
+.footer .footer__widget ul li a {
+    color: #ccc;
+}
+
+.footer .footer__newslatter form {
+    display: flex;
+}
+
+.footer .footer__newslatter input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.footer .footer__newslatter button {
+    background-color: #ff4d4d;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .breadcrumb-option .breadcrumb__text h4 {
+        font-size: 28px;
+    }
+
+    .shopping-cart .shopping__cart__table table {
+        font-size: 14px;
+    }
+
+    .shopping-cart .shopping__cart__table td,
+    .shopping-cart .shopping__cart__table th {
+        padding: 10px;
+    }
+
+    .footer .footer__about,
+    .footer .footer__widget {
+        margin-bottom: 30px;
+    }
+
+    .footer .footer__newslatter form {
+        flex-direction: column;
+    }
+
+    .footer .footer__newslatter input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .footer .footer__newslatter button {
+        width: 100%;
+    }
+}
+.breadcrumb-option {
+	background-color: #f8f8f8;
+	padding: 20px 0;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.breadcrumb__text h4 {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #333;
+}
+
+.breadcrumb__links {
+	font-size: 14px;
+	color: #777;
+	display: flex;
+	align-items: center;
+}
+
+.breadcrumb__links a {
+	color: #007bff;
+	text-decoration: none;
+	margin-right: 10px;
+}
+
+.breadcrumb__links a:hover {
+	text-decoration: underline;
+}
+
+.breadcrumb__links .separator {
+	margin: 0 10px;
+	color: #777;
+}
+
+.breadcrumb__links span {
+	font-weight: 500;
+	color: #333;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+	.breadcrumb__text h4 {
+		font-size: 20px;
+	}
+
+	.breadcrumb__links {
+		font-size: 12px;
+	}
+}

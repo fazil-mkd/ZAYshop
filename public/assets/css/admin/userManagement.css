@@ -1,0 +1,287 @@
+:root {
+  --primary-bg: #1a0070; /* Dark blue background */
+  --container-bg: #121212; /* Dark background for containers */
+  --text-color: #ffffff; /* White text color */
+  --teal: #1abc9c; /* Teal color for buttons */
+  --teal-hover: #16a085; /* Hover effect for teal */
+  --red: #e74c3c; /* Red for warning/banned states */
+  --red-hover: #c0392b; /* Hover effect for red */
+  --muted-gray: #000000; /* Muted gray for borders */
+  --light-muted-gray: #000000; /* Lighter gray for text */
+  --card-bg: #000000; /* Dark background for cards */
+  --button-font-size: 1.2rem; /* Larger font size for buttons */
+  --base-font-size: 1.2rem; /* Larger font size for body text */
+  --card-header-font-size: 1.8rem; /* Larger font size for card headers */
+}
+
+/* Global Styles */
+body {
+  background-color: var(--primary-bg); /* Dark blue background for the body */
+  color: var(--text-color); /* White text color */
+  font-family: 'Arial', sans-serif;
+  font-size: var(--base-font-size); /* Increased font size */
+  margin: 0;
+  padding-left: 90px; /* Space for navigation bar */
+}
+
+/* Header Styles */
+h4.card-title {
+  font-weight: bold;
+  font-size: 2rem; /* Increased font size */
+  color: var(--text-color); /* White text color */
+  margin-bottom: 2rem;
+}
+
+.container-fluid {
+  padding: 2rem;
+  padding-left: calc(2rem + 90px); /* Adjust for navigation bar */
+}
+
+/* Navigation Sidebar */
+.sidebar-nav {
+  width: 90px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--primary-bg);
+  z-index: 1000;
+}
+
+/* Search Bar */
+.search input {
+  border-radius: 20px;
+  background: var(--container-bg);
+  border: 1px solid var(--muted-gray);
+  color: var(--text-color); /* White text color */
+  padding: 12px;
+  font-size: 1.1rem;
+}
+
+.search button {
+  border-radius: 20px;
+  background: var(--teal);
+  border: none;
+  color: var(--text-color); /* White text color */
+  padding: 12px 15px;
+  font-size: var(--button-font-size);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search input:focus, .search button:hover {
+  box-shadow: 0 0 15px rgba(16, 0, 108, 0.7);
+}
+
+/* Table Styling */
+.table-responsive {
+  background: var(--container-bg);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.table {
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border: 1px solid var(--muted-gray);
+  padding: 15px 20px;
+  font-size: 1.2rem; /* Larger font size for table cells */
+  color: var(--text-color); /* White text color for table content */
+}
+
+.table th {
+  background: var(--primary-bg);
+  text-transform: uppercase;
+  color: var(--text-color); /* White text color for table headers */
+  font-weight: 600;
+}
+
+.table td {
+  background: var(--container-bg);
+  color: var(--text-color); /* White text color for table cells */
+}
+
+.table tr:hover {
+  background: var(--teal-hover);
+  color: var(--primary-bg);
+  transition: background 0.3s ease;
+}
+
+/* Button Styles */
+.btn-ban {
+  background-color: var(--red);
+  border: none;
+  color: var(--text-color); /* White text color for buttons */
+  transition: background-color 0.3s ease;
+  padding: 12px 20px;
+  font-size: var(--button-font-size);
+  cursor: pointer;
+}
+
+.btn-ban:hover {
+  background-color: var(--red-hover);
+}
+
+.btn-view {
+  background-color: var(--teal);
+  border: none;
+  color: var(--text-color); /* White text color for buttons */
+  transition: background-color 0.3s ease;
+  padding: 12px 20px;
+  font-size: var(--button-font-size);
+  cursor: pointer;
+}
+
+.btn-view:hover {
+  background-color: var(--teal-hover);
+}
+
+/* User Info Section */
+.userInfoView {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 2.5rem;
+  margin-top: 2rem;
+  color: var(--text-color); /* White text color */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.userInfoView h4 {
+  font-size: var(--card-header-font-size);
+  font-weight: 700;
+  color: var(--text-color); /* White text color */
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.userInfoView p {
+  font-size: 1.2rem; /* Increased font size for better readability */
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: var(--text-color); /* White text color */
+}
+
+.userInfoView p strong {
+  color: var(--text-color); /* White text color */
+  font-weight: 600;
+}
+
+.userInfoView p + p {
+  border-top: 1px solid #444;
+  padding-top: 10px;
+}
+
+/* Status label styling (Active/Banned) */
+.userInfoView p strong + span {
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.userInfoView p span.active {
+  background-color: #28a745; /* Green for active */
+}
+
+.userInfoView p span.banned {
+  background-color: #dc3545; /* Red for banned */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+      padding-left: 0;
+  }
+
+  .container-fluid {
+      padding: 1rem;
+  }
+
+  .table-responsive {
+      padding: 1rem;
+  }
+
+  .userInfoView {
+      padding: 1.5rem;
+  }
+
+  .userInfoView h4 {
+      font-size: 1.6rem;
+  }
+
+  .search input {
+      width: 100%;
+  }
+
+  .search button {
+      width: 100%;
+  }
+}
+
+/* Card Styling */
+.card {
+  background-color: var(--container-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  overflow: hidden;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Darken the shadow on hover */
+}
+
+/* Card Body */
+.card-body {
+  padding: 20px;
+  color: var(--text-color); /* White text color */
+}
+
+/* Card Header */
+.card h5 {
+  font-size: 1.8rem; /* Increased font size */
+  color: var(--text-color); /* White text color */
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Card Paragraphs */
+.card p {
+  font-size: 1.2rem; /* Increased font size */
+  color: var(--text-color); /* White text color */
+  margin-bottom: 10px;
+}
+
+/* Add strong text styling for labels (Name, Email, etc.) */
+.card p strong {
+  color: var(--text-color); /* White text color */
+  font-weight: 600;
+}
+
+/* Add a subtle line to separate sections */
+.card p + p {
+  border-top: 1px solid #444;
+  padding-top: 10px;
+}
+
+/* Status Label Styling (Active/Banned) */
+.card p strong + span {
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.card p span.active {
+  background-color: #28a745; /* Green for active */
+}
+
+.card p span.banned {
+  background-color: #dc3545; /* Red for banned */
+}

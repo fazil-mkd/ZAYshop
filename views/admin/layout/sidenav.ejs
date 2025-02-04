@@ -1,42 +1,107 @@
 <!-- Link to Sidebar CSS -->
 <!-- <link rel="stylesheet" href="/css/admin/layout/sidenav.css"> -->
-<link rel="stylesheet" href="/css/admin/layout/sidenav.css">
+<link rel="stylesheet" href="/assets/css/admin/layout/sidenav.css">
 
 <!-- Sidebar Component -->
 <aside class="sidebar" id="sidebar">
     <!-- Sidebar Logo -->
     <div class="sidebar-logo">
-        <img src="/images/produts-tactics/LOGO/blue-logo.png" alt="Logo">
+        <a style="font-size: 30px;" class="navbar-brand text-success logo h1 align-self-center " href="/admin/dashboard">
+            Zay
+        </a>
     </div>
 
-    
-    
+   
+
     <!-- Sidebar Menu -->
     <nav class="sidebar-menu">
-        <a href="/admin/dashboard" title="Dashboard">
-            <i><img src="/images/produts-tactics/admin-logo-2/1.png" alt="Dashboard Icon"></i>
-        </a>
+      <a href="/admin/sales" title="CouponManagement">
+        <i><img src="/images/admin/logos/6.png" alt="Coupon Management Icon">Sales</i>
+    </a>
         <a href="/admin/userManagement" title="userManagement">
-            <i><img src="/images/produts-tactics/admin-logo-2/2.png" alt="User Management Icon"></i>
+            <i><img style="width: 50px;" src="/images/admin/logos/2.png" alt="User Management Icon"></i><p>User</p>
         </a>
-        <a href="/admin/productManagement" title="productManagement">
-            <i><img src="/images/produts-tactics/admin-logo-2/3.png" alt="Product Management Icon"></i>
+        <a href="/admin/products" title="productManagement">
+            <i><img src="/images/admin/logos/3.png" alt="Product Management Icon"></i><p>Product</p>
         </a>
-        <a href="/admin/OrderManagement" title="OrderManagement">
-            <i><img src="/images/produts-tactics/admin-logo-2/4.png" alt="Order Management Icon"></i>
+        <a href="/admin/orders" title="OrderManagement">
+            <i><img src="/images/admin/logos/4.png" alt="Order Management Icon"></i><p>Order</p>
         </a>
         <a href="/admin/category" title="category">
-            <i><img src="/images/produts-tactics/admin-logo-2/5.png" alt="Category Management Icon"></i>
+            <i><img src="/images/admin/logos/5.png" alt="Category Management Icon"></i><P>Category</P>
         </a>
-        <a href="/admin/CouponManagement" title="CouponManagement">
-            <i><img src="/images/produts-tactics/admin-logo-2/6.png" alt="Coupon Management Icon"></i>
+        <a href="/admin/coupon" title="CouponManagement">
+          <i class="fas fa-tags">coupon</i>
         </a>
-        <a href="/admin/logout" title="logout">
-            <i><img src="/images/produts-tactics/admin-logo-2/7.png" alt="Log Out Icon"></i>
+        <a href="/admin/offer" title="CouponManagement">
+          <i class="fas fa-tags">offer</i>
+      </a>
+        <a id="logout-link" href="/admin/logout" title="logout">
+            <i><img style="height: 50px; width: 50px; border-radius: 30px;" src="/images/admin/logos/7.png" alt="Log Out Icon"></i><p>Logout</p>
         </a>
     </nav>
 </aside>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+  
+document.getElementById('logout-link').addEventListener('click', function(event) {
+  event.preventDefault(); 
+
+ 
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to log out?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, log me out!',
+    cancelButtonText: 'No, stay logged in'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      
+      fetch('/admin/logout', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          
+          Swal.fire(
+            'Logged out!',
+            'You have been logged out successfully.',
+            'success'
+          ).then(() => {
+            
+            window.location.href = '/admin/adminlogin'; 
+          });
+        } else {
+          Swal.fire(
+            'Error!',
+            'There was an issue logging you out. Please try again.',
+            'error'
+          );
+        }
+      })
+      .catch(error => {
+        Swal.fire(
+          'Error!',
+          'There was an issue with the request. Please try again.',
+          'error'
+        );
+      });
+    }
+  });
+});
+
+
+</script>
+
+
 <!-- Link to Sidebar JS -->
-<script src="/js/admin/layout/sidenav.js"></script>
+
 <!-- <script src="/js/admin/layout/sidenav copy.js"></script> -->

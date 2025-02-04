@@ -1,0 +1,172 @@
+/* Variables for consistent colors */
+:root {
+    --primary-brown: #8B4513;
+    --secondary-brown: #A0522D;
+    --light-brown: #DEB887;
+    --cream: #FDFAF6;
+    --off-white: #F5F5F5;
+    --dark-brown: #3E2723;
+  }
+  
+  /* Main container styles */
+  .container-fluid {
+    background-color: var(--cream);
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  
+  /* Card styles */
+  .card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1) !important;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-title {
+    color: var(--primary-brown);
+    font-weight: 600;
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--light-brown);
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }
+  
+  /* Search form styles */
+  .form-control {
+    border: 2px solid var(--light-brown);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .form-control:focus {
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    background-color: var(--primary-brown);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--secondary-brown);
+  }
+  
+  .btn-danger {
+    background-color: #DC3545;
+    border: none;
+  }
+  
+  /* Table styles */
+  .table {
+    margin-top: 1rem;
+    background-color: white;
+  }
+  
+  .table thead th {
+    background-color: var(--primary-brown);
+    color: white;
+    border: none;
+    padding: 1rem;
+  }
+  
+  .table tbody tr:nth-child(even) {
+    background-color: var(--off-white);
+  }
+  
+  .table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-color: var(--light-brown);
+  }
+  
+  /* Status select styles */
+  select[name="status"] {
+    padding: 0.5rem;
+    border: 1px solid var(--light-brown);
+    border-radius: 0.25rem;
+    margin-right: 0.5rem;
+  }
+  
+  /* Modal styles */
+  .modal-content {
+    border-radius: 1rem;
+    border: none;
+  }
+  
+  .modal-header {
+    background-color: var(--primary-brown);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 1.5rem;
+  }
+  
+  .modal-body {
+    padding: 2rem;
+    background-color: var(--cream);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 1rem;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .table-responsive {
+      margin: 0 -1rem;
+    }
+  }
+  
+  /* Action button styles */
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    margin: 0 0.2rem;
+  }
+  
+  /* Order details section */
+  #orderDetails {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
+  }
+  
+  #orderDetails p {
+    margin-bottom: 0.75rem;
+    color: var(--dark-brown);
+  }
+  
+  #orderDetails strong {
+    color: var(--primary-brown);
+  }
+  #closeDetailsBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #orderDetails {
+    position: relative;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
