@@ -21,10 +21,10 @@
             <h4 class="card-title" style="margin-left: 80px;" >User Management</h4>
             
             <form action="/admin/userManagement" method="GET" class="d-flex mb-3">
-                <input type="text" name="search" value="<%= searchQuery || '' %>" class="form-control me-2" placeholder="Search users...">
-                <input type="hidden" name="page" value="<%= currentPage %>">
+                <input type="text" name="search" value="<%= searchQuery %>" class="form-control me-2" placeholder="Search users...">
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
+            
             
 
             <div class="table-responsive">
@@ -115,6 +115,15 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script>
+
+
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.stopPropagation(); 
+});
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const banButtons = document.querySelectorAll('.btn-ban');
@@ -315,6 +324,11 @@ document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault(); 
         }
     });
+
+
+
+
+
 
  </script>
 

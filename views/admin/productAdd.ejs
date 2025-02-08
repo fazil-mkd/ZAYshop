@@ -27,7 +27,7 @@
             <div class="col-lg-8 col-md-10">
                 <div class="product-form-container">
                     <h2 class="text-center mb-4">Add New Product</h2>
-
+                    <div id="errorMessages"></div>
                     <form id="productForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
                         <!-- Product Name and Price -->
                         <div class="row">
@@ -35,12 +35,14 @@
                                 <div class="form-group">
                                     <label for="productName" class="form-label">Product Name</label>
                                     <input type="text" class="form-control" id="productName" name="productName" minlength="3">
+                                    <p id="name-error"></p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="productPrice" class="form-label">Price</label>
                                     <input type="number" class="form-control" id="productPrice" name="productPrice" min="0" >
+                                    <p id="price-error"></p>
                                 </div>
                             </div>
                         </div>
@@ -64,13 +66,14 @@
                                             <button class="remove-image" id="removeImage<%= index %>">&times;</button>
                                         </div>
                                         <div class="error-message" id="errorMessage<%= index %>"></div>
-                                        <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*">
+                                        <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*" >
+                                        <div class="error-message" id="imageError1"></div>
                                     </div>
                                 </div>
                                 <% }) %>
                             </div>
                         </div>
-                        
+                        <p id="image-error"></p>
                         <div class="modal fade" id="cropperModal" tabindex="-1">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
@@ -127,7 +130,7 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-primary" id="addColorSize">Add More Color & Sizes</button>
-
+                            <p id="color-size-error"></p>
                        
                         <div class="form-group">
                             <label for="productCategory" class="form-label">Category</label>
@@ -168,19 +171,28 @@
     <script>
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    const maxFileSize = 5 * 1024 * 1024; 
+    const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxImages = 4; 
+
+
     const previewContainers = document.querySelectorAll('.preview-container');
     const cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'));
     const cropperImage = document.getElementById('cropperImage');
     const cropButton = document.getElementById('cropButton');
-    let cropper;
+    let cropper; 
     let currentPreviewContainer = null;
+
     let croppedImages = {};
 
     previewContainers.forEach((container, index) => {
+  
         const fileInput = container.querySelector(`#fileInput${index + 1}`);
         const previewImage = container.querySelector(`#previewImage${index + 1}`);
         const removeButton = container.querySelector(`#removeImage${index + 1}`);
         const uploadPlaceholder = container.querySelector('.upload-placeholder');
+        const errorMessageContainer = container.querySelector('.error-message');
 
 
         container.addEventListener('click', (event) => {
@@ -191,13 +203,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         fileInput.addEventListener('change', (event) => {
+
+            errorMessageContainer.textContent = "";
             const file = event.target.files[0];
             if (file) {
+
+                if (!allowedFormats.includes(file.type)) {
+                    errorMessageContainer.textContent = 'Only JPG, JPEG, and PNG images are allowed.';
+                    fileInput.value = '';
+                    return;
+                }
+          
+                if (file.size > maxFileSize) {
+                    errorMessageContainer.textContent = 'Image file size must be less than 5 MB.';
+                    fileInput.value = '';
+                    return;
+                }
+            
                 const reader = new FileReader();
                 reader.onload = () => {
                     cropperImage.src = reader.result;
                     currentPreviewContainer = container;
                     cropperModal.show();
+                    
                     if (cropper) {
                         cropper.destroy();
                     }
@@ -205,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         aspectRatio: 1,
                         viewMode: 1,
                         ready() {
-
                             this.cropper.crop();
                         }
                     });
@@ -214,67 +241,137 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-
         cropButton.addEventListener('click', () => {
             if (cropper && currentPreviewContainer) {
                 const canvas = cropper.getCroppedCanvas({
-                    width: 800,    
+                    width: 800,
                     height: 800,
                     imageSmoothingEnabled: true,
                     imageSmoothingQuality: 'high'
                 });
-                
-                const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9); 
-                
-
+             
+                const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
                 const currentPreviewImage = currentPreviewContainer.querySelector('.preview-image');
                 const currentPlaceholder = currentPreviewContainer.querySelector('.upload-placeholder');
-                
 
+               
                 currentPreviewImage.src = croppedDataUrl;
                 currentPreviewImage.style.display = 'block';
-                
-    
                 currentPlaceholder.style.display = 'none';
-                
 
+              
                 const containerIndex = Array.from(previewContainers).indexOf(currentPreviewContainer);
                 croppedImages[containerIndex] = croppedDataUrl;
+
                 
-    
-                const fileInput = currentPreviewContainer.querySelector('input[type="file"]');
-                fileInput.value = '';
+                const currentFileInput = currentPreviewContainer.querySelector('input[type="file"]');
+                currentFileInput.value = '';
+
                 
                 cropperModal.hide();
             }
         });
 
-
+        
         removeButton.addEventListener('click', (event) => {
             event.stopPropagation();
             previewImage.src = '';
             previewImage.style.display = 'none';
             uploadPlaceholder.style.display = 'flex';
             fileInput.value = '';
+            errorMessageContainer.textContent = '';
             const containerIndex = Array.from(previewContainers).indexOf(container);
             delete croppedImages[containerIndex];
         });
     });
 
+    
+    const form = document.getElementById('productForm');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    let isValid = true;
+
+   
+    document.getElementById('name-error').textContent = '';
+    document.getElementById('price-error').textContent = '';
+    document.getElementById('color-size-error').textContent = '';
+    document.getElementById('image-error').textContent = '';
+
+ 
+    const productName = document.getElementById('productName');
+    const nameError = document.getElementById('name-error');
+
+    if (!productName.value.trim()) {
+        isValid = false;
+        nameError.textContent = 'Product Name is required.';
+        nameError.style.color = 'red';
+    }
+
+
+    const productPrice = document.getElementById('productPrice');
+    const priceError = document.getElementById('price-error');
+
+    if (!productPrice.value.trim() || parseFloat(productPrice.value) <= 0) {
+        isValid = false;
+        priceError.textContent = 'Product Price must be a positive number.';
+        priceError.style.color = 'red';
+    }
+
+
+    const colorSizeInputs = document.querySelectorAll('.color-input, .sizes-input');
+    const colorSizeError = document.getElementById('color-size-error');
+    let colorSizeValid = true;
+
+    colorSizeInputs.forEach(input => {
+        if (!input.value.trim()) {
+            colorSizeValid = false;
+        }
+    });
+
+    if (!colorSizeValid) {
+        isValid = false;
+        colorSizeError.textContent = 'Color and Size fields must not be empty.';
+        colorSizeError.style.color = 'red';
+    }
+
+    const previewContainers = document.querySelectorAll('.preview-container');
+    const imageError = document.getElementById('image-error');
+    let imageValid = true;
+
+    previewContainers.forEach((container, index) => {
+        const previewImage = container.querySelector('.preview-image');
+        if (!previewImage.src || previewImage.src.trim() === "") {
+            imageValid = false;
+        }
+    });
+
+    if (!imageValid) {
+        isValid = false;
+        imageError.textContent = 'All images are required.';
+        imageError.style.color = 'red';
+    }
+
+    if (!isValid) return; 
+
+
+
+
+ 
+
+
+
   
-    document.getElementById('productForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const form = event.target;
         const formData = new FormData(form);
 
-
+      
         for (let key of Array.from(formData.keys())) {
             if (key === 'productImages') {
                 formData.delete(key);
             }
         }
 
-
+   
         for (let [index, dataUrl] of Object.entries(croppedImages)) {
             try {
                 const blob = await dataURLtoBlob(dataUrl);
@@ -284,24 +381,43 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+ 
+        const response = await fetch(form.action, {
+    method: 'POST',
+    body: formData
+});
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Form submitted successfully:', data);
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        }
+if (!response.ok) {
+    Swal.fire({
+        title: 'Error!',
+        text: `HTTP error! Status: ${response.status}`,
+        icon: 'error',
+    });
+    throw new Error(`HTTP error! Status: ${response.status}`);
+}
+
+const contentType = response.headers.get('content-type');
+if (!contentType || !contentType.includes('application/json')) {
+    Swal.fire({
+        title: 'Error!',
+        text: "Expected JSON, but received something else.",
+        icon: 'error',
+    });
+    throw new Error("Expected JSON, but received something else.");
+}
+
+const data = await response.json();
+Swal.fire({
+    title: 'Response Received',
+    text: "Product added succesfully",
+    icon: 'success',
+}).then(()=>{
+    window.location.href='/admin/products'
+})
+
     });
 
+   
     function dataURLtoBlob(dataUrl) {
         return new Promise((resolve, reject) => {
             try {
@@ -319,71 +435,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-});
 
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('productForm');
-
-            form.addEventListener('submit', function (event) {
-                event.preventDefault(); 
-
-                let isValid = true;
-                let errorMessages = [];
-
-                const productName = document.getElementById('productName');
-                if (!productName.value.trim()) {
-                    isValid = false;
-                    errorMessages.push('Product Name is required.');
-                }
-
-                const productPrice = document.getElementById('productPrice');
-                if (productPrice.value <= 0) {
-                    isValid = false;
-                    errorMessages.push('Product Price must be a positive number.');
-                }
-
-              
-
-                const colorSizeInputs = document.querySelectorAll('.color-input, .sizes-input');
-                colorSizeInputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        isValid = false;
-                        errorMessages.push('Color and Size fields must not be empty.');
-                    }
-                });
-
-                if (!isValid) {
-                    Swal.fire({
-                        title: 'Form Validation Error',
-                        text: errorMessages.join('\n'),
-                        icon: 'error',
-                    });
-                } else {
-                    form.submit();
-                }
-            });
-
-       
-            document.getElementById('addColorSize').addEventListener('click', function () {
-                const colorSizeSection = document.getElementById('colorSizeSection');
-                const newRow = colorSizeSection.cloneNode(true);
-                newRow.querySelector('.remove-color-size').addEventListener('click', function () {
-                    newRow.remove();
-                });
-
-                colorSizeSection.appendChild(newRow);
-            });
-
-          
-            document.querySelectorAll('.remove-color-size').forEach(button => {
-                button.addEventListener('click', function () {
-                    button.closest('.row').remove();
-                });
-            });
+   
+    document.getElementById('addColorSize').addEventListener('click', function () {
+        const colorSizeSection = document.getElementById('colorSizeSection');
+        const newRow = colorSizeSection.cloneNode(true);
+        newRow.querySelector('.remove-color-size').addEventListener('click', function () {
+            newRow.remove();
         });
+        colorSizeSection.appendChild(newRow);
+    });
 
-
+    document.querySelectorAll('.remove-color-size').forEach(button => {
+        button.addEventListener('click', function () {
+            button.closest('.row').remove();
+        });
+    });
+});
 
 
         

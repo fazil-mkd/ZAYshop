@@ -557,4 +557,32 @@
   /* Optional: Add subtle shadow on hover */
   .remove-coupon-btn:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+  }.Address-edit {
+    background-color: #3498db; /* Blue background */
+    color: #ffffff; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 25px; /* Rounded corners */
+    padding: 10px 20px; /* Comfortable padding */
+    font-size: 14px; /* Readable font size */
+    font-weight: 600; /* Semi-bold text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    outline: none; /* Remove default outline */
+}
+
+.Address-edit:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.Address-edit:active {
+    background-color: #1c5980; /* Even darker blue on click */
+    transform: translateY(0); /* Reset lift effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reset shadow */
+}
+
+.Address-edit:focus {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); /* Focus ring for accessibility */
+}

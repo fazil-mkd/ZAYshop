@@ -128,7 +128,7 @@ const approveReturn = async (req, res) => {
     }
 
     const product = order.orderedItems.find(item => item.product.toString() === productId);
-    const productPrice = product.totalPrice;
+    const productPrice = item.totalPrice;
     const  stockToAdd = item.quantity;
     if (isNaN(productPrice) || productPrice <= 0) {
       console.log('Invalid product price');
@@ -187,10 +187,10 @@ const approveReturn = async (req, res) => {
     
 
 
-    wallet.walletBalance += productPrice * stockToAdd;
+    wallet.walletBalance += productPrice;
     wallet.transactions.push({
       type: 'credit',
-      amount: productPrice * stockToAdd,
+      amount: productPrice ,
       description: `Refund for returned product: ${productId} from order ${orderId}`,
       date: new Date(),
     });
@@ -204,7 +204,7 @@ const approveReturn = async (req, res) => {
           order.status = 'Returned';
         }
     
-        order.totalPrice -= (item.totalPrice * item.quantity);
+        order.totalPrice -= item.totalPrice ;
 
         await wallet.save();
     await order.save();

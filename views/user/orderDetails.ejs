@@ -137,97 +137,46 @@ h2.text-center::after {
     box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
 }
 
-/* Order Details Styles */
-#orderDetails {
-    background: linear-gradient(145deg, var(--pure-white), var(--off-white));
-    padding: 2.5rem;
-    border-radius: 15px;
-    box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
-    max-width: 800px;
-    min-height: 400px;
-    margin: 3rem auto;
-    border: 1px solid var(--light-brown);
+
+.custom-popup {
+  font-size: 18px; 
+  line-height: 1.6; 
+  padding: 20px;
 }
 
-#orderDetails p {
-    padding: 1.2rem;
-    margin-bottom: 1.2rem;
-    background: var(--pure-white);
-    border-radius: 8px;
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--soft-black);
-    border: 1px solid rgba(139, 69, 19, 0.1);
+.custom-title {
+  font-size: 24px; 
+  font-weight: bold;
+  margin-bottom: 20px; 
 }
 
-#orderId {
-    font-size: 1.6rem !important;
-    font-weight: bold;
-    color: var(--dark-brown) !important;
-    border-bottom: 2px solid var(--light-brown) !important;
-    margin-bottom: 2rem !important;
+.custom-html {
+  font-size: 18px; 
 }
 
-#totalPrice {
-    color: var(--primary-brown) !important;
-    font-size: 1.4rem !important;
-    font-weight: bold;
-    background: rgba(139, 69, 19, 0.05) !important;
+.custom-confirm-button {
+  font-size: 20px;
+  padding: 10px 20px; 
+  background-color: #007bff; 
+  border: none; 
+  border-radius: 5px; 
 }
 
-#orderStatus {
-    color: var(--dark-brown) !important;
-    font-weight: 600;
+.custom-confirm-button:hover {
+  background-color: #0056b3; 
 }
 
-/* Animation */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.order-details-popup {
+  max-width: 100%; 
 }
 
-#orderDetails[style*="block"] {
-    animation: slideIn 0.5s ease-out;
+.address-details {
+  margin-left: 20px; 
+  margin-top: 10px; 
 }
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .container {
-        max-width: 95%;
-        padding: 2rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 1.5rem;
-        min-height: 600px;
-    }
-
-    h2.text-center {
-        font-size: 2.2rem;
-    }
-
-    .table thead th {
-        padding: 1rem 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .table tbody td {
-        padding: 1rem 0.8rem;
-    }
-
-    #orderDetails {
-        padding: 1.5rem;
-        margin: 2rem auto;
-        min-height: 300px;
-    }
+.custom-popup {
+  max-width: 600px; 
+  font-size: 16px; 
 }
   </style>
 
@@ -298,8 +247,7 @@ function goBack() {
     }
 
 
-
- function viewOrderDetails(orderId) {
+    function viewOrderDetails(orderId) {
   fetch(`/user/orders/${orderId}`)
     .then(response => {
       console.log('Response Status:', response.status);
@@ -309,45 +257,46 @@ function goBack() {
       return response.json();
     })
     .then(orderArray => {
-    
-
       if (Array.isArray(orderArray) && orderArray.length > 0) {
         const order = orderArray[0]; 
 
-        if (order.orderId) {
-          document.getElementById('orderId').innerText = `Order ID: ${order.orderId}`;
-        }
-        if (order.status) {
-          document.getElementById('orderStatus').innerText = ` ${order.status}`;
-        }
-        if (order.paymentMethod) {
-          document.getElementById('paymentMethod').innerText = `${order.paymentMethod}`;
-        }
-        if (order.totalPrice) {
-          document.getElementById('totalPrice').innerText = `${order.totalPrice}`;
-        } 
-        if (order.orderNotes) {
-          document.getElementById('orderNotes').innerText = ` ${order.orderNotes}`;
-        }
-        if (order.createdAt) {
-          document.getElementById('createdAt').innerText = ` ${new Date(order.createdAt).toLocaleDateString()}`;
-        }if (order.address) {
-    document.getElementById('Address').innerHTML = `
-        <strong>Full Name:</strong> ${order.address.fullName} <br>
-        <strong>Street:</strong> ${order.address.streetAddress} ${order.address.aptNumber} <br>
-        <strong>City:</strong> ${order.address.city} <br>
-        <strong>State:</strong> ${order.address.state} <br>
-        <strong>Pincode:</strong> ${order.address.pincode} <br>
-        <strong>country:</strong> ${order.address.country} <br>
-        <strong>Phone:</strong> ${order.address.phone} <br>
-        <strong>Alt Phone:</strong> ${order.address.altPhone} <br>
-        <strong>Address Type:</strong> ${order.address.addressType}
-    `;
-}
+    
+        const orderDetailsHtml = `
+          <div class="order-details-popup">
+            <p><strong>Order ID:</strong> ${order.orderId || 'N/A'}</p>
+            <p><strong>Status:</strong> ${order.status || 'N/A'}</p>
+            <p><strong>Payment Method:</strong> ${order.paymentMethod || 'N/A'}</p>
+            <p><strong>Total Price:</strong> ${order.totalPrice || 'N/A'}</p>
+            <p><strong>Order Notes:</strong> ${order.orderNotes || 'N/A'}</p>
+            <p><strong>Order Date:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
+            <p><strong>Address:</strong></p>
+            <div class="address-details">
+              <p><strong>Full Name:</strong> ${order.address.fullName || 'N/A'}</p>
+              <p><strong>Street:</strong> ${order.address.streetAddress || 'N/A'} ${order.address.aptNumber || ''}</p>
+              <p><strong>City:</strong> ${order.address.city || 'N/A'}</p>
+              <p><strong>State:</strong> ${order.address.state || 'N/A'}</p>
+              <p><strong>Pincode:</strong> ${order.address.pincode || 'N/A'}</p>
+              <p><strong>Country:</strong> ${order.address.country || 'N/A'}</p>
+              <p><strong>Phone:</strong> ${order.address.phone || 'N/A'}</p>
+              <p><strong>Alt Phone:</strong> ${order.address.altPhone || 'N/A'}</p>
+              <p><strong>Address Type:</strong> ${order.address.addressType || 'N/A'}</p>
+            </div>
+          </div>
+        `;
 
-
-
-        document.getElementById('orderDetails').style.display = 'block';
+     
+        Swal.fire({
+          title: 'Order Details',
+          html: orderDetailsHtml,
+          confirmButtonText: 'Close',
+          customClass: {
+            popup: 'custom-popup', 
+            title: 'custom-title', 
+            htmlContainer: 'custom-html', 
+            confirmButton: 'custom-confirm-button', 
+          },
+          width: '1000px', 
+        });
       } else {
         Swal.fire('No order details found.');
         console.error('Empty order array:', orderArray);

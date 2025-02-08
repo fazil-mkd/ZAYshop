@@ -726,9 +726,10 @@ console.log(colorSizeStockMap);
                
 
 
-    const cloudinaryImages = product.images.map(imageId => {
-      return `https://res.cloudinary.com/<cloud_name>/image/upload/${imageId}`;
-    });
+const cloudinaryImages = product.images.slice(-4).map(imageId => {
+  return `https://res.cloudinary.com/<cloud_name>/image/upload/${imageId}`;
+});
+
 
     res.render('productDetails', {
       product,
@@ -936,59 +937,83 @@ const loadUpdateAddress = async (req, res,next) => {
 
 
 
-const updateAddress = async (req, res,next) => {
+
+const loadCheckUpdateAddress = async (req, res,next) => {
   try {
-    const { fullName, streetAddress, aptNumber, city, state, pincode, country, phone, altPhone, addressType } = req.body;
+    const { addressId } = req.params;
     const userId = req.session.userId;
 
 
-    console.log('Form data:', req.body);
-    const updatedAddress = {
-      fullName,
-      streetAddress,
-      aptNumber,
-      city,
-      state,
-      pincode,
-      country,
-      phone,
-      altPhone,
-      addressType
-    };
-
     const userAddress = await Address.findOne({ userId });
 
+
     if (!userAddress) {
-      throw new NotFoundError('User address record not found');
+      throw new NotFoundError( 'User address record not found');
     }
 
-    const address = userAddress.address.find(address => address._id.toString() === req.params.id);
+    const address = userAddress.address.find(address => address._id.toString() === addressId);
+
 
     if (!address) {
-      throw new NotFoundError('Address not found');
+      throw new NotFoundError('Address not found' );
     }
 
-    address.fullName = updatedAddress.fullName;
-    address.streetAddress = updatedAddress.streetAddress;
-    address.aptNumber = updatedAddress.aptNumber;
-    address.city = updatedAddress.city;
-    address.state = updatedAddress.state;
-    address.pincode = updatedAddress.pincode;
-    address.country = updatedAddress.country;
-    address.phone = updatedAddress.phone;
-    address.altPhone = updatedAddress.altPhone;
-    address.addressType = updatedAddress.addressType;
-
-    await userAddress.save();
-
-    req.flash('success', 'Address Updated  successfully!');
-    res.redirect('/address');
+    return res.render('CheckoutUpdateAddress', {
+      message: 'Address loaded successfully',
+      address,
+    });
 
   } catch (err) {
     console.error(err);
     return next(err);
   }
 };
+
+
+
+
+
+
+
+
+
+const updateAddress = async (req, res, next) => {
+  try {
+    const { fullName, streetAddress, aptNumber, city, state, pincode, country, phone, altPhone, addressType } = req.body;
+    const userId = req.session.userId;
+
+    console.log('Form data received:', req.body);
+
+ 
+    if (!fullName || !streetAddress || !city || !state || !pincode || !country || !phone) {
+      return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+    const userAddress = await Address.findOne({ userId });
+
+    if (!userAddress) {
+      return res.status(404).json({ message: 'User address record not found.' });
+    }
+
+    const address = userAddress.address.find(addr => addr._id.toString() === req.params.id);
+
+    if (!address) {
+      return res.status(404).json({ message: 'Address not found.' });
+    }
+
+  
+    Object.assign(address, { fullName, streetAddress, aptNumber, city, state, pincode, country, phone, altPhone, addressType });
+
+    await userAddress.save();
+
+    return res.status(200).json({ message: 'Address updated successfully!', updatedAddress: address });
+
+  } catch (err) {
+    console.error('Update Address Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  }
+};
+
 
 
 
@@ -1444,7 +1469,7 @@ const placeOrder = async (req, res,next) => {
     }
 
     const addressDocument = await Address.findOne({ "address._id": selectedAddress });
-    console.log('Address Document:', addressDocument);
+  
 
     if (!addressDocument) {
       throw new NotFoundError('Selected address not found.');
@@ -1453,9 +1478,7 @@ const placeOrder = async (req, res,next) => {
     for (const item of cart.items) {
       const { productColor, productSize, quantity } = item;
 
-      if (!productColor || !productSize) {
-        return next(err);
-      }
+  
 
 
       const productVariants = await Variant.find({ productId: item.productId });
@@ -1519,6 +1542,12 @@ const placeOrder = async (req, res,next) => {
     const totalPrice = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
 
 
+
+
+
+    if(paymentMethod === 'cod'&&totalPrice>2500){
+      return res.status(404).json({ message: 'Only Can Buy Less Than 3000 With COD' });
+    }
 
     if (paymentMethod === 'wallet') {
 
@@ -2347,28 +2376,59 @@ const removeFromWhishlist = async (req, res,next) => {
 
 
 
-
-const removeCoupon = async (req, res) => {
-  const { coupon } = req.body;
-  const userId = req.session.userId; 
+const removeCoupon = async (req, res, next) => {
+  const userId = req.session.user._id;
+  console.log("User ID from session:", userId);
 
   try {
+
+      const cart = await Cart.findOne({ userId }).populate('items.productId');
+
+      if (!cart || !cart.items || cart.items.length === 0) {
+          console.log("Cart is empty or not found.");
+          throw new NotFoundError("Cart is empty.");
+      }
+
+      const coupon = await Coupon.findOne({ userId });
+
+      if (!coupon) {
+          console.log("No coupon found for this user.");
+          req.flash('success', 'No coupon applied.');
+          return res.status(400).json({
+              success: false,
+              message: "No coupon applied.",
+          });
+      }
+
+   
+      const totalPrice = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+
+
+      cart.items.forEach((item) => {
+          const originalPrice = (item.totalPrice * 100) / (100 - coupon.discountAmount);
+          item.totalPrice = Math.round(originalPrice * 100) / 100;  
+      });
       
-      let user = await User.findById(userId);
-      if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-      user.coupon = null; 
-      await user.save();
 
       
-      let newTotal = user.cartTotal + 10; 
+      await cart.save();
 
-      res.json({ success: true, newTotal });
-  } catch (error) {
-      console.error("Error removing coupon:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+
+      coupon.userId = coupon.userId.filter(id => id.toString() !== userId);
+      await coupon.save();
+
+      req.flash('success', 'Coupon removed successfully.');
+      
+      return res.status(200).json({
+          success: true,
+          message: "Coupon removed successfully.",
+      });
+
+  } catch (err) {
+      console.error("Error removing coupon:", err);
+      next(err);
   }
-}
+};
 
 
 
@@ -2376,7 +2436,59 @@ const removeCoupon = async (req, res) => {
 
 
 
+const CheckoutupdateAddress = async (req, res,next) => {
+  try {
+    const { fullName, streetAddress, aptNumber, city, state, pincode, country, phone, altPhone, addressType } = req.body;
+    const userId = req.session.userId;
 
+
+    console.log('Form data:', req.body);
+    const updatedAddress = {
+      fullName,
+      streetAddress,
+      aptNumber,
+      city,
+      state,
+      pincode,
+      country,
+      phone,
+      altPhone,
+      addressType
+    };
+
+    const userAddress = await Address.findOne({ userId });
+
+    if (!userAddress) {
+      throw new NotFoundError('User address record not found');
+    }
+
+    const address = userAddress.address.find(address => address._id.toString() === req.params.id);
+
+    if (!address) {
+      throw new NotFoundError('Address not found');
+    }
+
+    address.fullName = updatedAddress.fullName;
+    address.streetAddress = updatedAddress.streetAddress;
+    address.aptNumber = updatedAddress.aptNumber;
+    address.city = updatedAddress.city;
+    address.state = updatedAddress.state;
+    address.pincode = updatedAddress.pincode;
+    address.country = updatedAddress.country;
+    address.phone = updatedAddress.phone;
+    address.altPhone = updatedAddress.altPhone;
+    address.addressType = updatedAddress.addressType;
+
+    await userAddress.save();
+
+    req.flash('success', 'Address Updated  successfully!');
+    res.redirect('/checkout');
+
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+};
 
 
 
@@ -2439,4 +2551,6 @@ module.exports = {
   productReturn,
   applayCoupon,
   removeCoupon,
+  loadCheckUpdateAddress,
+  CheckoutupdateAddress,
 }

@@ -77,6 +77,7 @@ router.post('/coupon/add',adminAuth,offerController.createCoupon);
 router.get('/coupon/view',adminAuth,offerController.getCoupons);
 router.put('/coupons/:id',adminAuth,offerController.updateCoupon);
 
+router.delete("/couponsDel/:id",offerController.deleteCoupon)
 
 //sales
 router.get('/sales',adminAuth,offerController.getSalesReports);

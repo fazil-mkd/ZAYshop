@@ -58,7 +58,7 @@
                                     is required.</div>
                             </div>
 
-                            <!-- Category and Stock -->
+                            
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -102,13 +102,13 @@
                                                     <button class="remove-image" id="removeImage<%= index %>">&times;</button>
                                                 </div>
                                                 <div class="error-message" id="errorMessage<%= index %>"></div>
-                                                <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*">
+                                                <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*" required>
                                             </div>
                                         </div>
                                         <% }) %>
                                     </div>
                             
-                            <!-- Cropper Modal -->
+
                           
                             <div class="modal fade" id="cropperModal" tabindex="-1">
                             <div class="modal-dialog modal-lg">
@@ -165,7 +165,6 @@
 
 
 
-        <!-- SweetAlert2 JS -->
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
@@ -174,75 +173,159 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.7/dist/sweetalert2.all.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            const form = document.querySelector('.updatePdt');
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
+           document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.updatePdt');
+    const existingImages = [];
+    
+   
+    [1, 2, 3, 4].forEach(index => {
+        const img = document.querySelector(`#previewImage${index}`);
+        if (img && img.src) {
+            existingImages[index - 1] = img.src;
+        }
+    });
 
-                const errorElements = document.querySelectorAll('.text-danger');
-                errorElements.forEach(el => el.style.display = 'none');
-
-                let isValid = true;
-
-
-                const productName = document.getElementById('productName').value.trim();
-                if (!productName) {
-                    document.getElementById('productNameError').style.display = 'block';
-                    isValid = false;
-                }
-
-
-                const productPrice = parseFloat(document.getElementById('productPrice').value);
-                if (isNaN(productPrice) || productPrice <= 0) {
-                    document.getElementById('productPriceError').style.display = 'block';
-                    isValid = false;
-                }
-
-
-
-
-                const productDescription = document.getElementById('productDescription').value.trim();
-                if (!productDescription) {
-                    document.getElementById('productDescriptionError').style.display = 'block';
-                    isValid = false;
-                }
-
-                const productCategory = document.getElementById('productCategory').value.trim();
-                if (!productCategory) {
-                    document.getElementById('productCategoryError').style.display = 'block';
-                    isValid = false;
-                }
+   
+    const validators = {
+        isEmpty: value => !value.trim(),
+        isInvalidPrice: value => isNaN(parseFloat(value)) || parseFloat(value) <= 0,
+        isInvalidImage: file => {
+            if (!file) return false;
+            const fileType = file.type.split('/')[0];
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            return fileType !== 'image' || file.size > maxFileSize;
+        }
+    };
 
 
+    const showError = (elementId) => {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.style.display = 'block';
+        }
+    };
 
-                const images = document.querySelectorAll('input[type="file"][name="productImages[]"]');
-                images.forEach((imageInput, index) => {
-                    if (imageInput.files.length > 0) {
-                        const file = imageInput.files[0];
-                        const fileType = file.type.split('/')[0];
-                        const maxFileSize = 5 * 1024 * 1024;
-                        if (fileType !== 'image') {
-                            document.getElementById(`imageError${index}`).style.display = 'block';
-                            isValid = false;
-                        } else if (file.size > maxFileSize) {
-                            document.getElementById(`imageSizeError${index}`).style.display = 'block';
-                            isValid = false;
-                        }
+   
+    const hideAllErrors = () => {
+        document.querySelectorAll('.text-danger').forEach(el => {
+            el.style.display = 'none';
+        });
+    };
+
+  
+    [1, 2, 3, 4].forEach(index => {
+        const removeBtn = document.querySelector(`#removeImage${index}`);
+        const previewImg = document.querySelector(`#previewImage${index}`);
+        const fileInput = document.querySelector(`#fileInput${index}`);
+
+        if (removeBtn && previewImg && fileInput) {
+            removeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                previewImg.src = '';
+                fileInput.value = '';
+                existingImages[index - 1] = null;
+
+              
+                const removedInput = document.createElement('input');
+                removedInput.type = 'hidden';
+                removedInput.name = 'removedImages';
+                removedInput.value = index - 1;
+                form.appendChild(removedInput);
+            });
+
+      
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (validators.isInvalidImage(file)) {
+                        showError(`imageError${index}`);
+                        fileInput.value = '';
+                        return;
                     }
-                });
 
-                if (isValid) {
-                    form.submit();
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'There are errors in the form. Please fix them and try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        existingImages[index - 1] = null;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        hideAllErrors();
+        
+        let isValid = true;
+        const validationFields = [
+            {
+                id: 'productName',
+                errorId: 'productNameError',
+                validator: validators.isEmpty
+            },
+            {
+                id: 'productPrice',
+                errorId: 'productPriceError',
+                validator: validators.isInvalidPrice
+            },
+            {
+                id: 'productDescription',
+                errorId: 'productDescriptionError',
+                validator: validators.isEmpty
+            },
+            {
+                id: 'productCategory',
+                errorId: 'productCategoryError',
+                validator: validators.isEmpty
+            }
+        ];
+
+     
+        validationFields.forEach(field => {
+            const element = document.getElementById(field.id);
+            if (element && field.validator(element.value)) {
+                showError(field.errorId);
+                isValid = false;
+            }
+        });
+
+ 
+        const imageInputs = document.querySelectorAll('input[type="file"][name="productImages"]');
+        imageInputs.forEach((input, index) => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                if (validators.isInvalidImage(file)) {
+                    showError(`imageError${index}`);
+                    isValid = false;
+                }
+            }
+        });
+
+        if (isValid) {
+       
+            existingImages.forEach((imgUrl, index) => {
+                if (imgUrl) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'existingImages';
+                    hiddenInput.value = imgUrl;
+                    form.appendChild(hiddenInput);
                 }
             });
 
-
+            form.submit();
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'There are errors in the form. Please fix them and try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+});
 
 
             async function handleFormSubmit(event) {
@@ -455,30 +538,100 @@
 
 
 
-
 document.addEventListener('DOMContentLoaded', function () {
-    const removeButtons = document.querySelectorAll('.remove-image');
-
-    removeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault(); 
-            const previewContainer = button.closest('.preview-container'); 
-            if (previewContainer) {
-                const previewImage = previewContainer.querySelector('.preview-image');
-                const fileInput = previewContainer.querySelector('input[type="file"]');
+    const form = document.querySelector('.updatePdt');
+    const removedImageIndexes = new Set();
 
 
-                if (previewImage) {
-                    previewImage.src = '';
+    const handleImageRemoval = (button, index) => {
+        const previewContainer = button.closest('.preview-container');
+        if (!previewContainer) return;
+
+        const previewImage = previewContainer.querySelector('.preview-image');
+        const fileInput = previewContainer.querySelector('input[type="file"]');
+        const uploadPlaceholder = previewContainer.querySelector('.upload-placeholder');
+
+        if (previewImage) {
+            const originalImageUrl = previewImage.getAttribute('data-original-url');
+            if (originalImageUrl) {
+                removedImageIndexes.add(index);
+
+                let removedInput = form.querySelector(`input[name="removedImages"][value="${index}"]`);
+                if (!removedInput) {
+                    removedInput = document.createElement('input');
+                    removedInput.type = 'hidden';
+                    removedInput.name = 'removedImages';
+                    removedInput.value = index;
+                    form.appendChild(removedInput);
                 }
-                if (fileInput) {
-                    fileInput.value = '';
-                }
-
             }
+
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+        }
+
+        if (fileInput) {
+            fileInput.value = '';
+        }
+
+        if (uploadPlaceholder) {
+            uploadPlaceholder.style.display = 'flex';
+        }
+
+        button.style.display = 'none';
+    };
+
+
+    const initializeImageHandling = () => {
+        const previewContainers = document.querySelectorAll('.preview-container');
+        
+        previewContainers.forEach((container, index) => {
+            const previewImage = container.querySelector('.preview-image');
+            const fileInput = container.querySelector('input[type="file"]');
+            const removeButton = container.querySelector('.remove-image');
+            const uploadPlaceholder = container.querySelector('.upload-placeholder');
+
+            if (previewImage && previewImage.src) {
+                previewImage.setAttribute('data-original-url', previewImage.src);
+                removeButton.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+            }
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        removeButton.style.display = 'block';
+                        uploadPlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                handleImageRemoval(removeButton, index);
+            });
+
+            container.addEventListener('click', (event) => {
+                if (!event.target.closest('.remove-image')) {
+                    fileInput.click();
+                }
+            });
         });
+    };
+
+    initializeImageHandling();
+
+    // Handle form submission
+    form.addEventListener('submit', function () {
+        form.querySelector('input[name="removedImages"]').value = Array.from(removedImageIndexes).join(',');
     });
 });
+
 
         </script>
 </body>

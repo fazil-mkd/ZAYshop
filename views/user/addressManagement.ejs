@@ -29,11 +29,7 @@
                                         <!-- <button class="btn btn-primary" id="search-btn">
                                             <i class="fas fa-search"></i> Search
                                         </button> -->
-                                        <% if (successMessage) { %>
-                                            <div id="success-alert" class="alert alert-success"><%= successMessage %></div>
-                                          <% } else { %>
-                                            <div id="success-alert" class="alert alert-success" style="display:none;"></div>
-                                          <% } %>
+                                    
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -86,41 +82,49 @@
                                     </div>
                                 </div>
 
-            <!-- Add New Address Button -->
+           
             <button type="button" class="address-btn" onclick="addAddress()">Add New Address</button>
 
-            <!-- Form for Adding Address -->
-            <form method="post" action="/add-address" id="addressForm" onsubmit="submitForm(event)" style="display:none;">
+            
+            <form method="post" action="/add-address" id="addressForm" style="display:none;" onsubmit="submitForm(event)">
                 <h6>Enter New Address</h6>
-
-                <!-- Form Fields -->
+            
                 <label for="fullName">Full Name:</label>
                 <input type="text" name="fullName" id="fullName" placeholder="Enter your full name" required>
-        
+                <span class="error-message" id="fullNameError"></span>
+            
                 <label for="streetAddress">Street Address:</label>
                 <input type="text" name="streetAddress" id="streetAddress" placeholder="Street Address" required>
-        
+                <span class="error-message" id="streetAddressError"></span>
+            
                 <label for="aptNumber">Apartment/Unit Number (optional):</label>
                 <input type="text" name="aptNumber" id="aptNumber" placeholder="Apartment or Unit Number">
-        
+                <span class="error-message" id="aptNumberError"></span>
+            
                 <label for="city">City:</label>
                 <input type="text" name="city" id="city" placeholder="Enter city" required>
-        
+                <span class="error-message" id="cityError"></span>
+            
                 <label for="state">State/Province:</label>
                 <input type="text" name="state" id="state" placeholder="Enter state/province" required>
-        
+                <span class="error-message" id="stateError"></span>
+            
                 <label for="pincode">Postal Code:</label>
                 <input type="text" name="pincode" id="pincode" placeholder="Postal/Zip Code" required>
-        
+                <span class="error-message" id="pincodeError"></span>
+            
                 <label for="country">Country:</label>
                 <input type="text" name="country" id="country" placeholder="Enter country" required>
-        
+                <span class="error-message" id="countryError"></span>
+            
                 <label for="phone">Phone Number:</label>
                 <input type="tel" name="phone" id="phone" placeholder="Enter phone number" required>
-        
+                <span class="error-message" id="phoneError"></span>
+            
                 <label for="altPhone">Alternate Phone Number (optional):</label>
                 <input type="tel" name="altPhone" id="altPhone" placeholder="Alternate phone number">
-        
+                <span class="error-message" id="altPhoneError"></span>
+            
                 <label for="addressType">Address Type:</label>
                 <select id="addressType" name="addressType" required>
                     <option value="home">Home</option>
@@ -128,8 +132,7 @@
                     <option value="billing">Billing</option>
                     <option value="shipping">Shipping</option>
                 </select>
-        
-                <!-- Action Buttons -->
+            
                 <button type="submit">Save Address</button>
                 <button type="button" onclick="cancelAdd()">Cancel</button>
             </form>
@@ -140,7 +143,7 @@
     <script>
         let editingAddress = null;
 
-        // Add New Address Button
+        
         function addAddress() {
             editingAddress = null;
             const form = document.getElementById('addressForm');
@@ -153,7 +156,6 @@
             }
         }
 
-        // Cancel the Address Form
         function cancelAdd() {
             const form = document.getElementById('addressForm');
             if (form) {
@@ -163,12 +165,38 @@
         }
 
         async function submitForm(event) {
-    event.preventDefault(); // Prevent form's default submission behavior
+    event.preventDefault(); 
+
+    const patterns = {
+        fullName: /^[A-Za-z]+$/,
+        streetAddress: /^[A-Za-z0-9#,-]+$/,
+        aptNumber: /^[A-Za-z0-9#,-]*$/, 
+        city: /^[A-Za-z]+$/,
+        state: /^[A-Za-z]+$/,
+        pincode: /^\d{4,10}$/,
+        country: /^[A-Za-z]+$/,
+        phone: /^\d{10,15}$/,
+        altPhone: /^\d{10,15}$/
+    };
+
+    const fields = ["fullName", "streetAddress", "aptNumber", "city", "state", "pincode", "country", "phone", "altPhone"];
+    let isValid = true;
+
+    fields.forEach(field => {
+        const input = document.getElementById(field);
+        const errorSpan = document.getElementById(field + "Error");
+        if (!patterns[field].test(input.value)) {
+            errorSpan.textContent = `Invalid ${field.replace(/([A-Z])/g, ' $1')}. No spaces or dots allowed.`;
+            isValid = false;
+        } else {
+            errorSpan.textContent = ""; 
+        }
+    });
+
+    if (!isValid) return; 
 
     const form = event.target;
     const formData = new FormData(form);
-
-    // Convert FormData to JSON object
     const data = Object.fromEntries(formData.entries());
 
     try {
@@ -180,20 +208,19 @@
 
         const result = await response.json();
         if (response.ok) {
-            // Show SweetAlert message and reload the page
-            Swal.fire(result.message).then(() => {
-                location.reload(); // Reload the page after closing the SweetAlert
+            Swal.fire({ title: 'Success!', text: result.message, icon: 'success' }).then(() => {
+                location.reload(); 
             });
-            cancelAdd(); // Hide the form after successful submission
+            cancelAdd();
         } else {
-            // Show SweetAlert error message
-            Swal.fire(result.message || 'Error submitting form');
+            Swal.fire({ title: 'Error', text: result.message || 'Error submitting form', icon: 'error' });
         }
     } catch (error) {
         console.error('Error:', error);
-        Swal.fire('An error occurred');
+        Swal.fire({ title: 'Error', text: 'An error occurred', icon: 'error' });
     }
 }
+
 
 
 
@@ -203,12 +230,12 @@
 
   deleteButtons.forEach((button) => {
     button.addEventListener('click', async (e) => {
-      e.preventDefault(); // Prevent default behavior (if inside a form)
+      e.preventDefault(); 
 
       const addressId = button.getAttribute('data-id');
       const addressItem = button.closest('.address-item');
 
-      // Confirm before deletion with SweetAlert
+      
       const { value: confirmDelete } = await Swal.fire({
         title: 'Are you sure?',
         text: 'Do you really want to delete this address?',
@@ -221,13 +248,13 @@
       if (!confirmDelete) return;
 
       try {
-        // Send DELETE request to the server
+     
         const response = await fetch(`/delete-address/<%= user._id %>/${addressId}`, {
           method: 'DELETE',
         });
 
         if (response.ok) {
-          // Alert success with SweetAlert
+         
           const data = await response.json();
           await Swal.fire({
             title: 'Deleted!',
@@ -235,7 +262,7 @@
             icon: 'success',
           });
 
-          // Reload the page to reflect changes
+    
           location.reload();
         } else {
           const error = await response.json();
@@ -256,6 +283,7 @@
     });
   });
 });
+
 
 
 

@@ -11,119 +11,98 @@ const Variant = require('../../models/ProductVariants.js');
 
 
 
-
 const addProduct = async (req, res, next) => {
     try {
-      const {
-        productName,
-        productPrice,
-        productDescription,
-        productCategory,
-        productSizes,
-        productColors,
-        productTags,
-        productbrand,
-      } = req.body;
-      const productImages = req.files;
-  
-   
-      if (
-        !productName ||
-        !productPrice ||
-        !productDescription ||
-        !productCategory ||
-        !productSizes ||
-        !productColors ||
-        !productImages ||
-        productImages.length === 0 ||
-        productColors.length === 0 ||
-        productSizes.length === 0
-      ) {
-        req.flash(
-          "error",
-          "Please fill in all required fields and upload images."
-        );
-        return res.redirect("/admin/products");
-      }
-  
-    
-      const regex = new RegExp("^" + productName + "$", "i");
-      const existingProduct = await Products.findOne({ name: { $regex: regex } });
-      if (existingProduct) {
-        req.flash("error", "This product already exists!");
-        return res.redirect("/admin/products");
-      }
-  
-      const categoryOffer = await Category.findById(productCategory);
-  
-  
-      const uploadImageToCloudinary = (file) => {
-        return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              resource_type: "auto",
-              folder: "products",
-              public_id: file.originalname,
-            },
-            (error, result) => {
-              if (error) {
-                return reject(error);
-              }
-              resolve(result.secure_url);
-            }
-          );
-          stream.end(file.buffer);
+        const {
+            productName,
+            productPrice,
+            productDescription,
+            productCategory,
+            productSizes,
+            productColors,
+            productTags,
+            productbrand,
+        } = req.body;
+
+        const productImages = req.files;
+
+        // ✅ Validation: Ensure all required fields exist
+        if (
+            !productName ||
+            !productPrice ||
+            !productDescription ||
+            !productCategory ||
+            !Array.isArray(productSizes) ||
+            !Array.isArray(productColors) ||
+            !Array.isArray(productImages) ||
+            productImages.length === 0 ||
+            productColors.length === 0 ||
+            productSizes.length === 0
+        ) {
+            return res.status(400).json({ error: "All fields are required." });
+        }
+
+        // ✅ Check if the product already exists
+        const regex = new RegExp("^" + productName + "$", "i");
+        const existingProduct = await Products.findOne({ name: { $regex: regex } });
+        if (existingProduct) {
+            return res.status(409).json({ error: "This product already exists!" });
+        }
+
+        // ✅ Handle Image Upload to Cloudinary
+        const uploadImageToCloudinary = (file) => {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { resource_type: "auto", folder: "products" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result.secure_url);
+                    }
+                ).end(file.buffer);
+            });
+        };
+
+        const imageUrls = await Promise.all(productImages.map(uploadImageToCloudinary));
+
+        // ✅ Create Product
+        const newProduct = new Products({
+            name: productName,
+            description: productDescription,
+            price: productPrice,
+            images: imageUrls,
+            tags: productTags,
+            category: productCategory,
+            brand: productbrand,
         });
-      };
-  
 
-      const imageUrls = await Promise.all(
-        productImages.map((file) => uploadImageToCloudinary(file))
-      );
-  
- 
-      const newProduct = new Products({
-        name: productName,
-        description: productDescription,
-        price: productPrice,
-        images: imageUrls,
-        tags: productTags,
-        category: productCategory,
-        brand: productbrand,
-      });
-  
+        // ✅ Add Variants
+        const newVariants = productColors.map((color, index) => ({
+            productId: newProduct._id,
+            color: color,
+            size: productSizes[index] || null, 
+        }));
 
-      const newVariants = [];
-      for (let i = 0; i < productColors.length; i++) {
-        newVariants.push({
-          productId: newProduct._id,
-          color: productColors[i],
-          size: productSizes[i],
-        });
-      }
-      await Variant.insertMany(newVariants);
-  
+        await Variant.insertMany(newVariants);
 
-      if (categoryOffer && categoryOffer.isOfferCategory) {
-        const discountPercentage = categoryOffer.discountPercentage;
-        const discountedPrice =
-          newProduct.price * (1 - discountPercentage / 100);
-        newProduct.offerPrice = Math.round(discountedPrice * 100) / 100;
-        newProduct.offerStartDate = categoryOffer.offerStartDate;
-        newProduct.offerEndDate = categoryOffer.offerEndDate;
-       
-      }
-  
+        // ✅ Apply Category Discount (if exists)
+        const categoryOffer = await Category.findById(productCategory);
+        if (categoryOffer && categoryOffer.isOfferCategory) {
+            const discountPercentage = categoryOffer.discountPercentage;
+            newProduct.offerPrice = Math.round(newProduct.price * (1 - discountPercentage / 100) * 100) / 100;
+            newProduct.offerStartDate = categoryOffer.offerStartDate;
+            newProduct.offerEndDate = categoryOffer.offerEndDate;
+        }
 
-      await newProduct.save();
-  
-      req.flash("success", "Product added successfully!");
-      res.redirect("/admin/products");
+        await newProduct.save();
+
+        return res.status(201).json({ success: true, message: "Product added successfully!" });
     } catch (err) {
-      console.error("Error in addProduct function:", err);
-      return next(err);
+        console.error("Error in addProduct function:", err);
+        return res.status(500).json({ error: "Internal server error." });
     }
-  };
+};
+
+
 
 
 
@@ -192,7 +171,7 @@ const loadUpdateProduct = async (req, res) => {
 
  const productVariants = await Variant.find({ productId:productId });
 
-       console.log(productVariants)
+  
 
      
 let colorSizeStockMap = {};
@@ -219,10 +198,7 @@ productVariants.forEach((variant) => {
         });
     }
 });
-
-console.log(colorSizeStockMap);
-               
-
+         
 
         res.render('productUpdate', { product, categories,colorSizeStockMap});
     } catch (err) {
@@ -233,120 +209,167 @@ console.log(colorSizeStockMap);
 
 
 
-const updateProduct = async (req, res,next) => {
-    const { id } = req.params;
-    const { productName, productPrice, productDescription, productCategory, productSizes, productColors, productTags, productbrand } = req.body;
 
-    console.log(req.body)
-    console.log(productCategory)
-    const categoryOffer = await Category.findById(productCategory);
 
+
+const updateProduct = async (req, res, next) => {
     try {
-        const product = await Products.findById(id);
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+
+        const { id } = req.params;
+        const { 
+            productName, 
+            productPrice, 
+            productDescription, 
+            productCategory, 
+            productSizes, 
+            productColors, 
+            productTags, 
+            productbrand,
+            existingImages,
+            removedImages 
+        } = req.body;
+
+       
+        if (!productName || !productPrice || !productDescription || !productCategory) {
+            return res.status(400).json({
+                success: false,
+                message: 'Required fields are missing'
+            });
         }
 
-        console.log('Existing product:', product);
-
-        const uploadImageToCloudinary = (file) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        resource_type: 'auto',
-                        folder: 'products',
-                        public_id: `${Date.now()}-${file.originalname}`,
-                    },
-                    (error, result) => {
-                        if (error) {
-                            console.error('Cloudinary upload error:', error);
-                            return reject(error);
-                        }
-                        resolve(result.secure_url);
-                    }
-                );
-                stream.end(file.buffer);
+       
+        const product = await Products.findById(id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
             });
-        };
+        }
 
+       
+        let finalImages = [];
+
+       
+        if (existingImages) {
+            const existingImagesArray = Array.isArray(existingImages) 
+                ? existingImages 
+                : [existingImages];
+            finalImages = [...existingImagesArray];
+        } else {
+            finalImages = [...product.images];
+        }
+
+       
+        if (removedImages) {
+            const removedIndexes = Array.isArray(removedImages)
+                ? removedImages.map(Number)
+                : [Number(removedImages)];
+            
+            finalImages = finalImages.filter((_, index) => 
+                !removedIndexes.includes(index)
+            );
+        }
+
+        
         if (req.files && req.files.length > 0) {
-            console.log('New files received:', req.files);
+            const uploadImageToCloudinary = (file) => {
+                return new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        {
+                            resource_type: 'auto',
+                            folder: 'products',
+                            public_id: `${Date.now()}-${file.originalname}`,
+                            transformation: [
+                                { width: 800, height: 800, crop: 'limit' },
+                                { quality: 'auto' }
+                            ]
+                        },
+                        (error, result) => {
+                            if (error) {
+                                console.error('Cloudinary upload error:', error);
+                                return reject(error);
+                            }
+                            resolve(result.secure_url);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+            };
 
-            const imageUrls = await Promise.all(
+            const newImageUrls = await Promise.all(
                 req.files.map(file => uploadImageToCloudinary(file))
             );
 
-            if (imageUrls.length > 0) {
-                console.log('New images uploaded:', imageUrls);
-                product.images = [...product.images, ...imageUrls]; 
-            }
+            finalImages = [...finalImages, ...newImageUrls];
         }
 
-        product.name = productName || product.name;
-        product.price = productPrice || product.price;
-        product.description = productDescription || product.description;
-        product.category = productCategory || product.category;
+    
+        product.name = productName;
+        product.price = productPrice;
+        product.description = productDescription;
+        product.category = productCategory;
         product.tags = productTags || product.tags;
         product.brand = productbrand || product.brand;
+        product.images = finalImages;
 
-        if (productColors && productColors.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Product colors cannot be empty.',
-            });
-        }
-
-        if (productSizes && productSizes.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Product sizes cannot be empty.',
-            });
-        }
-
-        if (categoryOffer.isOfferCategory === true) {
+       
+        const categoryOffer = await Category.findById(productCategory);
+        if (categoryOffer?.isOfferCategory) {
             const discountPercentage = categoryOffer.discountPercentage;
             const discountedPrice = product.price * (1 - (discountPercentage / 100));
             
-            product.offerPrice = Math.round(discountedPrice * 100) / 100; 
+            product.offerPrice = Math.round(discountedPrice * 100) / 100;
             product.offerStartDate = categoryOffer.offerStartDate;
             product.offerEndDate = categoryOffer.offerEndDate;
+        } else {
+          
+            product.offerPrice = null;
+            product.offerStartDate = null;
+            product.offerEndDate = null;
         }
-        
+
+       
         const updatedProduct = await product.save();
-        console.log('Product updated successfully:', updatedProduct);
+
+      
+        if (productColors && productSizes) {
+            const colorsArray = Array.isArray(productColors) 
+                ? productColors 
+                : productColors.split(',');
+            const sizesArray = Array.isArray(productSizes) 
+                ? productSizes 
+                : productSizes.split(',');
+
+            if (colorsArray.length > 0 && sizesArray.length > 0) {
+            
+                await Variant.deleteMany({ productId: updatedProduct._id });
+
+              
+                const newVariants = colorsArray.flatMap(color => 
+                    sizesArray.map(size => ({
+                        productId: updatedProduct._id,
+                        color: color.trim(),
+                        size: size.trim()
+                    }))
+                );
+
+                await Variant.insertMany(newVariants);
+                console.log('varient updated')
+            }
+        }
+
      
-        const colorsArray = Array.isArray(productColors) ? productColors : productColors.split(',');
-const sizesArray = Array.isArray(productSizes) ? productSizes : productSizes.split(',');
-
-console.log('color', colorsArray);
-console.log('size', sizesArray);
-
-if (colorsArray.length > 0 && sizesArray.length > 0) {
-    await Variant.deleteMany({ productId: updatedProduct._id });
-
-    const newVariants = colorsArray.flatMap(color => 
-        sizesArray.map(size => ({
-            productId: updatedProduct._id,
-            color,
-            size: size.trim(), 
-        }))
-    );
-
-    await Variant.insertMany(newVariants);
-    console.log(newVariants);
-}
-        
         req.flash('success', 'Product updated successfully!');
-        res.redirect('/admin/products');
+        return res.redirect('/admin/products');
 
-
-
-    } catch (err) {
-        console.error('Error updating product:', err);
-        next(err); 
-    
+    } catch (error) {
+        console.error('Error updating product:', error);
+        req.flash('error', 'Failed to update product');
+        return next(error);
     }
 };
+
+
 
 
 

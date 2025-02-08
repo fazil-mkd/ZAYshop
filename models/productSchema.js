@@ -11,7 +11,15 @@ const productSchema = new mongoose.Schema({
       },
       offerStartDate: { type: Date },  
     offerEndDate: { type: Date }, 
-    images: [{ type: String }], 
+    images: {
+        type: [{ type: String }],
+        validate: {
+            validator: function (arr) {
+                return arr.length <= 4; 
+            },
+            message: "A product can have a maximum of 4 images."
+        }
+    }, 
     tags: [{ type: String }],
     category: { type: mongoose.Schema.ObjectId, ref: 'Category' },
     brand: { type: String },

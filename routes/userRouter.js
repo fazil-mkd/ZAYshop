@@ -132,8 +132,12 @@ router.patch('/product/return',userAuth,userController.productReturn);
 
 //coupon
 router.post('/apply-coupon',userAuth,userController.applayCoupon);
-router.patch("/remove-coupon",userAuth,userController.removeCoupon)
+router.post("/remove-coupon",userAuth,userController.removeCoupon)
 
+
+router.get('/checkout/updateAddress/:addressId',userAuth,userController.loadCheckUpdateAddress);
+
+router.put('/checkout/updateAddress/:id',userAuth,userController.CheckoutupdateAddress);
 
 
 module.exports = router;

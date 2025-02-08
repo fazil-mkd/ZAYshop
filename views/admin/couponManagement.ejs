@@ -23,7 +23,7 @@
                 </div>
                 <div class="form-group">
                     <label for="discount">Discount Amount (%)</label>
-                    <input type="number" id="discount" min="0" max="100" >
+                    <input type="number" id="discount"  >
                     <div class="error-message" id="discount-error"></div>
                 </div>
                 <div class="form-group">
@@ -50,35 +50,64 @@
         
         </div>
     </div>
+   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         
         document.getElementById('couponForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const code = document.getElementById('code').value;
-            const discount = document.getElementById('discount').value;
-            const expiry = document.getElementById('expiry').value;
-            const type = document.getElementById('type').value;
-            const maxDiscount = document.getElementById('maxDiscount').value;
-            const name = `Coupon for ${code}`;
+    e.preventDefault();
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    
+    const fields = {
+        code: { value: document.getElementById('code').value, pattern: /^[A-Za-z0-9]+$/, message: 'Coupon Code should contain only letters and numbers ' },
+        discount: { value: document.getElementById('discount').value, pattern: /^\d{1,2}(\.\d{1,2})?$/, range: [0, 100], message: 'Discount Amount must be a valid number between 0 and 100.' },
+        expiry: { value: document.getElementById('expiry').value, required: true, message: 'Please select an expiry date.' },
+        maxDiscount: { value: document.getElementById('maxDiscount').value, pattern: /^\d+$/, message: 'Maximum Discount should be a positive integer.' },
+        type: { value: document.getElementById('type').value, required: true, message: 'Please select a discount type.' }
+    };
 
+    let isValid = true;
+    Object.keys(fields).forEach(id => {
+        const field = fields[id];
+        if ((field.required && !field.value) || (field.pattern && !field.value.match(field.pattern)) || (field.range && (field.value < field.range[0] || field.value > field.range[1]))) {
+            document.getElementById(id + '-error').textContent = field.message;
+            isValid = false;
+        }
+    });
+
+    if (isValid) {
+        const name = `Coupon for ${fields.code.value}`;
+        try {
             const response = await fetch('/admin/coupon/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code, discountValue: discount, discountType: type, expireOn: expiry, name,maxDiscount })
+                body: JSON.stringify({
+                    code: fields.code.value,
+                    discountAmount: fields.discount.value,
+                    discountType: fields.type.value,
+                    expireOn: fields.expiry.value,
+                    name,
+                    maxDiscount: fields.maxDiscount.value
+                })
             });
-           
+
             const result = await response.json();
             if (response.ok) {
-                alert('Coupon added successfully!');
-                loadCoupons(); 
-                e.target.reset(); 
+                Swal.fire('Coupon added successfully!');
+                loadCoupons();
+                e.target.reset();
             } else {
-                alert(`Error: ${result.message}`);
+                Swal.fire(`Error: ${result.message}`);
             }
-        });
+        } catch (error) {
+            Swal.fire('Error: Unable to connect to the server');
+            console.error(error);
+        }
+    }
+});
+
+
 
         
         async function loadCoupons() {
@@ -107,6 +136,8 @@
                     </div>
                   
                     <button class='update-btn'>Update</button>
+                    <button class="delete-btn" data-id="${coupon._id}">Delete</button>
+
                 `;
 
 
@@ -121,71 +152,136 @@
 
      
 
+
+
         function showUpdateForm(coupon) {
-        const updateFormHTML = `
-            <form id="updateForm" class="update-form">
-                <h3>Update Coupon</h3>
-                <label for="updateCode">Code:</label>
-                <input type="text" id="updateCode" value="${coupon.code}" readonly />
+    const today = new Date().toISOString().split('T')[0]; 
 
-                <label for="updateDiscount">Discount Value:</label>
-                <input type="number" id="updateDiscount" value="${coupon.discountAmount}" />
+    const updateFormHTML = `
+        <form id="updateForm" class="update-form">
+            <h3>Update Coupon</h3>
 
-                <label for="updateExpiry">Expiry Date:</label>
-                <input type="date" id="updateExpiry" value="${coupon.expireOn.split('T')[0]}" />
+            <label for="updateCode">Code:</label>
+            <input type="text" id="updateCode" value="${coupon.code}" readonly />
+            <span class="error-message text-danger" id="updateCode-error"></span>
 
-                <label for="updateType">Discount Type:</label>
-                <select id="updateType">
-                    <option value="percentage" ${coupon.discountType === 'percentage' ? 'selected' : ''}>Percentage</option> 
-                </select>
+            <label for="updateDiscount">Discount Value:</label>
+            <input type="number" id="updateDiscount" value="${coupon.discountAmount}" />
+            <span class="error-message text-danger" id="updateDiscount-error"></span>
 
-                <label for="updateMaxDiscount">Max Discount:</label>
-                <input type="number" id="updateMaxDiscount" value="${coupon.maxDiscount || ''}" />
+            <label for="updateExpiry">Expiry Date:</label>
+            <input type="date" id="updateExpiry" value="${coupon.expireOn.split('T')[0]}" min="${today}" />
+            <span class="error-message text-danger" id="updateExpiry-error"></span>
 
-                <button type="button" id="cancelUpdate">Cancel</button>
-                <button type="submit">Update</button>
-            </form>
-        `;
+            <label for="updateType">Discount Type:</label>
+            <select id="updateType">
+                <option value="percentage" ${coupon.discountType === 'percentage' ? 'selected' : ''}>Percentage</option> 
+            </select>
+            <span class="error-message text-danger" id="updateType-error"></span>
 
-        const updateFormContainer = document.createElement('div');
-        updateFormContainer.id = 'updateFormContainer';
-        updateFormContainer.innerHTML = updateFormHTML;
-        document.body.appendChild(updateFormContainer);
+            <label for="updateMaxDiscount">Max Discount:</label>
+            <input type="number" id="updateMaxDiscount" value="${coupon.maxDiscount || ''}" />
+            <span class="error-message text-danger" id="updateMaxDiscount-error"></span>
 
-        document.getElementById('cancelUpdate').addEventListener('click', function () {
-            document.getElementById('updateFormContainer').remove();
-        });
+            <button type="button" id="cancelUpdate">Cancel</button>
+            <button type="submit">Update</button>
+        </form>
+    `;
 
-        document.getElementById('updateForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
+    const updateFormContainer = document.createElement('div');
+    updateFormContainer.id = 'updateFormContainer';
+    updateFormContainer.innerHTML = updateFormHTML;
+    document.body.appendChild(updateFormContainer);
 
-            const updatedDiscount = document.getElementById('updateDiscount').value;
-            const updatedExpiry = document.getElementById('updateExpiry').value;
-            const updatedType = document.getElementById('updateType').value;
-            const updatedMaxDiscount = document.getElementById('updateMaxDiscount').value;
+    document.getElementById('cancelUpdate').addEventListener('click', function () {
+        document.getElementById('updateFormContainer').remove();
+    });
 
-            const response = await fetch(`/admin/coupons/${coupon._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    discountAmount: updatedDiscount,
-                    expireOn: updatedExpiry,
-                    discountType: updatedType,
-                    maxDiscount: updatedMaxDiscount
-                })
-            });
+    document.getElementById('updateForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-            if (response.ok) {
-                Swal.fire('Coupon updated successfully!');
-                loadCoupons();
-                document.getElementById('updateFormContainer').remove();
-            } else {
-                Swal.fire('Error updating coupon');
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+        const updatedDiscount = document.getElementById('updateDiscount').value;
+        const updatedExpiry = document.getElementById('updateExpiry').value;
+        const updatedType = document.getElementById('updateType').value;
+        const updatedMaxDiscount = document.getElementById('updateMaxDiscount').value;
+
+        const fields = {
+            updateDiscount: { 
+                value: updatedDiscount, 
+                pattern: /^\d{1,2}(\.\d{1,2})?$/, 
+                range: [0, 100], 
+                message: 'Discount Amount must be a valid number between 0 and 100.' 
+            },
+            updateExpiry: { 
+                value: updatedExpiry, 
+                required: true, 
+                message: 'Please select an expiry date.' 
+            },
+            updateMaxDiscount: { 
+                value: updatedMaxDiscount, 
+                pattern: /^\d+$/, 
+                message: 'Maximum Discount should be a positive integer.' 
+            },
+            updateType: { 
+                value: updatedType, 
+                required: true, 
+                message: 'Please select a discount type.' 
+            }
+        };
+
+        let isValid = true;
+
+        Object.keys(fields).forEach(id => {
+            const field = fields[id];
+            if ((field.required && !field.value) || 
+                (field.pattern && !field.value.match(field.pattern)) || 
+                (field.range && (field.value < field.range[0] || field.value > field.range[1]))) {
+                document.getElementById(id + '-error').textContent = field.message;
+                isValid = false;
             }
         });
-    }
 
+   
+        if (new Date(updatedExpiry) < new Date(today)) {
+            document.getElementById('updateExpiry-error').textContent = 'Expiry date cannot be in the past.';
+            isValid = false;
+        }
 
+        if (!isValid) return;
+
+        const response = await fetch(`/admin/coupons/${coupon._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                discountAmount: updatedDiscount,
+                expireOn: updatedExpiry,
+                discountType: updatedType,
+                maxDiscount: updatedMaxDiscount
+            })
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Coupon updated successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                document.getElementById('updateFormContainer').remove();
+               
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error updating coupon.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
 
 
         window.onload = loadCoupons;
@@ -193,59 +289,44 @@
 
 
 
-        document.getElementById('couponForm').addEventListener('submit', function(event) {
+        document.addEventListener("click", async function (event) {
+    if (event.target.classList.contains("delete-btn")) {
+        const couponId = event.target.getAttribute("data-id");
 
-    event.preventDefault();
+     
+        const confirmDelete = await Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        });
 
-    clearErrorMessages();
+        if (!confirmDelete.isConfirmed) return;
 
-    const code = document.getElementById('code').value;
-    const discount = document.getElementById('discount').value;
-    const expiry = document.getElementById('expiry').value;
-    const type = document.getElementById('type').value;
-    const maxDiscount = document.getElementById('maxDiscount').value;
+        try {
+            const response = await fetch(`/admin/couponsDel/${couponId}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
 
-
-    const codePattern = /^[A-Za-z0-9]+$/;  
-    const discountPattern = /^\d{1,2}(\.\d{1,2})?$/;  
-    const maxDiscountPattern = /^\d+$/;  
-
-
-    let isValid = true;
-
-
-    if (!code.match(codePattern)) {
-        displayErrorMessage('code', 'Coupon Code should contain only letters and numbers (no spaces or periods).');
-        isValid = false;
+            if (response.ok) {
+                Swal.fire("Deleted!", "Coupon has been removed.", "success");
+                event.target.closest(".coupon-card").remove(); 
+            } else {
+                Swal.fire("Error!", "Failed to delete the coupon.", "error");
+            }
+        } catch (error) {
+            Swal.fire("Error!", "Something went wrong.", "error");
+        }
     }
-    if (!discount.match(discountPattern) || discount < 0 || discount > 100) {
-        displayErrorMessage('discount', 'Discount Amount must be a valid number between 0 and 100.');
-        isValid = false;
-    }
-
-    if (!expiry) {
-        displayErrorMessage('expiry', 'Please select an expiry date.');
-        isValid = false;
-    }
-
-    if (!maxDiscount.match(maxDiscountPattern)) {
-        displayErrorMessage('maxDiscount', 'Maximum Discount should be a positive integer.');
-        isValid = false;
-    }
-
 });
 
-function displayErrorMessage(inputId, message) {
-    const errorMessageElement = document.getElementById(inputId + '-error');
-    errorMessageElement.textContent = message;
-}
 
-function clearErrorMessages() {
-    const errorElements = document.querySelectorAll('.error-message');
-    errorElements.forEach(function (element) {
-        element.textContent = '';
-    });
-}
+
+       
     </script>
 </body>
 </html>
