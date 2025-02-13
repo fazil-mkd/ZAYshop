@@ -310,9 +310,9 @@ async function deleteOffer(Id, type) {
 
    
     const discountRegex = /^[0-9]{1,3}$/;
-    if (!discountRegex.test(discountPercentage) || discountPercentage < 0 || discountPercentage > 100) {
+    if (!discountRegex.test(discountPercentage) || discountPercentage < 1 || discountPercentage > 100) {
         valid = false;
-        document.getElementById('discountError').innerText = 'Please enter a valid discount percentage between 0 and 100.';
+        document.getElementById('discountError').innerText = 'Please enter a valid discount percentage between 1 and 100.';
         document.getElementById('discountError').style.display = 'block';
     }
 

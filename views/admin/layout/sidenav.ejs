@@ -1,48 +1,61 @@
 <!-- Link to Sidebar CSS -->
 <!-- <link rel="stylesheet" href="/css/admin/layout/sidenav.css"> -->
 <link rel="stylesheet" href="/assets/css/admin/layout/sidenav.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-<!-- Sidebar Component -->
-<aside class="sidebar" id="sidebar">
-    <!-- Sidebar Logo -->
+  
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <a style="font-size: 30px;" class="navbar-brand text-success logo h1 align-self-center " href="/admin/dashboard">
+        <a class="navbar-brand text-success logo h1" href="/admin/dashboard">
             Zay
         </a>
     </div>
-
-   
-
-    <!-- Sidebar Menu -->
+    
     <nav class="sidebar-menu">
-      <a href="/admin/sales" title="CouponManagement">
-        <i><img src="/images/admin/logos/6.png" alt="Coupon Management Icon">Sales</i>
-    </a>
-        <a href="/admin/userManagement" title="userManagement">
-            <i><img style="width: 50px;" src="/images/admin/logos/2.png" alt="User Management Icon"></i><p>User</p>
+        <a href="/admin/sales" class="menu-item" >
+            <i class="fas fa-chart-line"></i>
+            <span>Sales</span>
         </a>
-        <a href="/admin/products" title="productManagement">
-            <i><img src="/images/admin/logos/3.png" alt="Product Management Icon"></i><p>Product</p>
+        
+        <a href="/admin/userManagement" class="menu-item" >
+            <i class="fas fa-users"></i>
+            <span>User</span>
         </a>
-        <a href="/admin/orders" title="OrderManagement">
-            <i><img src="/images/admin/logos/4.png" alt="Order Management Icon"></i><p>Order</p>
+        
+        <a href="/admin/products" class="menu-item" >
+            <i class="fas fa-box"></i>
+            <span>Product</span>
         </a>
-        <a href="/admin/category" title="category">
-            <i><img src="/images/admin/logos/5.png" alt="Category Management Icon"></i><P>Category</P>
+        
+        <a href="/admin/orders" class="menu-item" >
+            <i class="fas fa-shopping-cart"></i>
+            <span>Order</span>
         </a>
-        <a href="/admin/coupon" title="CouponManagement">
-          <i class="fas fa-tags">coupon</i>
+        
+        <a href="/admin/category" class="menu-item" >
+            <i class="fas fa-list"></i>
+            <span>Category</span>
         </a>
-        <a href="/admin/offer" title="CouponManagement">
-          <i class="fas fa-tags">offer</i>
-      </a>
-        <a id="logout-link" href="/admin/logout" title="logout">
-            <i><img style="height: 50px; width: 50px; border-radius: 30px;" src="/images/admin/logos/7.png" alt="Log Out Icon"></i><p>Logout</p>
+        
+        <a href="/admin/coupon" class="menu-item" >
+            <i class="fas fa-tags"></i>
+            <span>Coupon</span>
+        </a>
+        
+        <a href="/admin/offer" class="menu-item">
+            <i class="fas fa-gift"></i>
+            <span>Offer</span>
+        </a>
+        
+        <a id="logout-link" href="/admin/logout" class="menu-item logout" >
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
         </a>
     </nav>
 </aside>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <script>
 
   

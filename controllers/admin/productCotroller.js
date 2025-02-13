@@ -13,6 +13,7 @@ const Variant = require('../../models/ProductVariants.js');
 
 const addProduct = async (req, res, next) => {
     try {
+      
         const {
             productName,
             productPrice,
@@ -26,7 +27,7 @@ const addProduct = async (req, res, next) => {
 
         const productImages = req.files;
 
-        // ✅ Validation: Ensure all required fields exist
+     
         if (
             !productName ||
             !productPrice ||
@@ -42,14 +43,19 @@ const addProduct = async (req, res, next) => {
             return res.status(400).json({ error: "All fields are required." });
         }
 
-        // ✅ Check if the product already exists
-        const regex = new RegExp("^" + productName + "$", "i");
-        const existingProduct = await Products.findOne({ name: { $regex: regex } });
+  
+        const existingProduct = await Products.findOne({
+            name: productName
+        }).collation({
+            locale: 'en',
+            strength: 2
+        });
+
         if (existingProduct) {
-            return res.status(409).json({ error: "This product already exists!" });
+            req.flash('error', 'Product with this name already exists!');
+            return res.redirect('/admin/products');
         }
 
-        // ✅ Handle Image Upload to Cloudinary
         const uploadImageToCloudinary = (file) => {
             return new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
@@ -62,9 +68,10 @@ const addProduct = async (req, res, next) => {
             });
         };
 
+  
         const imageUrls = await Promise.all(productImages.map(uploadImageToCloudinary));
 
-        // ✅ Create Product
+       
         const newProduct = new Products({
             name: productName,
             description: productDescription,
@@ -75,16 +82,16 @@ const addProduct = async (req, res, next) => {
             brand: productbrand,
         });
 
-        // ✅ Add Variants
         const newVariants = productColors.map((color, index) => ({
             productId: newProduct._id,
             color: color,
-            size: productSizes[index] || null, 
+            size: productSizes[index] || null,
         }));
+
 
         await Variant.insertMany(newVariants);
 
-        // ✅ Apply Category Discount (if exists)
+  
         const categoryOffer = await Category.findById(productCategory);
         if (categoryOffer && categoryOffer.isOfferCategory) {
             const discountPercentage = categoryOffer.discountPercentage;
@@ -93,20 +100,25 @@ const addProduct = async (req, res, next) => {
             newProduct.offerEndDate = categoryOffer.offerEndDate;
         }
 
+ 
         await newProduct.save();
 
-        return res.status(201).json({ success: true, message: "Product added successfully!" });
+        console.log('Product added successfully!');
+        req.flash('success', 'Product added successfully!');
+        return res.redirect('/admin/products');
+
     } catch (err) {
         console.error("Error in addProduct function:", err);
-        return res.status(500).json({ error: "Internal server error." });
+        if (!res.headersSent) {
+            return res.status(500).json({ error: "Internal server error." });
+        }
     }
 };
 
 
 
 
-
- //------ProductManagement--------------> 
+ 
  const loadProductManagement = async(req, res)=>{
     try {
         if (!req.session.admin) {
@@ -115,7 +127,7 @@ const addProduct = async (req, res, next) => {
         
   
         const page = parseInt(req.query.page) || 1;
-        const productsPerPage = 10;
+        const productsPerPage = 8;
         const skip = (page - 1) * productsPerPage;
 
         
@@ -134,7 +146,7 @@ const addProduct = async (req, res, next) => {
        
         return res.status(200).render('productManagement', { products, currentPage: page, totalPages });
     } catch (error) {
-        console.log('Error loading product management ➡️' + error);
+        console.log('Error loading product management ' + error);
         next(err); 
     }
 }
@@ -199,6 +211,7 @@ productVariants.forEach((variant) => {
     }
 });
          
+     console.log( colorSizeStockMap)
 
         res.render('productUpdate', { product, categories,colorSizeStockMap});
     } catch (err) {
@@ -342,7 +355,7 @@ const updateProduct = async (req, res, next) => {
 
             if (colorsArray.length > 0 && sizesArray.length > 0) {
             
-                await Variant.deleteMany({ productId: updatedProduct._id });
+                await Variant.deleteMany({ productId: new mongoose.Types.ObjectId(updatedProduct._id) });
 
               
                 const newVariants = colorsArray.flatMap(color => 
@@ -403,6 +416,44 @@ const  deleteProduct = async (req, res)=>{
 }
 
 
+
+
+
+const recoverProduct = async (req, res, next) => {
+    try {
+        const productId = req.params.id;
+
+
+        const product = await Products.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        if (!product.isDeleted) {
+            return res.status(400).json({ success: false, message: 'Product is already active' });
+        }
+
+
+        product.isDeleted = false;
+        await product.save();
+
+        res.status(200).json({ success: true, message: 'Product successfully recovered', product });
+
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+
+
+
+
+
+
+
+
+
 module.exports={
     loadProductManagement,
     loadAddProductsPage,
@@ -411,6 +462,7 @@ module.exports={
     loadDelProductPage,
     deleteProduct,
   addProduct,
+  recoverProduct,
 }
 
 

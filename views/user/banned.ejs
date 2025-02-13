@@ -69,8 +69,46 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
+        }/* Custom SweetAlert2 Popup */
+.custom-swal-popup {
+    background-color: #f8f9fa; /* Light background */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+    padding: 20px;
+}
+
+
+.custom-swal-title {
+    color: #2c3e50; 
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+.custom-swal-content {
+    color: #34495e; 
+    font-size: 16px;
+}
+
+.custom-swal-confirm-button {
+    background-color: #3498db; 
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-swal-confirm-button:hover {
+    background-color: #2980b9; 
+}
     </style>
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+  />
 </head>
 <body>
     <div class="ban-container">
@@ -108,10 +146,29 @@
             `;
             
             document.getElementById('appeal-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Your appeal has been submitted and will be reviewed within 3-5 business days.');
-            });
+    e.preventDefault();
+    Swal.fire({
+        title: 'Appeal Submitted',
+        text: 'Your appeal has been submitted and will be reviewed within 3-5 business days.',
+        icon: 'success',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            content: 'custom-swal-content',
+            confirmButton: 'custom-swal-confirm-button'
+        },
+        confirmButtonText: 'OK',
+        willClose: () => {
+            location.reload(); 
+        }
+    });
+});
+
+
+
         }
     </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

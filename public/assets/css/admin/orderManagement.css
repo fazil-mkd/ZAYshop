@@ -170,3 +170,123 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+/* Custom SweetAlert Styles */
+.custom-swal-popup {
+  width: 800px !important;
+  padding: 30px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Header Styles */
+.custom-swal-popup .swal2-title {
+  color: #2c3e50;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  padding-bottom: 20px !important;
+  border-bottom: 2px solid #eee !important;
+  margin-bottom: 25px !important;
+}
+
+/* Content Grid Layout */
+.custom-swal-popup .swal2-html-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 0 15px !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+/* Individual Field Styles */
+.custom-swal-popup p {
+  margin: 12px 0 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: #4a5568 !important;
+}
+
+.custom-swal-popup strong {
+  color: #2d3748;
+  font-weight: 600;
+  margin-right: 8px;
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Section Headers */
+.custom-swal-popup h4 {
+  grid-column: 1 / -1;
+  color: #2c3e50;
+  font-size: 25px !important;
+  font-weight: 600 !important;
+  margin: 25px 0 15px 0 !important;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+/* Horizontal Line */
+.custom-swal-popup hr {
+  grid-column: 1 / -1;
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background-color: #eee;
+}
+
+/* Close Button */
+.custom-swal-popup .swal2-confirm {
+  background-color: #4299e1 !important;
+  padding: 12px 30px !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-swal-popup .swal2-confirm:hover {
+  background-color: #3182ce !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3) !important;
+}
+
+/* Value Highlighting */
+.custom-swal-popup p span:not(strong) {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+/* Status Badge */
+.custom-swal-popup p:nth-child(2) span:last-child {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 500;
+  background-color: #EDF2F7;
+  color: #2D3748;
+}
+
+/* Phone Numbers */
+.custom-swal-popup p:nth-child(n+14):nth-child(-n+15) {
+  color: #4299e1 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-swal-popup {
+      width: 95% !important;
+      padding: 20px !important;
+  }
+
+  .custom-swal-popup .swal2-html-container {
+      grid-template-columns: 1fr;
+  }
+
+  .custom-swal-popup p {
+      font-size: 20px !important;
+  }
+
+  .custom-swal-popup strong {
+      min-width: 100px;
+  }
+}

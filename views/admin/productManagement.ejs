@@ -83,7 +83,7 @@
 
                               </a>
                               <button class="btn btn-sm btn-action btn-delete" data-id="<%= product._id %>">
-                                <i class="fas fa-trash"></i> Soft Delete
+                                <i class="fas fa-trash"></i> Unlist
                               </button>
                             </div>
                           </td>
@@ -147,7 +147,7 @@
               <i class="fas fa-plus-circle"></i> Create New Product
             </a>
             <button onclick="window.location.href='/admin/products/deleted'" class="btn btn-warning btn-action" id="btn-del-prod">
-              <i class="fas fa-archive"></i> View Deleted Products
+              <i class="fas fa-archive"></i> View Unlisted Products
             </button>
           </div>
         </div>
@@ -238,6 +238,15 @@
     });
 
 
+
+    const params = new URLSearchParams(window.location.search);
+
+if (params.get('reload') === 'true') {
+  params.delete('reload')
+  const newUrl = window.location.pathname + '?' + params.toString();
+  window.history.replaceState({}, '', newUrl); 
+  location.reload(); 
+}
 
   </script>
 

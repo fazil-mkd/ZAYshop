@@ -283,23 +283,30 @@ const loadDelCategoryPage = async(req, res)=> {
         return res.status(500).send("Internal Server Error");
     }
 }
+
 const recoverCategory = async (req, res) => {
-  const { id } = req.params; 
-
   try {
-     
-      const category = await Category.findByIdAndUpdate(id, { isListed: true }, { new: true });
+      const { id } = req.params; 
 
+      const category = await Category.findById(id);
       if (!category) {
           return res.status(404).json({ message: 'Category not found' });
       }
 
-      return res.status(200).json({ message: 'Product successfully recovered', category });
+      if (category.isListed) {
+          return res.status(400).json({ message: 'Category is already active' });
+      }
+
+      category.isListed = true; 
+      await category.save();
+
+      res.status(200).json({ message: 'Category successfully recovered', category });
   } catch (error) {
-      console.error("Error recovering product:", error);
-      return res.status(500).json({ message: 'Internal Server Error' });
+      console.error('Error recovering category:', error);
+      res.status(500).json({ message: 'Failed to recover category', error: error.message });
   }
 };
+
 
 
 const deleteCategory = async (req, res) => {
@@ -323,6 +330,11 @@ const deleteCategory = async (req, res) => {
       res.status(500).json({ message: 'Failed to unlist category', error: error.message });
   }
 };
+
+
+
+
+
 
 module.exports ={
     loadCategoryManagement,

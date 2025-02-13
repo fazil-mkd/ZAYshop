@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="/assets/css/admin/productDelete.css">
 </head>
 
-<body>
+<body style="width: 1500px;">
     <%- include('./layout/sidenav.ejs') %>
-    <div class="table-responsive">
+    <div style="margin-left: 300px;" class="table-responsive">
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
@@ -23,7 +23,7 @@
             <tbody>
                 <% deletedProducts.forEach(product => { %>
                     <tr>
-                        <td style="color: black;"><%= product.name %></td>
+                        <td> <p style="color: black;"><%= product.name %></p></td>
                         <td>
                             <button class="btn btn-success btn-recover w-100" data-id="<%= product._id %>" data-bs-toggle="tooltip" title="Recover this product">
                                 Recover
@@ -53,66 +53,58 @@
 <script>
 document.querySelectorAll('.btn-recover').forEach(button => {
     button.addEventListener('click', async function() {
-        const productId = this.getAttribute('data-id');
+        const categoryId = this.getAttribute('data-id'); 
         const spinner = this.querySelector('.spinner-border');
 
+      
+        spinner.classList.remove('d-none');
 
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: 'Do you want to recover this product?',
+            text: 'Do you want to recover this category?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, recover it!',
             cancelButtonText: 'No, cancel!',
         });
 
-        
-        if (result.isConfirmed) {
-            
-            spinner.classList.remove('d-none');
+        if (!result.isConfirmed) {
+            spinner.classList.add('d-none');
+            return;
+        }
 
-            try {
-                const response = await fetch(`/admin/category/recover/${productId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
+        try {
+            const response = await fetch(`/admin/category/recover/${categoryId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-                
-                spinner.classList.add('d-none');
+            spinner.classList.add('d-none');
 
-                if (response.ok) {
-                    const data = await response.json();
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Product recovered successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-
-                   
-                    document.location.reload(); 
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Failed to recover product.',
-                        icon: 'error',
-                        confirmButtonText: 'Close'
-                    });
-                }
-            } catch (error) {
-                spinner.classList.add('d-none');
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Category recovered successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => document.location.reload()); 
+            } else {
+                const data = await response.json();
                 Swal.fire({
                     title: 'Error!',
-                    text: 'An error occurred while recovering the product.',
+                    text: data.message || 'Failed to recover category.',
                     icon: 'error',
                     confirmButtonText: 'Close'
                 });
             }
-        } else {
-            
-            return;
+        } catch (error) {
+            spinner.classList.add('d-none');
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while recovering the category.',
+                icon: 'error',
+                confirmButtonText: 'Close'
+            });
         }
     });
 });

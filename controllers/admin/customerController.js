@@ -66,6 +66,7 @@ const getUsersAsJson = async (req, res) => {
 
 
 const userBan = async (req, res) => {
+    console.log('...............')
     try {
         const { email } = req.body;
 

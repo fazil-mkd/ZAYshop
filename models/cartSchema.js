@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { schema } = require("./addressSchema");
+const Coupon = require("./couponSchema");
 const { Schema } = mongoose;
 
 const cartSchema = new Schema({
@@ -50,6 +51,15 @@ const cartSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },iscouponApplied: {
+        type: Boolean,
+        default: false 
+    }, CouponCode: {
+        type: String,
+        required: false, 
+    },couponDis: {
+        type: Number,
+        required: false
     }
 });
 const Cart = mongoose.model("Cart", cartSchema)

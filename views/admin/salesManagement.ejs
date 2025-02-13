@@ -374,7 +374,7 @@
             }
         }
 
-        /* Additional browser-specific fixes */
+     
         input[type="date"]::-webkit-calendar-picker-indicator {
             background-color: #fff;
             padding: 5px;
@@ -432,12 +432,62 @@
                 max-width: calc(100% - 20px);
             }
         }
+        .dash {
+ 
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 150px;
+}
+
+.dash::before {
+
+    content: "←";
+    margin-right: 8px;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+
+.dash:hover {
+    background-color: #357abd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.dash:hover::before {
+    transform: translateX(-4px);
+}
+
+
+.dash:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+.dash:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+}
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
+            <button class="dash" onclick="window.location.href='/admin/dashboard'"> Dashboard</button>
             <h1>Sales Report</h1>
 
             <div class="period-selector">
@@ -470,7 +520,7 @@
 
             <button class="download" onclick="downloadPDF()">Download PDF</button>
             <button class="download" onclick="downloadExcel()">Download Excel</button>
-            <button class="download" onclick="window.location.href='/admin/dashboard'"> Dashboard</button>
+           
 
         </div>
         <% if (errorMessage) { %>
@@ -486,7 +536,7 @@
                     <div class="cards-grid">
                         <div class="card">
                             <div class="card-header">
-
+                              
                                 <span class="card-title">Total Sales</span>
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -497,11 +547,13 @@
                             </div>
                             <div class="card-content">
                                 <div class="value">
-                                    <%=totalSales%>
+                                    <%=SaleTotal%>
                                 </div>
                                 <div class="change">+12% from last period</div>
                             </div>
                         </div>
+                      
+
 
                         <div class="card">
                             <div class="card-header">
@@ -522,22 +574,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
-                            <div class="card-header">
-                                <span class="card-title">Average Order Value</span>
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M23 6L13.5 15.5L8.5 10.5L1 18"></path>
-                                    <path d="M17 6H23V12"></path>
-                                </svg>
-                            </div>
-                            <div class="card-content">
-                                <div class="value">
-                                    <%=avarageOrder%>
-                                </div>
-                                <div class="change">+5% from last period</div>
-                            </div>
-                        </div>
+               
 
                         <div class="card">
                             <div class="card-header">
@@ -702,7 +739,11 @@
 
 
         const salesDataString = document.getElementById('salesData').getAttribute('data-sales');
-        const sampleData = JSON.parse(salesDataString);
+        const sortedData = JSON.parse(salesDataString); 
+
+
+const sampleData = sortedData.sort((a, b) => periodLabel(b).localeCompare(periodLabel(a)));
+
 
 
         const periods = sampleData.map(item => periodLabel(item));
@@ -763,26 +804,30 @@
     <td class="text-right">₹${item.sales.toLocaleString()}</td>
     <td class="text-right">${item.orders}</td>
     <td class="text-right">${item.customers}</td>
-    <td class="text-right">₹${(item.sales / item.orders).toFixed(2)}</td>
+    <td class="text-right">₹${(item.sales / item.orders).toFixed()}</td>
     <td>
         <table>
             <thead>
                 <tr>
                     <th>Product Name</th>
-                    <th>Price</th>
-                    <th>Quantity Sold</th>
                     <th>Color</th>
                     <th>Size</th>
+                    <th>Price</th>
+                    <th>Quantity Sold</th>
+                    <th>Total</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 ${item.products.map(product => `
                 <tr>
                     <td><strong>${product.name}</strong></td>
-                    <td>₹${product.price}</td>
-                    <td>${product.quantitySold}</td>
                     <td>${product.color || "N/A"}</td>
                     <td>${product.size || "N/A"}</td>
+                         <td>₹${product.price/product.quantitySold}</td>
+                    <td>${product.quantitySold}</td>
+                    <td>₹${product.price}</td>
+                    <td>${product.productStatus}</td>
                 </tr>
                 `).join('')}
             </tbody>
@@ -794,23 +839,26 @@
 
 
         function periodLabel(item) {
-            if (item.period.hasOwnProperty('day')) {
-                const { year, month, day } = item.period;
-                return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            } else if (item.period.hasOwnProperty('week')) {
-                const { year, week } = item.period;
-                return `${year}-W${String(week).padStart(2, '0')}`;
-            } else if (item.period.hasOwnProperty('month')) {
-                const { year, month } = item.period;
-                return `${year}-${String(month).padStart(2, '0')}`;
-            } else if (item.period.hasOwnProperty('year')) {
-                const { year } = item.period;
-                return `${year}`;
-            }
-            return '';
-        }
+    if (item.period.hasOwnProperty('day')) {
+        const { year, month, day } = item.period;
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    } else if (item.period.hasOwnProperty('week')) {
+        const { year, week } = item.period;
+        return `${year}-W${String(week).padStart(2, '0')}`;
+    } else if (item.period.hasOwnProperty('month')) {
+        const { year, month } = item.period;
+        return `${year}-${String(month).padStart(2, '0')}`;
+    } else if (item.period.hasOwnProperty('year')) {
+        const { year } = item.period;
+        return `${year}`;
+    }
+    return '';
+}
 
 
+function sortByPeriod(data) {
+    return data.sort((a, b) => periodLabel(b).localeCompare(periodLabel(a)));
+}
 
 
 
@@ -846,7 +894,7 @@ doc.text("ZAY", centerX, 15);
 
     const tableHead = [
         ["Period", "Sales ", "Orders", "Customers", "Avg. Order Value ", 
-         "Product Name", "Price ", "Qty", "Color", "Size"]
+         "Product Name",  "Color", "Size","Price ", "Qty",'Total','status']
     ];
 
     const tableBody = [];
@@ -859,11 +907,13 @@ doc.text("ZAY", centerX, 15);
                 index === 0 ? data.orders : "", 
                 index === 0 ? (data.customers || 0) : "", 
                 index === 0 ? `${(data.sales / data.orders).toFixed(2)}` : "", 
-                product.name,
-                `${product.price.toLocaleString()}`,
-                product.quantitySold,
+                product.name,    
                 product.color,
-                product.size
+                product.size,  
+             `${(product.price/product.quantitySold).toLocaleString()}`,
+                product.quantitySold,
+                   `${product.price.toLocaleString()}`,
+                   product.productStatus,
             ]);
         });
 
@@ -888,16 +938,16 @@ doc.text("ZAY", centerX, 15);
         styles: { fontSize: 15, cellPadding: 5 },
         headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 15, fontStyle: "bold" },
         columnStyles: {
-    0: { cellWidth: 35 },  
-    1: { cellWidth: 40, halign: "right" }, 
-    2: { cellWidth: 30, halign: "center" }, 
-    3: { cellWidth: 40, halign: "center" }, 
-    4: { cellWidth: 50, halign: "right" }, 
-    5: { cellWidth: 55 }, 
-    6: { cellWidth: 40, halign: "right" }, 
-    7: { cellWidth: 30, halign: "center" }, 
-    8: { cellWidth: 35, halign: "center" }, 
-    9: { cellWidth: 30, halign: "center" } 
+    0: { cellWidth: 25 },  
+    1: { cellWidth: 30, halign: "right" }, 
+    2: { cellWidth: 20, halign: "center" }, 
+    3: { cellWidth: 30, halign: "center" }, 
+    4: { cellWidth: 35, halign: "right" }, 
+    5: { cellWidth: 40 }, 
+    6: { cellWidth: 30, halign: "right" }, 
+    7: { cellWidth: 20, halign: "center" }, 
+    8: { cellWidth: 25, halign: "center" }, 
+    9: { cellWidth: 20, halign: "center" } 
 }
 ,
         theme: "grid"
@@ -914,7 +964,7 @@ function downloadExcel() {
     const wb = XLSX.utils.book_new();
     
     const wsData = [
-        ["S.No", "Date", "Sales", "Orders", "Customers", "Avg Sales/Order", "Product Name", "Price ", "Qty", "Color", "Size"]
+        ["S.No", "Date", "Sales", "Orders", "Customers", "Avg Sales/Order", "Product Name","Color", "Size","Price ", "Qty","Total",'Status']
     ];
 
     let rowIndex = 1;
@@ -923,16 +973,18 @@ function downloadExcel() {
         item.products.forEach((product, productIndex) => {
             wsData.push([
                 productIndex === 0 ? index + 1 : "", 
-                productIndex === 0 ? item.period : "", 
+                productIndex === 0 ? periodLabel(item) : "", 
                 productIndex === 0 ? item.sales : "", 
                 productIndex === 0 ? item.orders : "", 
                 productIndex === 0 ? item.customers || 0 : "", 
                 productIndex === 0 ? (item.sales / item.orders).toFixed(2) : "", 
                 product.name,
-                product.price,
-                product.quantitySold,
                 product.color || "N/A",
-                product.size || "N/A"
+                product.size || "N/A",
+                product.price/product.quantitySold,
+                product.quantitySold,
+                product.price,
+                product.productStatus,
             ]);
         });
     });

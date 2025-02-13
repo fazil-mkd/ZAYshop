@@ -55,8 +55,8 @@ router.post('/products/add',adminAuth,uploadMultiple, productController.addProdu
 router.get("/products/:id/update",adminAuth, productController.loadUpdateProduct);
 router.put('/products/:id',adminAuth, uploadMultiple, productController.updateProduct);
 router.get('/products/deleted',adminAuth, productController.loadDelProductPage);
-router.delete('/products/:id',adminAuth, productController.deleteProduct);
 router.put('/productManagement/unlink',adminAuth, productController.deleteProduct);
+router.patch('/products/recover/:id',adminAuth, productController.recoverProduct);
 
 
 //Order management
@@ -70,6 +70,8 @@ router.patch('/orders/cancel',adminAuth,orderController.AdminorderCancel);
 
 router.patch('/orders/return/approve',adminAuth,orderController.approveReturn);
 router.patch('/orders/return/reject',adminAuth,orderController.rejectReturn);
+router.get('/order/invoice/:orderId',adminAuth,orderController.invoice)
+
 
 //coupon
 router.get('/coupon',adminAuth,offerController.couponManagement);

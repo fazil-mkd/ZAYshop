@@ -6,7 +6,7 @@ const fs = require('fs')
 const Variant = require('../../models/ProductVariants');
 const Wallet = require('../../models/walletSchema');
 const Notification = require('../../models/NotificationSchema');
-
+const PDFDocument = require('pdfkit'); 
 
      const viewOrder = async (req, res) => {
       
@@ -414,6 +414,141 @@ if (order.orderedItems.every(item => item.isCancelled === true)) {
 
 
 
+const invoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId)
+            .populate('userId')
+            .populate('orderedItems.product');
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+       
+        const doc = new PDFDocument({ margin: 50 });
+
+     
+        res.setHeader('Content-Disposition', `attachment; filename=ZAY_invoice-${orderId}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+      
+
+      
+        doc.fontSize(20)
+           .text('ZAY', 50, 50, { align: 'center' })
+           .fontSize(10)
+           .text('catalonia, barcalona ,spain', { align: 'center' })
+           .text('Phone: 1212121212 | Email: support@zay.com', { align: 'center' });
+
+        
+        doc.moveDown()
+           .lineCap('butt')
+           .moveTo(50, doc.y)
+           .lineTo(550, doc.y)
+           .stroke();
+
+       
+        doc.moveDown()
+           .fontSize(16)
+           .text('INVOICE', { align: 'center' })
+           .fontSize(10)
+           .text(`Invoice Number: INV-${order.orderId}`, { align: 'right' })
+           .text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, { align: 'right' });
+
+       
+        doc.moveDown()
+           .fontSize(12)
+           .text('Bill To:', { continued: true })
+           .fontSize(10)
+           .text(`\n${order.userId.name}`)
+           .text(`${order.userId.email}`)
+           .text(`${order.address.streetAddress}`)
+           .text(`${order.address.city}, ${order.address.state} ${order.address.pincode}`);
+
+
+       
+        doc.moveDown(2);
+        const tableTop = doc.y;
+        const itemCodeX = 50;
+        const descriptionX = 150;
+        const quantityX = 280;
+        const priceX = 350;
+        const amountX = 450;
+
+     
+        doc.fontSize(10)
+           .text('Item', itemCodeX, tableTop)
+           .text('Details', descriptionX, tableTop)
+           .text('Qty', quantityX, tableTop)
+           .text('Price', priceX, tableTop)
+           .text('Amount', amountX, tableTop);
+
+        
+        doc.moveDown(0.5);
+        doc.lineCap('butt')
+           .moveTo(50, doc.y)
+           .lineTo(550, doc.y)
+           .stroke();
+
+     
+        let currentY = doc.y + 10;
+        order.orderedItems.forEach((item, index) => {
+            doc.fontSize(10)
+               .text(item.product.name, itemCodeX, currentY)
+               .text(`${item.color || ''} ${item.size || ''}`.trim(), descriptionX, currentY)
+               .text(item.quantity.toString(), quantityX, currentY)
+               .text(`${item.price}`, priceX, currentY)
+               .text(`${order.totalPrice + order.couponDis}`, amountX, currentY);
+            
+            currentY += 20;
+        });
+
+     
+        doc.lineCap('butt')
+           .moveTo(50, currentY)
+           .lineTo(550, currentY)
+           .stroke();
+
+     
+        currentY += 20;
+        doc.fontSize(10);
+
+        if (order.iscouponApplied) {
+            doc.text('Subtotal:', 350, currentY)
+               .text(`${order.totalPrice + order.couponDis}`, amountX, currentY);
+            currentY += 20;
+            doc.text(`Discount (${order.CouponCode}):`, 350, currentY)
+               .text(`-${order.couponDis}`, amountX, currentY);
+            currentY += 20;
+        }
+
+        doc.fontSize(12)
+           .text('Total:', 350, currentY)
+           .text(`${order.totalPrice}`, amountX, currentY, { bold: true });
+
+      
+        doc.fontSize(10)
+           .text(
+               'Thank you for your business!',
+               50,
+               700,
+               { align: 'center', width: 500 }
+           );
+
+     
+        doc.end();
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error generating invoice');
+    }
+};
+
+
+
+
 
 
 
@@ -429,5 +564,5 @@ module.exports = {
     rejectReturn,
     approveReturn,
     AdminorderCancel,
-
+    invoice,
 }

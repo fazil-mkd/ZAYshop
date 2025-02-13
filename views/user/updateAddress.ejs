@@ -205,10 +205,10 @@
         const fields = [
             { id: 'fullName', errorId: 'fullNameError', regex: /^[A-Za-z\s]+$/, message: 'Full Name must only contain letters and spaces.' },
             { id: 'streetAddress', errorId: 'streetAddressError', regex: /^[A-Za-z0-9\s,.'-]+$/, message: 'Street Address can contain letters, numbers, and common punctuation.' },
-            { id: 'city', errorId: 'cityError', regex: /^[A-Za-z\s]+$/, message: 'City must only contain letters and spaces.' },
-            { id: 'state', errorId: 'stateError', regex: /^[A-Za-z\s]+$/, message: 'State must only contain letters and spaces.' },
+            { id: 'city', errorId: 'cityError', regex: /^[A-Za-z\s]+$/, message: 'City must only contain letters .' },
+            { id: 'state', errorId: 'stateError', regex: /^[A-Za-z\s]+$/, message: 'State must only contain letters ' },
             { id: 'pincode', errorId: 'pincodeError', regex: /^[A-Za-z0-9\s-]+$/, message: 'Postal Code can contain letters, numbers, spaces, or hyphens.' },
-            { id: 'country', errorId: 'countryError', regex: /^[A-Za-z\s]+$/, message: 'Country must only contain letters and spaces.' },
+            { id: 'country', errorId: 'countryError', regex: /^[A-Za-z\s]+$/, message: 'Country must only contain letters .' },
             { id: 'phone', errorId: 'phoneError', regex: /^[0-9]{10}$/, message: 'Phone Number must be 10 digits.' },
             { id: 'addressType', errorId: 'addressTypeError', regex: /.+/, message: 'Please select an Address Type.' }
         ];

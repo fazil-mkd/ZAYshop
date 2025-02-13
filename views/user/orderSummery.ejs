@@ -494,7 +494,10 @@
             height: 4px;
             background: linear-gradient(90deg, #198754, #20c997);
             opacity: 0.8;
-        }
+        }.btn-primary::before {
+    content: '⬇️';
+    font-size: 16px;
+}
 
 </style>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -600,7 +603,7 @@
                         <div> <span>
                                 <%= item.isCancelled?'Cancelled':'' %>
                             </span></div>
-                        <% if(order.status==="Delivered"&&!item.isReturned){ %>
+                        <% if(order.status==="Delivered"&&!item.isReturned&&!item.isCancelled){ %>
 
 
                             <label for="returnReason-<%= item.product._id %>">Reason for Return:</label>
@@ -663,6 +666,8 @@
                         </div>
                         <% } %>
         </div>
+       
+<button  style="margin-left: 1100px;  margin-top: 50px;" onclick="window.location.href='/order/invoice/<%= order._id %>'" class="btn btn-primary">Download Invoice</button>
     </div>
 
 

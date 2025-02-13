@@ -500,6 +500,44 @@
 .return-rejected .return-status-icon {
   background-color: #991b1b;
 }
+.btn-primary::before {
+    content: '⬇️';
+    font-size: 16px;
+}.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    content: '⬇️';
+    
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 123, 255, 0.2);
+}
+
+/* For better positioning */
+.btn-primary {
+    position: fixed;
+}
 
 </style>
 
@@ -602,6 +640,7 @@
                 <p class="total-price">Total Price(after:R/C): <span class="price-highlight"><%= order.totalPrice %></span></p>
             </div>
         <% } %>
+        <button  style="margin-left: 1700px;  margin-top: 50px;" onclick="window.location.href='/admin/order/invoice/<%= order._id %>'" class="btn btn-primary">Download Invoice</button>
     </div>
 
 

@@ -17,7 +17,7 @@ const Cart = require('./models/cartSchema')
 
 const NotFoundError = require('./helpers/NotFoundError');
 
-
+const isBlockedMiddleware = require('./middlewares/UserBlock');
 
 db()
 
@@ -34,10 +34,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl:process.env.MONGODB_URI,
-      collectionName: 'sessions',
-    }),
+    // store: MongoStore.create({
+    //   mongoUrl:process.env.MONGODB_URI,
+    //   collectionName: 'sessions',
+    // }),
     cookie: {
       secure: false,
       httpOnly: true,
@@ -86,11 +86,19 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('view engine', 'ejs');
 
 
+app.use((req, res, next) => {
+
+  req.user = req.session.user 
+  req.session.userId=req.session.user._id
+  next();
+});
+
 
 
 
 app.use((err, req, res, next) => {
-  console.error(err); 
+ 
+
 
   if (err.name === 'ValidationError') {
       return res.status(400).render('page-404', { message: 'Validation error: ' + err.message });

@@ -90,6 +90,10 @@ const orderSchema = new Schema({
         required: true,
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
         default: 'Pending'
+    },paymentStatus: { 
+        type: String, 
+        enum: ['pending', 'completed'], 
+        default: 'pending' 
     },returnReason: {
         type: String, 
         default: ''
@@ -105,6 +109,15 @@ const orderSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true
+    },iscouponApplied: {
+        type: Boolean,
+        default: false 
+    }, CouponCode: {
+        type: String,
+        required: false, 
+    },couponDis: {
+        type: Number,
+        required: false
     }
 });
 

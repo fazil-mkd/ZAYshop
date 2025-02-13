@@ -1,58 +1,121 @@
 body {
     background-color: #2c3e50; /* Dark blue-gray */
-    color: #ecf0f1; /* Light gray */
+    color: #ffffff; /* White text for better contrast */
     font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
 }
 
 .category-container {
     background-color: #34495e; /* Slightly lighter blue-gray */
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 30px;
-    margin-top: 50px;
+    margin: 50px auto;
+    max-width: 1200px;
+    width: 90%;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #2c3e50;
-    transition: background-color 0.3s ease;
+.category-container h2 {
+    color: #ffffff; /* White text for headings */
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
 }
 
 .table thead {
-    background-color: #34495e;
-    color: #ecf0f1;
+    background-color: #2c3e50; /* Dark blue-gray */
+    color: #ffffff; /* White text */
+}
+
+.table th,
+.table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #4a5f78; /* Subtle border color */
+}
+
+.table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #3b4f63; /* Standard hover color */
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .btn-recover {
-    background-color: #1abc9c;
-    border-color: #16a085;
-    color: #ecf0f1;
+    background-color: #000000; /* Turquoise */
+    color: #ffffff; /* White text */
 }
 
 .btn-recover:hover {
-    background-color: #16a085;
+    background-color: #16a085; /* Darker turquoise on hover */
 }
 
 .btn-delete {
-    background-color: #e74c3c;
-    border-color: #c0392b;
-    color: #ecf0f1;
+    background-color: #e74c3c; /* Red */
+    color: #ffffff; /* White text */
 }
 
 .btn-delete:hover {
-    background-color: #c0392b;
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    background-color: #3b4f63; /* Darker blue-gray */
+    border-radius: 12px;
+    margin-top: 25px;
 }
 
 .empty-state h3 {
-    color: #bdc3c7;
+    color: #ffffff; /* White text */
+    font-size: 1.5rem;
+    margin-bottom: 10px;
 }
 
 .empty-state p {
-    color: #95a5a6;
+    color: #000000; /* Light gray text */
+    font-size: 1rem;
 }
 
 @media screen and (max-width: 768px) {
     .category-container {
-        padding: 15px;
+        padding: 20px;
         margin-top: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
     }
 }

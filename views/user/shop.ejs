@@ -48,20 +48,29 @@
         <div class="alert-content"></div>
     </div>
         </div>
+       
     </section>
 
     <section class="shop-section">
         <div class="container">
             <div class="row">
-           
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="productSearch" 
+                        class="search-input" 
+                        placeholder="Search products by name..."
+                    >
+                </div>
+            
                 <div class="col-lg-3">
                     <div class="shop__sidebar">
-                     
+                 
                         <div class="shop__sidebar__accordion">
                             <div class="accordion" id="accordionExample">
                                 <div class="card">
                                     <div class="card-heading">
-                                       
+                                     
                                     </div>
                                     <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
@@ -69,9 +78,9 @@
                                                 <option value="">Default</option>
                                                 <option value="low-to-high" <%=sortOption==='low-to-high' ? 'selected' : '' %>>Price: Low to High</option>
                                                 <option value="high-to-low" <%=sortOption==='high-to-low' ? 'selected' : '' %>>Price: High to Low</option>
-                                                <option value="latest" <%=sortOption==='latest' ? 'selected' : '' %>>Latest</option>
-                                                <option value="A-Z" <%=sortOption==='A-Z' ? 'selected' : '' %>>Alphabetical: A-Z</option>
-                                                <option value="Z-A" <%=sortOption==='Z-A' ? 'selected' : '' %>>Alphabetical: Z-A</option>
+                                                <option value="latest" <%=sortOption==='latest' ? 'selected' : '' %>>What's New</option>
+                                                <option value="A-Z" <%=sortOption==='A-Z' ? 'selected' : '' %>> A-Z</option>
+                                                <option value="Z-A" <%=sortOption==='Z-A' ? 'selected' : '' %>> Z-A</option>
                                             </select>
                                         </div>
                                     </div>
@@ -83,9 +92,9 @@
                         <div class="filter-section">
                             <h4>Price Range</h4>
                             <div class="price-filter">
-                                <input type="range" id="price-range" min="1000" max="10000" step="100" value="10000">
+                                <input type="range" id="price-range" min="2000" max="10000" step="100" value="10000">
                                 <div class="price-values">
-                                    <span>₹0</span>
+                                    <span></span>
                                     <span id="price-value">₹10000</span>
                                 </div>
                             </div>
@@ -386,9 +395,51 @@ document.addEventListener('DOMContentLoaded', function() {
             const checkbox = document.querySelector(`#color-${color}`);
             if (checkbox) checkbox.checked = true;
         });
+    
     }
 
     initializeFiltersFromURL();
+
+
+
+    const searchInput = document.getElementById('productSearch');
+       
+            const productItems = productsContainer.getElementsByClassName('col-lg-4');
+
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.className = 'no-results';
+            noResultsMessage.textContent = 'No products found';
+            noResultsMessage.style.display = 'none';
+            productsContainer.parentNode.insertBefore(noResultsMessage, productsContainer.nextSibling);
+
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                let hasVisibleProducts = false;
+
+                Array.from(productItems).forEach(item => {
+                    const productName = item.querySelector('.product__item__text h6').textContent.toLowerCase();
+                    const shouldShow = productName.includes(searchTerm);
+                    item.style.display = shouldShow ? 'block' : 'none';
+                    if (shouldShow) hasVisibleProducts = true;
+                });
+
+       
+                noResultsMessage.style.display = hasVisibleProducts ? 'none' : 'block';
+            }
+
+            searchInput.addEventListener('input', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+
+
+
+
+
+
 });
 
 
@@ -560,6 +611,14 @@ function initializeFlashMessages() {
         }
 
         document.addEventListener('DOMContentLoaded', initializeFlashMessages);
+
+
+
+
+
+
+
+
 
 </script>
 

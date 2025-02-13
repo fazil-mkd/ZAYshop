@@ -92,7 +92,10 @@ https://templatemo.com/tm-559-zay-shop
                             <div class="category__item__text text-center mt-3">
                                 <h5><%= category.name %></h5>
                                 
-                                <p><a href="/shop/<%= category._id %>" class="btn btn-success">Go Shop</a></p>
+                                <p>
+                                    <a href="/shop?maxPrice=10000&categories=<%= category._id %>" class="btn btn-success">Go Shop</a>
+                                </p>
+                                
                             </div>
                         </div>
                     </div>

@@ -125,7 +125,7 @@ async function unlistCategory(categoryId) {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                   
+                   location.reload()
                     document.querySelector(`[data-id="${categoryId}"]`).closest('div').remove();
                 });
             } else {

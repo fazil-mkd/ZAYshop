@@ -177,12 +177,196 @@ h2.text-center::after {
 .custom-popup {
   max-width: 600px; 
   font-size: 16px; 
+}  .dash {
+    /* Base button styles */
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  }
+  
+  .dash::before {
+    /* Back arrow styles */
+    content: "←";
+    margin-right: 8px;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Hover effects */
+  .dash:hover {
+    background-color: #357abd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+  
+  .dash:hover::before {
+    transform: translateX(-4px);
+  }
+  
+  /* Active state */
+  .dash:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Focus state for accessibility */
+  .dash:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+  }/* Main Popup Container */
+.custom-popup {
+    width: 80vw !important; /* Using viewport width */
+    max-width: 1400px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
+    background: #ffffff !important;
+    overflow: hidden !important;
+}
+
+/* Popup Title */
+.custom-title {
+    color: #ffffff !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    padding: 15px 30px !important; /* Reduced padding */
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%) !important;
+}
+
+/* Order Details Container */
+.order-details-popup {
+    text-align: left;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px; /* Reduced gap */
+    padding: 20px 30px; /* Reduced padding */
+    background: #f8fafc;
+}
+
+/* General Text Styling */
+.order-details-popup p {
+    margin: 6px 0 !important; /* Reduced margin */
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #4a5568 !important;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 8px 15px; /* Reduced padding */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Strong Tags (Labels) */
+.order-details-popup strong {
+    color: #2d3748;
+    font-weight: 600;
+    min-width: 150px;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+/* Status Styling */
+.order-details-popup p:nth-child(2) {
+    grid-column: 1 / -1;
+    background: #ebf8ff;
+    border-left: 4px solid #4299e1;
+}
+
+/* Price Styling */
+.order-details-popup p:nth-child(4) {
+    background: #F0FFF4;
+    border-left: 4px solid #48BB78;
+}
+
+/* Address Section */
+.order-details-popup p:nth-child(7) {
+    grid-column: 1 / -1;
+    margin-top: 10px !important; /* Reduced margin */
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    color: #ffffff !important;
+    font-size: 16px !important;
+}
+
+.address-details {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px; /* Reduced gap */
+    background: #ffffff;
+    padding: 15px 20px; /* Reduced padding */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Close Button */
+.custom-confirm-button {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%) !important;
+    padding: 8px 25px !important; /* Reduced padding */
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    margin: 15px auto !important; /* Reduced margin */
+    box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .custom-popup {
+        width: 95vw !important;
+    }
+
+    .order-details-popup,
+    .address-details {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .order-details-popup strong {
+        min-width: 120px;
+    }
+
+    .custom-title {
+        font-size: 25px !important;
+        padding: 12px 20px !important;
+    }
+}
+
+/* For smaller screens */
+@media (max-height: 800px) {
+    .order-details-popup p {
+        padding: 6px 12px !important;
+        margin: 4px 0 !important;
+    }
+
+    .address-details {
+        padding: 10px 15px;
+    }
+
+    .custom-title {
+        padding: 10px 20px !important;
+    }
 }
   </style>
 
 </head>
 
 <body>
+  <button class="dash" onclick="window.location.href='/profile/<%= user._id %>'">Profile</button>
   <div class="container mt-5">
     <h2 class="text-center mb-4">My Orders</h2>
 
@@ -221,20 +405,7 @@ h2.text-center::after {
     </div>
 
 
-    <div id="orderDetails" style="display: none;">
-      <h3>Order Details</h3>
-      <p><strong>Order ID:</strong> <span id="orderId"></span></p>
-      <p><strong>Status:</strong> <span id="orderStatus"></span></p>
-      <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
-      <p><strong>Total Price:</strong> <span id="totalPriceog"></span></p>
-      <p><strong>Total Price(R/C):</strong> <span id="totalPrice"></span></p>
-      <p><strong>Order Notes:</strong> <span id="orderNotes"></span></p>
-      <p><strong>Created At:</strong> <span id="createdAt"></span></p>
-      <p><strong>Address:</strong> <span id="Address"></span></p>
-  
-  
-      <button id="backButton" onclick="goBack()" class="btn btn-secondary">Back</button>
-  </div>
+
   
   </div>
 

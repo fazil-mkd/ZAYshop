@@ -11,6 +11,7 @@
 
 </head>
 <body>
+    <button class="dash" onclick="window.location.href='/profile/<%= user._id %>'">Profile</button>
     <div class="tab-pane active" id="address" role="tabpanel" aria-labelledby="address-tab">
       
         <div class="address-box">
@@ -186,7 +187,7 @@
         const input = document.getElementById(field);
         const errorSpan = document.getElementById(field + "Error");
         if (!patterns[field].test(input.value)) {
-            errorSpan.textContent = `Invalid ${field.replace(/([A-Z])/g, ' $1')}. No spaces or dots allowed.`;
+            errorSpan.textContent = `Invalid ${field.replace(/([A-Z])/g, ' $1')}.`;
             isValid = false;
         } else {
             errorSpan.textContent = ""; 

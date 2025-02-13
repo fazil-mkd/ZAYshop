@@ -19,7 +19,13 @@ router.get("/userlogin",userController.userlogin);
 
 const { userAuth, adminAuth } = require('../middlewares/auth');
 
+const isBlockedMiddleware = require('../middlewares/UserBlock');
 
+
+
+
+
+router.use(isBlockedMiddleware);
 
 router.get('/auth/google', 
     passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -79,7 +85,7 @@ router.get('/update-profile/:id',userAuth,userController.loadUpdateProfile)
 
 router.get('/orderDetails',userAuth,userController.loaduserOrderDetails)
 router.post('/place-order',userAuth,userController.placeOrder)
-router.post('/checkout/add-address',userAuth,userController.addAddress);
+router.post('/checkout/add-address',userAuth,userController.CheckoutaddAddress);
 router.post('/user/orders/cancel',userAuth,userController.orderCancel);
 router.get('/user/orders/:orderId',userAuth,userController.viewOderDetails);
 router.get('/order/:orderId',userAuth,userController.orderSummery);
@@ -138,6 +144,10 @@ router.post("/remove-coupon",userAuth,userController.removeCoupon)
 router.get('/checkout/updateAddress/:addressId',userAuth,userController.loadCheckUpdateAddress);
 
 router.put('/checkout/updateAddress/:id',userAuth,userController.CheckoutupdateAddress);
+
+
+
+router.get('/order/invoice/:orderId',userAuth,userController.invoice)
 
 
 module.exports = router;

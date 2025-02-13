@@ -59,6 +59,80 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
+<script>
+
+
+
+
+
+document.querySelectorAll('.btn-recover').forEach(button => {
+    button.addEventListener('click', async function() {
+        const productId = this.getAttribute('data-id');
+        const spinner = this.querySelector('.spinner-border');
+
+        // Show spinner before asking for confirmation
+        spinner.classList.remove('d-none');
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to recover this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, recover it!',
+            cancelButtonText: 'No, cancel!',
+        });
+
+        if (!result.isConfirmed) {
+            spinner.classList.add('d-none');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/products/recover/${productId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            spinner.classList.add('d-none');
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Product recovered successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => document.location.reload()); // Reload after confirmation
+            } else {
+                const data = await response.json();
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to recover product.',
+                    icon: 'error',
+                    confirmButtonText: 'Close'
+                });
+            }
+        } catch (error) {
+            spinner.classList.add('d-none');
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while recovering the product.',
+                icon: 'error',
+                confirmButtonText: 'Close'
+            });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+</script>
+
+
 
 </body>
 </html>

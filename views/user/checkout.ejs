@@ -23,6 +23,12 @@
 
 
         <section class="checkout spad">
+            <div id="success-alert" class="custom-alert custom-alert-success animate-in" role="alert"
+                data-message="<%= successMessage %>">
+                <div class="alert-icon"></div>
+                <div class="alert-content"></div>
+            </div>
+
             <div class="container">
                 <div class="checkout__form">
 
@@ -71,14 +77,16 @@
                                                                                                             %>
                                                                         </p>
                                                                     </label>
-                                                                    <button type="button" onclick="window.location.href='/checkout/updateAddress/<%= address._id %>'" class="Address-edit">
+                                                                    <button type="button"
+                                                                        onclick="window.location.href='/checkout/updateAddress/<%= address._id %>'"
+                                                                        class="Address-edit">
                                                                         Edit
                                                                     </button>
-                                                                    
+
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <% }); %>
                                                             <% } %>
                                         </div>
@@ -519,6 +527,7 @@
                                                         transactionId: response.razorpay_payment_id,
                                                         selectedAddress,
                                                         orderNotes,
+                                                        paymentStatus:'completed'
                                                     }),
                                                 });
 
@@ -551,10 +560,105 @@
                                             contact: '7736817302',
                                         },
                                         theme: { color: '#5469d4' },
+                                        modal: {
+                                            escape: false,
+                                        },
                                     };
 
-                                    const rzp = new Razorpay(options);
-                                    rzp.open();
+                                    try {
+                                        const rzp = new Razorpay(options);
+
+                                      
+                                        rzp.on('payment.failed', function (response) {
+                                            console.error('Payment failed:', response);
+
+                                            Swal.fire({
+                                                title: 'Payment Failed!',
+                                                text: response.error.description || 'Transaction was unsuccessful. You can retry or choose to pay later.',
+                                                icon: 'error',
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Retry Payment',
+                                                cancelButtonText: 'Pay Later',
+                                            }).then(async (result) => {
+                                                if (result.isConfirmed) {
+                                                    rzp.open(); 
+                                                } else {
+                                                  
+                                                    await placeOrderWithoutPayment();
+                                                }
+                                            });
+                                        });
+
+                                        
+                                        rzp.open();
+
+                                       
+                                        Swal.fire({
+                                            title: 'Want to pay later?',
+                                            text: 'You can proceed with your order without immediate payment.',
+                                            icon: 'info',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Pay Later',
+                                            cancelButtonText: 'Cancel',
+                                        }).then(async (result) => {
+                                            if (result.isConfirmed) {
+                                                await placeOrderWithoutPayment();
+                                            }
+                                        });
+
+                                    } catch (error) {
+                                        console.error('Error initiating payment:', error);
+
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: 'Error initiating payment. Please try again.',
+                                            icon: 'error',
+                                            confirmButtonText: 'Retry',
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                    }
+
+
+                                    async function placeOrderWithoutPayment() {
+                                        try {
+                                            const response = await fetch('/place-order', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    orderDetails: order,
+                                                    paymentMethod: 'razorpay',
+                                                    selectedAddress,
+                                                    orderNotes,
+                                                    paymentStatus:'pending'
+                                                }),
+                                            });
+
+                                            const result = await response.json();
+                                            if (response.ok) {
+                                                Swal.fire({
+                                                    title: 'Order Placed!',
+                                                    text: 'You can complete your payment later.',
+                                                    icon: 'success',
+                                                    confirmButtonText: 'View Order',
+                                                }).then(() => {
+                                                    window.location.href = `/order/${result.orderId}`;
+                                                });
+                                            } else {
+                                                throw new Error(result.message || 'Failed to place the order.');
+                                            }
+                                        } catch (error) {
+                                            console.error('Error placing order:', error);
+                                            Swal.fire({
+                                                title: 'Error',
+                                                text: 'Failed to place the order. Please try again.',
+                                                icon: 'error',
+                                                confirmButtonText: 'Retry',
+                                            });
+                                        }
+                                    }
                                 } catch (error) {
                                     console.error('Error initiating payment:', error);
                                     Swal.fire({
@@ -581,6 +685,7 @@
                                                 paymentMethod: 'cod',
                                                 selectedAddress,
                                                 orderNotes,
+                                                paymentStatus:'pending',
                                             }),
                                         });
 
@@ -617,6 +722,7 @@
                                             paymentMethod: 'wallet',
                                             selectedAddress,
                                             orderNotes,
+                                            paymentStatus:'completed'
                                         }),
                                     });
 
@@ -699,30 +805,65 @@
 
 
                 document.getElementById("removeCouponBtn").addEventListener("click", function () {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to remove the applied coupon?",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/remove-coupon', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.fire({
-                    text: data.message,
-                }).then(() => {
-                    location.reload();
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to remove the applied coupon?",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/remove-coupon', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.fire({
+                                        text: data.message,
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                })
+                                .catch(err => console.error("Error:", err));
+                        }
+                    });
                 });
-            })
-            .catch(err => console.error("Error:", err));
-        }
-    });
-});
+
+
+
+
+
+
+
+
+
+
+                function initializeFlashMessages() {
+                    const successAlert = document.getElementById('success-alert');
+                    const errorAlert = document.getElementById('error-alert');
+
+                    function showAlertIfMessageExists(alertElement) {
+                        const message = alertElement.getAttribute('data-message');
+                        const contentElement = alertElement.querySelector('.alert-content');
+
+                        if (message && message !== 'undefined' && message.trim() !== '') {
+                            contentElement.textContent = message;
+                            alertElement.classList.add('show');
+
+                            setTimeout(() => {
+                                alertElement.classList.remove('show');
+                                alertElement.setAttribute('data-message', '');
+                            }, 3000);
+                        }
+                    }
+
+                    showAlertIfMessageExists(successAlert);
+                    showAlertIfMessageExists(errorAlert);
+                }
+
+                document.addEventListener('DOMContentLoaded', initializeFlashMessages);
+
 
 
 

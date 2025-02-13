@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
 
-
+   <link rel="stylesheet" href="/assets/css/admin/productUpdate.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.7/dist/sweetalert2.min.css">
 </head>
@@ -81,6 +81,8 @@
                             </div>
 
                             <div class="container mt-5">
+                                <h6 style="color: rgb(0, 0, 0);">Allowed Formats:  jpeg, png, jpg</h6>
+                                <h6 style="color: rgb(0, 0, 0);">Maximum Size: 5MB</h6>
                                 <form class="updatePdt" action="/admin/products/<%= product._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
                                     <div class="row g-3">
                                         <% [1, 2, 3, 4].forEach(index => { %>
@@ -102,7 +104,7 @@
                                                     <button class="remove-image" id="removeImage<%= index %>">&times;</button>
                                                 </div>
                                                 <div class="error-message" id="errorMessage<%= index %>"></div>
-                                                <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*" required>
+                                                <input type="file" class="d-none" name="productImages" id="fileInput<%= index %>" accept="image/*" >
                                             </div>
                                         </div>
                                         <% }) %>
@@ -130,24 +132,55 @@
                             </div>
                         </div>
 
+                        <div class="variant-form bg-light p-4 rounded mb-4">
                             <div id="colorSizeSection" class="mb-3">
-                                <label class="form-label">Colors and Sizes</label>
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-3">
-                                        <input type="text" name="productColors[]" class="form-control color-input"
-                                            placeholder="Color (e.g., Red)">
+                                <label class="form-label fw-bold">Colors and Sizes</label>
+                                <div class="variant-item">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <input type="text" 
+                                                   name="productColors[]" 
+                                                   class="form-control color-input" 
+                                                   placeholder="Color (e.g., Red)">
+                                        </div>
                                     </div>
-                                    <div class="col-md-7 ">
-                                        <input  type="text" name="productSizes[]" class="form-control sizes-input"
-                                            placeholder="Sizes and Quantities (e.g., M:5, XL:10)">
+                                    <div class="size-grid">
+                                        <div>
+                                            <label class="form-label">S</label>
+                                            <input type="number" class="form-control size-input" data-size="S" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">M</label>
+                                            <input type="number" class="form-control size-input" data-size="M" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">L</label>
+                                            <input type="number" class="form-control size-input" data-size="L" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">X</label>
+                                            <input type="number" class="form-control size-input" data-size="X" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">XL</label>
+                                            <input type="number" class="form-control size-input" data-size="XL" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">XXL</label>
+                                            <input type="number" class="form-control size-input" data-size="XXL" min="0">
+                                        </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <input type="hidden" name="productSizes[]" class="size-string-input">
+                                    <div class="mt-3">
                                         <button type="button" class="btn btn-danger remove-color-size">Remove</button>
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-primary" id="addColorSize">Add More Color &
-                                Sizes</button>
+                            <button type="button" class="btn btn-primary" id="addColorSize">
+                                Add More Color & Sizes
+                            </button>
+                            <p id="color-size-error" class="text-danger mt-2 small"></p>
+                        </div>
 
 
 
@@ -192,7 +225,7 @@
         isInvalidImage: file => {
             if (!file) return false;
             const fileType = file.type.split('/')[0];
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const maxFileSize = 5 * 1024 * 1024; 
             return fileType !== 'image' || file.size > maxFileSize;
         }
     };
@@ -360,59 +393,131 @@
          
 
 
-            function displayColorSizes(data) {
-                const colorSizeSection = document.getElementById('colorSizeSection');
 
-                data.colors.forEach((item, index) => {
-                    if (index === 0) {
-                        const firstRow = colorSizeSection.querySelector('.row');
-                        firstRow.querySelector('.color-input').value = item.color;
-                        firstRow.querySelector('.sizes-input').value = item.sizes.trim();
-                    } else {
-
-                        const firstRow = colorSizeSection.querySelector('.row');
-                        const newRow = firstRow.cloneNode(true);
-                        newRow.querySelector('.color-input').value = item.color;
-                        newRow.querySelector('.sizes-input').value = item.sizes.trim();
-
-                        newRow.querySelector('.remove-color-size').addEventListener('click', function () {
-                            this.closest('.row').remove();
-                        });
-
-                        colorSizeSection.appendChild(newRow);
-                    }
-                });
-            }
+            function addColorSizeVariant(color = '', sizes = {}) {
+    try {
+   
+        const templateElement = document.querySelector('.variant-item');
+        if (!templateElement) {
+            console.error('Variant template not found');
+            return;
+        }
 
 
+        const template = templateElement.cloneNode(true);
+        template.style.display = "block";
+
+        const colorInput = template.querySelector('.color-input');
+        if (colorInput) {
+            colorInput.value = color;
+        }
 
 
-            document.getElementById('addColorSize').addEventListener('click', function () {
-                const colorSizeSection = document.getElementById('colorSizeSection');
-                const firstRow = colorSizeSection.querySelector('.row');
-                const newRow = firstRow.cloneNode(true);
+        const sizeInputs = template.querySelectorAll('.size-input');
+        if (sizeInputs.length > 0) {
+            sizeInputs.forEach(input => {
+                const size = input.getAttribute('data-size');
+                if (size) {
+                    input.value = sizes[size] || '';
+                }
+            });
+        }
+
+        const container = document.getElementById('colorSizeSection');
+        if (!container) {
+            console.error('Container element not found');
+            return;
+        }
 
 
-                newRow.querySelectorAll('input').forEach(input => {
-                    input.value = '';
-                });
+        container.appendChild(template);
 
-                newRow.querySelector('.remove-color-size').addEventListener('click', function () {
-                    this.closest('.row').remove();
-                });
+    } catch (error) {
+        console.error('Error adding variant:', error);
+    }
+}
 
-                colorSizeSection.appendChild(newRow);
+
+
+  
+    for (const [color, sizes] of Object.entries(colorSizeStockMap)) {
+        addColorSizeVariant(color, sizes);
+    }
+
+
+    document.querySelector('.variant-item').remove();
+
+
+    document.getElementById("addColorSize").addEventListener("click", function () {
+        addColorSizeVariant("", {});
+    });
+
+    document.getElementById("colorSizeSection").addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-color-size")) {
+            event.target.closest(".variant-item").remove();
+        }
+    });
+
+
+
+
+
+            function updateSizeString(variantItem) {
+            const sizeInputs = variantItem.querySelectorAll('.size-input');
+            const sizeStringInput = variantItem.querySelector('.size-string-input');
+            
+            let sizes = [];
+            sizeInputs.forEach(input => {
+                if (input.value && parseInt(input.value) > 0) {
+                    sizes.push(`${input.dataset.size}:${input.value}`);
+                }
+            });
+            
+            sizeStringInput.value = sizes.join(',');
+        }
+
+      
+        document.getElementById('addColorSize').addEventListener('click', function() {
+            const colorSizeSection = document.querySelector('.variant-item');
+            const newRow = colorSizeSection.cloneNode(true);
+          
+            newRow.querySelectorAll('input').forEach(input => {
+                input.value = '';
             });
 
-
-            document.querySelectorAll('.remove-color-size').forEach(button => {
-                button.addEventListener('click', function () {
-                    this.closest('.row').remove();
-                });
+          
+            newRow.querySelectorAll('.size-input').forEach(input => {
+                input.addEventListener('input', () => updateSizeString(newRow));
             });
 
+       
+            newRow.querySelector('.remove-color-size').addEventListener('click', function() {
+                if (document.querySelectorAll('.variant-item').length > 1) {
+                    newRow.remove();
+                }
+            });
 
-            displayColorSizes(productData);
+            document.getElementById('colorSizeSection').appendChild(newRow);
+        });
+
+      
+        document.querySelectorAll('.variant-item').forEach(variantItem => {
+           
+            variantItem.querySelectorAll('.size-input').forEach(input => {
+                input.addEventListener('input', () => updateSizeString(variantItem));
+            });
+
+            
+            variantItem.querySelector('.remove-color-size').addEventListener('click', function() {
+                if (document.querySelectorAll('.variant-item').length > 1) {
+                    variantItem.remove();
+                }
+            });
+        });
+
+    
+
+           
 
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -618,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             container.addEventListener('click', (event) => {
                 if (!event.target.closest('.remove-image')) {
-                    fileInput.click();
+                   
                 }
             });
         });
@@ -626,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initializeImageHandling();
 
-    // Handle form submission
+ 
     form.addEventListener('submit', function () {
         form.querySelector('input[name="removedImages"]').value = Array.from(removedImageIndexes).join(',');
     });

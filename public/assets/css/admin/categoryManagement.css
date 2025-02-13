@@ -1,14 +1,14 @@
 :root {
-    --primary-bg-color: #000000;  /* Black background */
-    --container-bg-color: #222222; /* Darker background for containers */
-    --text-color: #ffffff;  /* White text color */
-    --secondary-text-color: #bdc3c7;  /* Lighter text color */
-    --muted-text-color: #95a5a6;  /* Muted text color */
-    --primary-action-color: #1abc9c;  /* Teal for primary buttons */
-    --primary-action-hover: #16a085;  /* Darker teal for hover */
-    --danger-action-color: #e74c3c;  /* Red for danger buttons */
-    --danger-action-hover: #c0392b;  /* Darker red for hover */
-    --hover-bg-color: #2f4a5a;  /* Slightly different hover background */
+    --primary-bg: #ffffff;
+    --secondary-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #333333;
+    --text-muted: #666666;
+    --border: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.06);
+    --shadow-hover: rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *,
@@ -20,158 +20,247 @@
 }
 
 body {
-    background-color: var(--primary-bg-color);
-    color: var(--text-color);  /* White text */
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--secondary-bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
     min-height: 100vh;
-    flex-direction: column;
-    margin: 0;
 }
 
 .main-content {
-    max-width: 1400px;  /* Increased max-width for a wider layout */
-    width: 100%;
-    padding: 20px;
-    margin: 40px auto;
-    font-size: 16px;  /* Slightly reduced font size */
+    max-width: 1400px;
+    padding: 40px 20px;
+    margin: 0 auto;
 }
 
-.card {
-    border: none;
-    border-radius: 8px;  /* Slightly reduced radius for more modern look */
-    background-color: var(--container-bg-color);
-    color: var(--text-color);  /* White text inside the card */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-    padding: 20px;
-    max-width: 100%;  /* Ensure card expands fully inside the container */
+/* Enhanced Header */
+.header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    padding: 2rem 0;
 }
 
-.card-header {
-    border-bottom: 1px solid var(--muted-text-color);
-    padding: 1.5rem;
-    background-color: var(--container-bg-color);
-    font-size: 20px;  /* Slightly larger header text */
+.header h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
 }
 
-.card-body {
-    padding: 15px;
-    font-size: 14px;
-}
-
-.card-body p {
-    margin-bottom: 8px;
-}
-
+/* Modern Search Box */
 .search-box {
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
     position: relative;
-    margin-bottom: 15px;
 }
 
 .search-box input {
-    background-color: var(--primary-bg-color);
-    color: var(--text-color);  /* White text in search box */
-    border: 1px solid var(--muted-text-color);
-    border-radius: 25px;
-    padding: 10px 20px 10px 35px;
     width: 100%;
-    font-size: 14px;
+    padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    background: var(--card-bg);
+    transition: var(--transition);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+    box-shadow: 0 4px 20px var(--shadow);
 }
 
 .search-box i {
     position: absolute;
-    left: 15px;
+    left: 1.25rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--muted-text-color);
-    font-size: 16px;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+}
+
+/* Card Grid Layout */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px var(--shadow-hover);
+}
+
+.card-header {
+    margin: -2rem -2rem 1.5rem;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+    border-radius: 20px 20px 0 0;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+.card-body {
+    flex: 1;
+    padding: 0;
+    color: var(--text-secondary);
+}
+
+.card-body p {
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+/* Enhanced Buttons */
+.btn-custom {
+    padding: 1rem 1.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: var(--transition);
+    border: 2px solid var(--text-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-create {
+    background-color: rgb(0, 0, 109);
+    color: var(--primary-bg);
+}
+
+.btn-create:hover {
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.btn-unlist {
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+}
+
+.btn-unlist:hover {
+    background-color: var(--text-primary);
+    color: var(--primary-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Modern Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    background: var(--secondary-bg);
+    color: var(--text-primary);
+}
+
+.status-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.action-buttons button {
+    flex: 1;
+}
+
+/* Table Enhancement */
+.table-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    overflow-x: auto;
+    margin-bottom: 2rem;
 }
 
 .table {
     width: 100%;
-    color: var(--text-color);  /* White text in table */
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.table td {
-    background-color: var(--primary-bg-color);
-    vertical-align: middle;
-    padding: 10px;
-    font-size: 16px;
-    color: var(--text-color);
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table th {
-    background-color: var(--container-bg-color);
-    color: var(--text-color);
-    padding: 12px;
-    text-align: left;
-    font-size: 18px;
-}
-
-.table tr:hover {
-    background-color: var(--hover-bg-color);
-}
-
-.btn-custom {
-    padding: 8px 20px;
-    border-radius: 25px;
+    background: var(--secondary-bg);
+    padding: 1.25rem 1rem;
     font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s;
-}
-
-.btn-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.btn-create {
-    background-color: var(--primary-action-color);
-    color: var(--text-color);
-}
-
-.btn-create:hover {
-    background-color: var(--primary-action-hover);
-}
-
-.btn-unlist {
-    background-color: var(--danger-action-color);
-    color: var(--text-color);
-}
-
-.btn-unlist:hover {
-    background-color: var(--danger-action-hover);
-}
-
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
+    text-transform: uppercase;
     font-size: 0.9rem;
+    letter-spacing: 0.05em;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 12px;
+.table td {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid var(--border);
 }
 
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .main-content {
-        padding: 10px;
-        margin: 20px;
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .card {
-        padding: 12px;
+        padding: 1.5rem;
     }
 
-    .card-body {
-        padding: 8px;
+    .card-header {
+        margin: -1.5rem -1.5rem 1.25rem;
+        padding: 1.5rem;
     }
 
     .action-buttons {
@@ -180,6 +269,10 @@ body {
 
     .btn-custom {
         width: 100%;
-        margin-bottom: 5px;
+    }
+
+    .search-box input {
+        padding: 1rem 1.25rem 1rem 3rem;
+        font-size: 1rem;
     }
 }

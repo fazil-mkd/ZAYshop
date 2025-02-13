@@ -187,8 +187,6 @@ const createCoupon = async (req, res) => {
 
 
 
-
-
   const getSalesReports = async (req, res) => {
     try {
       const totalOrders = await Order.countDocuments({ status: "Delivered" });
@@ -201,19 +199,6 @@ const createCoupon = async (req, res) => {
       ]);
   
  
-      const totalSalesResult = await Order.aggregate([ 
-        { $match: { status: "Delivered" } },
-       { $group: { _id: null, totalSales: { $sum: "$totalPrice" } } }
-     ]);
-  
-      const avarageOrders = await Order.aggregate([ 
-         { $match: { status: "Delivered" } },
-        { $group: { _id: null, avarageOrder: { $avg: "$totalPrice" } } }
-      ]);
-  
-      const AvarageOrder = avarageOrders.length > 0 ? avarageOrders[0].avarageOrder : 0;
-      const totalSales = totalSalesResult.length > 0 ? totalSalesResult[0].totalSales : 0;
-  
   
       const period = req.query.period || 'daily';
       const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
@@ -240,90 +225,131 @@ const createCoupon = async (req, res) => {
         return res.redirect("/admin/sales");
       }
       
-      let matchStage = { status: "Delivered" };
+
       
+      const startOfDay = new Date(startDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      const matchStage = {};
       if (startDate && endDate) {
-        matchStage.createdAt = { $gte: startDate, $lte: endDate };
+          matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
       }
       
-       console.log('qwertyuiooooikuytrertyui',period)
-
-
+      // Debugging
+      console.log("Applying match filter:", JSON.stringify(matchStage, null, 2));
       
       const salesData = await Order.aggregate([
-        { $match: matchStage },
-        { $unwind: "$orderedItems" },
-        {
-            $lookup: {
-                from: "products",
-                localField: "orderedItems.product",
-                foreignField: "_id",
-                as: "productDetails"
-            }
-        },
-        { $unwind: "$productDetails" },
-        {
-            $project: {
-                createdAt: 1, 
-                totalPrice: 1,
-                userId: 1,
-                productId: "$productDetails._id",
-                productName: "$productDetails.name",
-                productCategory: "$productDetails.category",
-                productPrice: "$orderedItems.totalPrice",
-                quantitySold: "$orderedItems.quantity",
-                color: "$orderedItems.color",
-                size: "$orderedItems.size",
-            }
-        },
-        {
-            $group: {
-                _id: { productId: "$productId", color: "$color", size: "$size" },
-                createdAt: { $first: "$createdAt" },  
-                userId: { $first: "$userId" }, 
-                productName: { $first: "$productName" },
-                productPrice: { $first: "$productPrice" },
-                quantitySold: { $sum: "$quantitySold" },
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    year: { $year: "$createdAt" },
-                    ...(period === "weekly" && { week: { $isoWeek: "$createdAt" } }),
-                    ...(period === "monthly" && { month: { $month: "$createdAt" } }),
-                    ...(period === "daily" && { month: { $month: "$createdAt" }, day: { $dayOfMonth: "$createdAt" } }),
-                },
-                totalSales: { $sum: "$productPrice" },
-                totalOrders: { $sum: 1 },
-                totalCustomers: { $addToSet: "$userId" }, 
-                productsSold: {
-                    $push: {
-                        productId: "$_id.productId",
-                        productName: "$productName",
-                        productPrice: "$productPrice",
-                        quantitySold: "$quantitySold",
-                        color: { $ifNull: ["$_id.color", "N/A"] }, 
-                        size: { $ifNull: ["$_id.size", "N/A"] },
-                    }
-                }
-            }
-        },
-        {
-            $project: {
-                period: "$_id",
-                totalSales: 1,
-                totalOrders: 1,
-                totalCustomers: { $size: "$totalCustomers" }, 
-                productsSold: 1
-            }
-        }
-    ]);
-    
+          { $match: matchStage }, // ✅ Corrected Date Filtering
+          { $unwind: "$orderedItems" },
+          {
+              $lookup: {
+                  from: "products",
+                  localField: "orderedItems.product",
+                  foreignField: "_id",
+                  as: "productDetails"
+              }
+          },
+          { $unwind: "$productDetails" },
+          {
+              $addFields: {
+                  productStatus: {
+                      $cond: {
+                          if: "$orderedItems.isReturnApproved",
+                          then: "Returned",
+                          else: {
+                              $cond: {
+                                  if: "$orderedItems.isCancelled",
+                                  then: "Cancelled",
+                                  else: "$status"
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          {
+              $project: {
+                  createdAt: 1,
+                  userId: 1,
+                  productId: "$productDetails._id",
+                  productName: "$productDetails.name",
+                  productPrice: "$orderedItems.totalPrice",
+                  quantitySold: "$orderedItems.quantity",
+                  color: { $ifNull: ["$orderedItems.color", "N/A"] },
+                  size: { $ifNull: ["$orderedItems.size", "N/A"] },
+                  productStatus: 1
+              }
+          },
+          {
+              $group: {
+                  _id: { productId: "$productId", color: "$color", size: "$size" },
+                  createdAt: { $first: "$createdAt" },
+                  userId: { $first: "$userId" },
+                  productName: { $first: "$productName" },
+                  productPrice: { $first: "$productPrice" },
+                  quantitySold: { $sum: "$quantitySold" },
+                  productStatus: { $first: "$productStatus" }
+              }
+          },
+          {
+              $group: {
+                  _id: {
+                      year: { $year: "$createdAt" },
+                      ...(period === "weekly" && { week: { $isoWeek: "$createdAt" } }),
+                      ...(period === "monthly" && { month: { $month: "$createdAt" } }),
+                      ...(period === "daily" && { month: { $month: "$createdAt" }, day: { $dayOfMonth: "$createdAt" } })
+                  },
+                  latestCreatedAt: { $max: "$createdAt" },
+                  totalSales: {
+                      $sum: {
+                          $cond: {
+                              if: { $eq: ["$productStatus", "Delivered"] }, 
+                              then: { $multiply: ["$productPrice", "$quantitySold"] }, 
+                              else: 0
+                          }
+                      }
+                  },
+                  totalOrders: { $sum: 1 },
+                  totalCustomers: { $addToSet: "$userId" },
+                  productsSold: {
+                      $push: {
+                          productId: "$_id.productId",
+                          productName: "$productName",
+                          productPrice: "$productPrice",
+                          quantitySold: "$quantitySold",
+                          color: "$_id.color",
+                          size: "$_id.size",
+                          productStatus: "$productStatus"
+                      }
+                  }
+              }
+          },
+          {
+              $project: {
+                  period: "$_id",
+                  totalSales: 1, 
+                  totalOrders: 1,
+                  totalCustomers: { $size: "$totalCustomers" },
+                  productsSold: 1
+              }
+          },
+          { $sort: { latestCreatedAt: -1 } }
+      ]);
+      
+
+
+ console.log('ddddddddddddddddddddddddddddddddd',salesData)   
 
 
 const topSellingProducts = await Order.aggregate([
   { $unwind: "$orderedItems" }, 
+  {$match:{  status: "Delivered",
+    "orderedItems.isReturnApproved": false,
+    "orderedItems.isCancelled": false
+}},
   {
       $group: {
           _id: {
@@ -343,7 +369,7 @@ const topSellingProducts = await Order.aggregate([
       }
   },
   { $sort: { totalQuantity: -1 } }, 
-  { $limit: 5 }, 
+  { $limit: 10 }, 
   {
       $lookup: {
           from: "products",
@@ -366,7 +392,11 @@ const topSellingProducts = await Order.aggregate([
 
 
 const topSellingCategories = await Order.aggregate([
-  { $unwind: "$orderedItems" },  
+  { $unwind: "$orderedItems" },
+  {$match:{  status: "Delivered",
+    "orderedItems.isReturnApproved": false,
+    "orderedItems.isCancelled": false
+}},  
   {
     $lookup: {
       from: "products", 
@@ -384,7 +414,7 @@ const topSellingCategories = await Order.aggregate([
     }
   },
   { $sort: { totalSales: -1 } },
-  { $limit: 5 }, 
+  { $limit: 10 }, 
   {
     $lookup: {
       from: "categories", 
@@ -403,37 +433,35 @@ const topSellingCategories = await Order.aggregate([
     }
   }
 ]);
-console.log(salesData)
 
-console.log(topSellingCategories)
+
+
   
 const Data = salesData.length > 0 ? salesData.map(data => ({
   period: data.period,
-  sales: data.totalSales,
+  sales:Math.round(data.totalSales),
   orders: data.totalOrders,
   customers: data.totalCustomers || 0, 
   products: data.productsSold.map(product => ({
     name: product.productName,
-    price: product.productPrice,
+    price: Math.round(product.productPrice),
     quantitySold: product.quantitySold,
     color: product.color || "N/A",
-    size: product.size || "N/A"
+    size: product.size || "N/A",
+    productStatus:product.productStatus,
   }))
 })) : [];
 
+const SaleTotal = Data.reduce((sum, item) => sum + item.sales, 0);  
 
-
-
-console.dir(Data, { depth: null, colors: true });
       
-        const avarageOrder = Math.round(AvarageOrder)
+      
         res.render('salesManagement', {
           totalOrders: totalOrders || 0,
           totalUsers: totalUsers || 0,
           totalProducts: totalProducts && totalProducts.length > 0 ? totalProducts : [{ totalProducts: 0 }], 
-          totalSales: totalSales || 0,
-          avarageOrder: avarageOrder || 0,
           salesData: Array.isArray(Data) && Data.length > 0 ? JSON.stringify(Data) : "[]",
+          SaleTotal,
           period: period || "",
           topSellingProducts,
           topSellingCategories,

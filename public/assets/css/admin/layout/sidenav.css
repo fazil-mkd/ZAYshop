@@ -1,162 +1,183 @@
-:root {
-    --sidebar-width: 250px;
-    --sidebar-collapsed-width: 80px;
-    --sidebar-bg: #111; /* Deep black background */
-    --sidebar-text: #ecf0f1;
-    --sidebar-hover: #34495e; /* Dark hover effect */
-    --sidebar-active-bg: #555; /* Slightly lighter background when active */
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s;
-    background-color: #f4f6f9;
-    margin: 0;
-}
-
+/* Sidebar Container */
 .sidebar {
     position: fixed;
-    top: 0;
     left: 0;
+    top: 0;
     height: 100vh;
-    width: var(--sidebar-width);
-    background-color: var(--sidebar-bg);
-    transition: width 0.3s ease;
-    overflow-x: hidden;
+    width: 240px;
+    background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
+    color: rgb(0, 0, 0);
+    padding: 20px 0;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Ensure spacing between logo and menu */
-    padding-top: 20px;
 }
 
-.sidebar.collapsed {
-    width: var(--sidebar-collapsed-width);
-}
-
+/* Logo Section */
 .sidebar-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0;
-    background-color: rgba(0, 0, 0, 0.2);
-    width: 100%;
+    padding: 20px 25px;
+    margin-bottom: 20px;
 }
 
-.sidebar-logo img {
-    max-width: 80%; /* Logo fits better in collapsed mode */
-    height: auto;
-    transition: transform 0.3s ease;
-}
-
-.sidebar.collapsed .sidebar-logo img {
-    transform: scale(0.5); /* Smaller logo when collapsed */
-}
-
-.sidebar-menu {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-bottom: 20px; /* Space for menu items */
-}
-
-.sidebar a {
-    display: flex;
-    align-items: center;
-    color: var(--sidebar-text);
-    padding: 15px 25px;
+.sidebar-logo a {
+    color: rgb(0, 0, 0);
     text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border-radius: 8px; /* Rounded corners for links */
+    font-weight: 700;
+    font-size: 24px;
 }
 
-.sidebar a:hover {
-    background-color: var(--sidebar-hover);
-    color: white;
+/* Navigation Menu */
+.sidebar-menu {
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
-.sidebar a.active {
-    background-color: var(--sidebar-active-bg); /* Active menu item */
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease forwards;
+    animation-delay: calc(var(--index) * 0.1s);
+    opacity: 0;
 }
 
-.sidebar a i {
-    margin-right: 20px;
-    font-size: 1.3em; /* Slightly bigger icons */
+.sidebar-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgb(0, 0, 0);
+    transform: translateX(4px);
 }
 
-.sidebar.collapsed .menu-text {
-    display: none;
+.sidebar-menu a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgb(0, 0, 0);
 }
 
-.sidebar-toggle {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    color: var(--sidebar-text);
-    font-size: 1.5em;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+/* Icon Styling */
+.sidebar-menu i {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
 }
 
-.sidebar-toggle:hover {
-    transform: rotate(180deg); /* Rotate button for better interaction */
+.sidebar-menu img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
-.content {
-    margin-left: var(--sidebar-width);
-    padding: 20px;
-    transition: margin-left 0.3s ease;
-    background-color: #f4f6f9;
+.sidebar-menu p {
+    margin: 0;
+    font-size: 14px;
+    color: black;
 }
 
-.content.sidebar-collapsed {
-    margin-left: var(--sidebar-collapsed-width);
+/* Logout Button Special Styling */
+.sidebar-menu a#logout-link {
+    margin-top: auto;
+    background: rgb(248, 248, 248);
 }
 
-/* Responsive Adjustments */
+.sidebar-menu a#logout-link:hover {
+    background: rgba(35, 4, 172, 0.2);
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
-        width: 0;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        width: 70px;
+        padding: 20px 5px;
     }
-
-    .sidebar.open {
-        width: 250px;
+    
+    .sidebar-logo {
+        padding: 10px;
     }
-
-    .content {
-        margin-left: 0;
+    
+    .sidebar-logo a {
+        font-size: 20px;
     }
-
-    .content.sidebar-collapsed {
-        margin-left: 0;
+    
+    .sidebar-menu p {
+        display: none;
+    }
+    
+    .sidebar-menu a {
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    .sidebar-menu i {
+        margin-right: 0;
     }
 }
 
-.logo-admin {
-    width: 47px;
-}
-
-#sideNav {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background-color: #333;
-    color: white;
-    overflow: auto;
-    transition: 0.3s;
-    padding: 15px;
-}
-
-.side-nav.active {
+/* Social Media Links */
+.social-links {
+    position: absolute;
+    bottom: 20px;
     left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0 15px;
 }
 
-button {
-    margin: 20px;
-    padding: 10px 20px;
-    cursor: pointer;
+.social-links a {
+    color: rgba(47, 0, 189, 0.8);
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: rgb(38, 0, 161);
+}.sidebar-menu .menu-item {
+    display: flex;
+    align-items: center;
+    color: black; /* Text color */
+    text-decoration: none;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+.sidebar-menu .menu-item i {
+    color: black; /* Icon color */
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.sidebar-menu .menu-item:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+    border-radius: 5px;
+}
+
+#logout-link {
+    margin-top: 20px;
+    color: black;
+}
+
+#logout-link i {
+    color: black;
 }
