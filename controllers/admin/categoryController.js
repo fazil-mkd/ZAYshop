@@ -147,6 +147,7 @@ const updateCategory = async (req, res) => {
 
     category.name = categoryName || category.name;
     category.description = categoryDescription || category.description;
+    category.updatedAt=new Date()
 
     const updatedCategory = await category.save();
     console.log('Category updated successfully:', updatedCategory);

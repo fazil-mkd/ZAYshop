@@ -1,292 +1,250 @@
 /* Variables for consistent colors */
 :root {
-    --primary-brown: #8B4513;
-    --secondary-brown: #A0522D;
-    --light-brown: #DEB887;
-    --cream: #FDFAF6;
-    --off-white: #F5F5F5;
-    --dark-brown: #3E2723;
-  }
-  
-  /* Main container styles */
+  --primary-blue: #2563eb;
+  --hover-blue: #1d4ed8;
+  --background-gray: #f8fafc;
+  --border-gray: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-gray: #64748b;
+  --white: #ffffff;
+  --success-green: #10b981;
+  --warning-orange: #f59e0b;
+  --danger-red: #ef4444;
+}
+
+/* Main container styles */
+.container-fluid {
+  background-color: var(--background-gray);
+  padding: 2rem;
+  width: 80%;
+  margin-left: auto;
+}
+
+/* Card styles */
+.card {
+  background-color: var(--white);
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-title {
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+/* Table styles */
+.table-responsive {
+  margin: 0 -1rem;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.table th {
+  background-color: var(--background-gray);
+  color: var(--text-gray);
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-gray);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 1rem;
+  vertical-align: middle;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-gray);
+}
+
+/* Status cell styles */
+.status-cell {
+  min-width: 200px;
+}
+
+.status-cell p {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.status-cell select {
+  width: auto;
+  padding: 0.375rem 2rem 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--border-gray);
+  border-radius: 0.375rem;
+  background-color: var(--white);
+  margin-right: 0.5rem;
+}
+
+.status-cell button {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.status-cell button:hover {
+  background-color: var(--hover-blue);
+}
+
+/* Action buttons */
+.btn-primary {
+  background-color: var(--primary-blue);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-blue);
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.cancel-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #fee2e2;
+  color: var(--danger-red);
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #fecaca;
+}
+
+/* Pagination styles */
+.pagination-container {
+  margin-top: 2rem;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.pagination .page-item .page-link {
+  padding: 0.5rem 0.75rem;
+  color: var(--text-gray);
+  background-color: var(--white);
+  border: 1px solid var(--border-gray);
+  border-radius: 0.375rem;
+  margin: 0 0.125rem;
+  transition: all 0.2s ease;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border-color: var(--primary-blue);
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: var(--background-gray);
+  color: var(--text-dark);
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: var(--background-gray);
+  color: var(--text-gray);
+  cursor: not-allowed;
+}
+
+/* Status colors */
+.status-Pending {
+  color: var(--warning-orange);
+}
+
+.status-Processing {
+  color: var(--primary-blue);
+}
+
+.status-Shipped {
+  color: var(--text-dark);
+}
+
+.status-Delivered {
+  color: var(--success-green);
+}
+
+.status-Cancelled {
+  color: var(--danger-red);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
   .container-fluid {
-    background-color: var(--cream);
-    padding: 2rem;
-    min-height: 100vh;
-  }
-  
-  /* Card styles */
-  .card {
-    background-color: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1) !important;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .card-title {
-    color: var(--primary-brown);
-    font-weight: 600;
-    padding: 1rem 0;
-    border-bottom: 2px solid var(--light-brown);
-  }
-  
-  .card-body {
-    padding: 2rem;
-  }
-  
-  /* Search form styles */
-  .form-control {
-    border: 2px solid var(--light-brown);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-  }
-  
-  .form-control:focus {
-    border-color: var(--primary-brown);
-    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
-  }
-  
-  /* Button styles */
-  .btn-primary {
-    background-color: var(--primary-brown);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    transition: background-color 0.2s ease;
-  }
-  
-  .btn-primary:hover {
-    background-color: var(--secondary-brown);
-  }
-  
-  .btn-danger {
-    background-color: #DC3545;
-    border: none;
-  }
-  
-  /* Table styles */
-  .table {
-    margin-top: 1rem;
-    background-color: white;
-  }
-  
-  .table thead th {
-    background-color: var(--primary-brown);
-    color: white;
-    border: none;
-    padding: 1rem;
-  }
-  
-  .table tbody tr:nth-child(even) {
-    background-color: var(--off-white);
-  }
-  
-  .table td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-color: var(--light-brown);
-  }
-  
-  /* Status select styles */
-  select[name="status"] {
-    padding: 0.5rem;
-    border: 1px solid var(--light-brown);
-    border-radius: 0.25rem;
-    margin-right: 0.5rem;
-  }
-  
-  /* Modal styles */
-  .modal-content {
-    border-radius: 1rem;
-    border: none;
-  }
-  
-  .modal-header {
-    background-color: var(--primary-brown);
-    color: white;
-    border-radius: 1rem 1rem 0 0;
+    width: 90%;
     padding: 1.5rem;
   }
   
-  .modal-body {
-    padding: 2rem;
-    background-color: var(--cream);
+  .card-body {
+    padding: 1.5rem;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .container-fluid {
-      padding: 1rem;
-    }
-    
-    .card-body {
-      padding: 1rem;
-    }
-    
-    .table-responsive {
-      margin: 0 -1rem;
-    }
-  }
-  
-  /* Action button styles */
-  .btn-sm {
-    padding: 0.4rem 0.8rem;
-    margin: 0 0.2rem;
-  }
-  
-  /* Order details section */
-  #orderDetails {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    margin-top: 2rem;
-    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
-  }
-  
-  #orderDetails p {
-    margin-bottom: 0.75rem;
-    color: var(--dark-brown);
-  }
-  
-  #orderDetails strong {
-    color: var(--primary-brown);
-  }
-  #closeDetailsBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  #orderDetails {
-    position: relative;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-/* Custom SweetAlert Styles */
-.custom-swal-popup {
-  width: 800px !important;
-  padding: 30px !important;
-  border-radius: 16px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Header Styles */
-.custom-swal-popup .swal2-title {
-  color: #2c3e50;
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  padding-bottom: 20px !important;
-  border-bottom: 2px solid #eee !important;
-  margin-bottom: 25px !important;
-}
-
-/* Content Grid Layout */
-.custom-swal-popup .swal2-html-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  padding: 0 15px !important;
-  margin: 0 !important;
-  text-align: left !important;
-}
-
-/* Individual Field Styles */
-.custom-swal-popup p {
-  margin: 12px 0 !important;
-  font-size: 15px !important;
-  line-height: 1.5 !important;
-  color: #4a5568 !important;
-}
-
-.custom-swal-popup strong {
-  color: #2d3748;
-  font-weight: 600;
-  margin-right: 8px;
-  min-width: 120px;
-  display: inline-block;
-}
-
-/* Section Headers */
-.custom-swal-popup h4 {
-  grid-column: 1 / -1;
-  color: #2c3e50;
-  font-size: 25px !important;
-  font-weight: 600 !important;
-  margin: 25px 0 15px 0 !important;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #eee;
-}
-
-/* Horizontal Line */
-.custom-swal-popup hr {
-  grid-column: 1 / -1;
-  margin: 20px 0;
-  border: none;
-  height: 1px;
-  background-color: #eee;
-}
-
-/* Close Button */
-.custom-swal-popup .swal2-confirm {
-  background-color: #4299e1 !important;
-  padding: 12px 30px !important;
-  font-size: 20px !important;
-  font-weight: 500 !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-.custom-swal-popup .swal2-confirm:hover {
-  background-color: #3182ce !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3) !important;
-}
-
-/* Value Highlighting */
-.custom-swal-popup p span:not(strong) {
-  color: #4a5568;
-  font-weight: 500;
-}
-
-/* Status Badge */
-.custom-swal-popup p:nth-child(2) span:last-child {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 20px;
-  font-weight: 500;
-  background-color: #EDF2F7;
-  color: #2D3748;
-}
-
-/* Phone Numbers */
-.custom-swal-popup p:nth-child(n+14):nth-child(-n+15) {
-  color: #4299e1 !important;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-  .custom-swal-popup {
-      width: 95% !important;
-      padding: 20px !important;
+  .container-fluid {
+    width: 95%;
+    padding: 1rem;
   }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table td, 
+  .table th {
+    padding: 0.75rem;
+  }
+  
+  .status-cell {
+    min-width: 150px;
+  }
+}
 
-  .custom-swal-popup .swal2-html-container {
-      grid-template-columns: 1fr;
-  }
+/* Search form styles (commented in HTML but styled for future use) */
+.form-control {
+  border: 1px solid var(--border-gray);
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+}
 
-  .custom-swal-popup p {
-      font-size: 20px !important;
-  }
+.form-control:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
 
-  .custom-swal-popup strong {
-      min-width: 100px;
-  }
+/* Optional: Add smooth scrolling for the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optional: Improve button focus states */
+button:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
 }

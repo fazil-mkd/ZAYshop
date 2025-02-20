@@ -112,12 +112,13 @@ res.status(200).json({
 
 
 const applyOffer = async (req,res) => {
+
      
   const { type, item, discount, start, end } = req.body;
     console.log(req.body)
   const currentDate = new Date();
 
-  if (currentDate >= new Date(start) && currentDate <= new Date(end)) {
+  if (currentDate => new Date(start) && currentDate <= new Date(end)) {
     if (type === 'product') {
       return applyDiscountToProduct(req,res,item, discount,start,end);
     } else if (type === 'category') {
@@ -227,22 +228,74 @@ const createCoupon = async (req, res) => {
       
 
       
+      const matchStage = {};
+      const currentDate = new Date(); 
+
       const startOfDay = new Date(startDate);
-      startOfDay.setHours(0, 0, 0, 0);
+      startOfDay.setHours(0, 0, 0, 0); 
       
       const endOfDay = new Date(endDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      endOfDay.setHours(23, 59, 59, 999); 
       
-      const matchStage = {};
+
+
+      
+      if (period === "daily") {
+        matchStage.createdAt = {
+            $gte: new Date(currentDate.setHours(0, 0, 0, 0)),
+            $lte: new Date(currentDate.setHours(23, 59, 59, 999))
+        };
+        formattedPeriod = currentDate.toISOString().split("T")[0]; 
+    } else if (period === "weekly") {
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); 
+        startOfWeek.setHours(0, 0, 0, 0);
+    
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); 
+        endOfWeek.setHours(23, 59, 59, 999);
+    
+        matchStage.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
+    
+  
+        const year = startOfWeek.getFullYear();
+        const weekNumber = Math.ceil(((startOfWeek - new Date(year, 0, 1)) / 86400000 + 1) / 7);
+        formattedPeriod = `${year}-W${weekNumber}`;
+    } else if (period === "monthly") {
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    
+        startOfMonth.setHours(0, 0, 0, 0);
+        endOfMonth.setHours(23, 59, 59, 999);
+    
+        matchStage.createdAt = { $gte: startOfMonth, $lte: endOfMonth };
+    
+      
+        formattedPeriod = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+    } else if (period === "yearly") {
+        const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+        const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+    
+        startOfYear.setHours(0, 0, 0, 0);
+        endOfYear.setHours(23, 59, 59, 999);
+    
+        matchStage.createdAt = { $gte: startOfYear, $lte: endOfYear };
+    
+
+        formattedPeriod = `${currentDate.getFullYear()}`;
+    }
+    
+      
+     
       if (startDate && endDate) {
           matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
       }
       
-      // Debugging
-      console.log("Applying match filter:", JSON.stringify(matchStage, null, 2));
+      
+
       
       const salesData = await Order.aggregate([
-          { $match: matchStage }, // ✅ Corrected Date Filtering
+          { $match: matchStage },
           { $unwind: "$orderedItems" },
           {
               $lookup: {
@@ -273,41 +326,49 @@ const createCoupon = async (req, res) => {
           {
               $project: {
                   createdAt: 1,
+                  totalPrice: 1,
                   userId: 1,
                   productId: "$productDetails._id",
                   productName: "$productDetails.name",
+                  productCategory: "$productDetails.category",
                   productPrice: "$orderedItems.totalPrice",
                   quantitySold: "$orderedItems.quantity",
-                  color: { $ifNull: ["$orderedItems.color", "N/A"] },
-                  size: { $ifNull: ["$orderedItems.size", "N/A"] },
-                  productStatus: 1
+                  color: "$orderedItems.color",
+                  size: "$orderedItems.size",
+                  productStatus: 1,
+                  productPeyment:"$orderedItems.paymentStatus"
               }
           },
           {
               $group: {
-                  _id: { productId: "$productId", color: "$color", size: "$size" },
-                  createdAt: { $first: "$createdAt" },
+                  _id: { 
+                      productId: "$productId", 
+                      color: "$color", 
+                      size: "$size" 
+                  },
+                  latestCreatedAt: { $max: "$createdAt" }, 
                   userId: { $first: "$userId" },
                   productName: { $first: "$productName" },
                   productPrice: { $first: "$productPrice" },
                   quantitySold: { $sum: "$quantitySold" },
-                  productStatus: { $first: "$productStatus" }
+                  productStatus: { $first: "$productStatus" },
+                  productPeyment:{ $first:"$productPeyment"}
               }
           },
           {
               $group: {
                   _id: {
-                      year: { $year: "$createdAt" },
-                      ...(period === "weekly" && { week: { $isoWeek: "$createdAt" } }),
-                      ...(period === "monthly" && { month: { $month: "$createdAt" } }),
-                      ...(period === "daily" && { month: { $month: "$createdAt" }, day: { $dayOfMonth: "$createdAt" } })
+                      year: { $year: "$latestCreatedAt" }, 
+                      month: { $month: "$latestCreatedAt" },
+                      day: { $dayOfMonth: "$latestCreatedAt" },
+                      week: { $isoWeek: "$latestCreatedAt" } 
                   },
-                  latestCreatedAt: { $max: "$createdAt" },
+                  latestCreatedAt: { $max: "$latestCreatedAt" }, 
                   totalSales: {
                       $sum: {
                           $cond: {
                               if: { $eq: ["$productStatus", "Delivered"] }, 
-                              then: { $multiply: ["$productPrice", "$quantitySold"] }, 
+                              then: "$productPrice",
                               else: 0
                           }
                       }
@@ -320,9 +381,10 @@ const createCoupon = async (req, res) => {
                           productName: "$productName",
                           productPrice: "$productPrice",
                           quantitySold: "$quantitySold",
-                          color: "$_id.color",
-                          size: "$_id.size",
-                          productStatus: "$productStatus"
+                          color: { $ifNull: ["$_id.color", "N/A"] },
+                          size: { $ifNull: ["$_id.size", "N/A"] },
+                          productStatus: "$productStatus",
+                          productPeyment:"$productPeyment",
                       }
                   }
               }
@@ -340,8 +402,7 @@ const createCoupon = async (req, res) => {
       ]);
       
 
-
- console.log('ddddddddddddddddddddddddddddddddd',salesData)   
+      
 
 
 const topSellingProducts = await Order.aggregate([
@@ -436,6 +497,39 @@ const topSellingCategories = await Order.aggregate([
 
 
 
+
+const topSellingBrands = await Order.aggregate([
+  { $unwind: "$orderedItems" }, 
+  {
+    $match: {  
+      status: "Delivered",
+      "orderedItems.isReturnApproved": false,
+      "orderedItems.isCancelled": false,
+      "orderedItems.brand": { $exists: true, $ne: null, $ne: "" }  
+    }
+  },
+  {
+    $group: {
+      _id: "$orderedItems.brand",  
+      totalSales: { $sum: "$orderedItems.quantity" },  
+      totalRevenue: { $sum: "$orderedItems.totalPrice" }  
+    }
+  },
+  { $sort: { totalSales: -1 } },  
+  { $limit: 10 },  
+  {
+    $project: {
+      _id: 0,
+      brand: "$_id",  
+      totalSales: 1,
+      totalRevenue: 1
+    }
+  }
+]);
+
+
+
+
   
 const Data = salesData.length > 0 ? salesData.map(data => ({
   period: data.period,
@@ -449,6 +543,7 @@ const Data = salesData.length > 0 ? salesData.map(data => ({
     color: product.color || "N/A",
     size: product.size || "N/A",
     productStatus:product.productStatus,
+    productPeyment:product.productPeyment,
   }))
 })) : [];
 
@@ -465,6 +560,7 @@ const SaleTotal = Data.reduce((sum, item) => sum + item.sales, 0);
           period: period || "",
           topSellingProducts,
           topSellingCategories,
+          topSellingBrands,
       });
       
       

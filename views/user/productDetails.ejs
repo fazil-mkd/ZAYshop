@@ -150,6 +150,9 @@ https://templatemo.com/tm-559-zay-shop
                                     <p class="text-muted"><strong><%= product.brand %></strong></p>
                                 </li>
                             </ul>
+                            
+                          
+                            
     
                             <h6>Description:</h6>
                             <p><%= product.description %></p>
@@ -167,7 +170,7 @@ https://templatemo.com/tm-559-zay-shop
                             <form action="/cart/add" method="POST" class="product-form">
                                 <input type="hidden" name="product-title" value="<%= product.name %>">
                                 <input type="hidden" name="product-id" value="<%= product._id %>">
-    
+                                <input type="hidden" name="product-brand" value="<%= product.brand %>">
                             
                                 <div class="row pb-3">
                                     <div class="col-auto">
@@ -218,12 +221,20 @@ https://templatemo.com/tm-559-zay-shop
                        
                                 <!-- Action Buttons -->
                                 <div class="row pb-3">
+                                 
                                     <div class="col d-grid">
                                         <button  style="background: darkgreen; color: #fff;"   id="add-to-cart-btn"  type="submit" class="btn btn-warning btn-lg" name="action" value="addtocart">Add to Cart</button>
                                     </div>
                                 </div>
                             </form>
-    
+                            <button
+                            class="wishlistBtn p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            aria-label="<%= product.isInWishlist ? 'Remove from wishlist' : 'Add to wishlist' %>"
+                            data-product-id="<%= product._id %>"
+                            onclick="toggleWishlist(this)"
+                          >
+                            <i class="fa fa-heart <%= product.isInWishlist ? 'text-red-500 fill-red-500' : 'text-gray-600 hover:text-red-500' %>"></i>
+                          </button>
                             <!-- Stock and Category -->
                             <ul class="list-inline">
                                 <li class="list-inline-item">

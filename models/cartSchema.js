@@ -42,7 +42,11 @@ const cartSchema = new Schema({
         productColor: {
             type: String,
             required: false, 
-        }
+        },
+        brand:{
+            type: String,
+            required: false, 
+        },
     }],
     createdAt: {
         type: Date,

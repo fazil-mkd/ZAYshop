@@ -481,14 +481,58 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
 }
+
+
+.toggle-btn {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 999;
+    padding: 10px 15px;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Optional overlay */
+.sidenav {
+  
+    display: none;
+}
+
+.toggle-btn {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 9999;
+    padding: 10px 15px;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    margin-left: 80px;
+    margin-top: 15px;
+}
     </style>
 </head>
 
 <body>
+    <button onclick="toggleNav()" id="toggleNav" class="toggle-btn">☰ Menu</button>
+
+<div id="mySidenav" class="sidenav">
+   <%- include('./layout/sidenav.ejs') %>
+</div>
+
+
     <div class="container">
+      
         <div class="header">
-            <button class="dash" onclick="window.location.href='/admin/dashboard'"> Dashboard</button>
-            <h1>Sales Report</h1>
+      
+            <h1 style="margin-top: 50px;">Sales Report</h1>
 
             <div class="period-selector">
                 <label for="period">Select Period:</label>
@@ -658,7 +702,34 @@
                                             <% } %>
 
 
-
+                                            <% if (topSellingBrands.length > 0) { %>
+                                                <div class="card"
+                                                    style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); max-width: 100%; margin-top: 20px;">
+                                                    <div class="card-header"
+                                                        style="display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+                                                        <span class="card-title">Top Selling Brands</span>
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" style="width: 24px; height: 24px;">
+                                                            <path d="M23 6L13.5 15.5L8.5 10.5L1 18"></path>
+                                                            <path d="M17 6H23V12"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="card-content"
+                                                        style="display: flex; flex-direction: column; gap: 8px;">
+                                                        <% topSellingBrands.forEach((item) => { %>
+                                                            <div class="brand-detail"
+                                                                style="font-size: 16px; padding: 5px 0;">
+                                                                <strong>Brand:</strong> <%= item.brand %> |
+                                                                <strong>Sold:</strong> <%= item.totalSales %> units |
+                                                                <strong>Revenue:</strong> ₹<%= item.totalRevenue %>
+                                                            </div>
+                                                        <% }) %>
+                                                    </div>
+                                                </div>
+                                            <% } else { %>
+                                                <p>No top-selling brands found.</p>
+                                            <% } %>
+                                            
 
 
                                                 <div class="card">
@@ -809,6 +880,7 @@ const sampleData = sortedData.sort((a, b) => periodLabel(b).localeCompare(period
         <table>
             <thead>
                 <tr>
+                      <td colspan="5"></td>
                     <th>Product Name</th>
                     <th>Color</th>
                     <th>Size</th>
@@ -816,11 +888,13 @@ const sampleData = sortedData.sort((a, b) => periodLabel(b).localeCompare(period
                     <th>Quantity Sold</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>Peyment Status</th>
                 </tr>
             </thead>
             <tbody>
                 ${item.products.map(product => `
                 <tr>
+                      <td colspan="5"></td>
                     <td><strong>${product.name}</strong></td>
                     <td>${product.color || "N/A"}</td>
                     <td>${product.size || "N/A"}</td>
@@ -828,6 +902,7 @@ const sampleData = sortedData.sort((a, b) => periodLabel(b).localeCompare(period
                     <td>${product.quantitySold}</td>
                     <td>₹${product.price}</td>
                     <td>${product.productStatus}</td>
+                    <td>${product.productPeyment}</td>
                 </tr>
                 `).join('')}
             </tbody>
@@ -1084,8 +1159,30 @@ function downloadExcel() {
         });
 
 
+        console.log('Script started loading');
 
 
+
+
+
+        function toggleNav() {
+    var sidenav = document.getElementById("mySidenav");
+    if (sidenav.style.display === "block") {
+        sidenav.style.display = "none";
+    } else {
+        sidenav.style.display = "block";
+    }
+}
+
+// Add click event listener as backup
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('toggleNav');
+    if (btn) {
+        btn.addEventListener('click', toggleNav);
+    }
+});
+
+     
     </script>
 
 </body>

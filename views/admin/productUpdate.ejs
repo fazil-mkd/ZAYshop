@@ -599,20 +599,22 @@
 
        
         Object.keys(croppedImages).forEach((index) => {
-            console.log(`Appending cropped image ${index}`);
-            formData.append(`croppedImages[]`, dataURLtoBlob(croppedImages[index]), `croppedImage${index}.jpg`);
-        });
+    formData.delete(`fileInput${index}`); 
+    formData.append(`fileInput${index}`, dataURLtoBlob(croppedImages[index]), `croppedImage${index}.jpg`);
+});
+
+  
+Object.keys(existingImages).forEach((index) => {
+        const imageUrl = existingImages[index].split('/').pop(); 
+        formData.append('existingImages[]', imageUrl);
+    });
+
+ 
+    for (let pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+    }
 
      
-        Object.keys(existingImages).forEach((index) => {
-            console.log(`Appending existing image ${index}`);
-            formData.append('existingImages[]', existingImages[index]);
-        });
-
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-
         fetch(form.action, {
             method: 'POST',
             body: formData,

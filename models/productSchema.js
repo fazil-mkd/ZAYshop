@@ -15,11 +15,10 @@ const productSchema = new mongoose.Schema({
         type: [{ type: String }],
         validate: {
             validator: function (arr) {
-                return arr.length <= 4; 
-            },
-            message: "A product can have a maximum of 4 images."
+                return arr.length <= 4;
+            }
         }
-    }, 
+    },
     tags: [{ type: String }],
     category: { type: mongoose.Schema.ObjectId, ref: 'Category' },
     brand: { type: String },
@@ -40,6 +39,14 @@ const productSchema = new mongoose.Schema({
     isDeleted: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+});
+
+
+productSchema.pre("save", function (next) {
+    if (this.images.length > 4) {
+        this.images = this.images.slice(0, 4); 
+    }
+    next();
 });
 
 module.exports = mongoose.model('Products', productSchema);

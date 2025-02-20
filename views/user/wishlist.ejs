@@ -141,7 +141,7 @@ const productId = document.getElementById('product').textContent.trim();
           icon: 'success',
           title: 'Removed!',
           text: 'Product removed from wishlist successfully.',
-        });
+        }).then(()=>window.location.reload())
 
 		const productRow = document.querySelector(`#product-${productId}`);
       if (productRow) {

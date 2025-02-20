@@ -42,7 +42,7 @@
                 <tbody id="orderList">
                   <% orders.forEach(order => { %>
                     <tr>
-                      <td><%= order._id %></td>
+                      <td><%= order.orderId %></td>
                       <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
                       <td id="order_<%= order._id %>" class="status-cell">
                         <p><%= order.status %></p>
@@ -172,6 +172,7 @@
         <p><strong>Order ID:</strong> ${order.orderId}</p>
         <p><strong>Status:</strong> ${order.status}</p>
         <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+         <p><strong>Payment Status:</strong> ${order.paymentStatus}</p>
         <p><strong>Total Price:</strong> ${order.totalPrice}</p>
         <p><strong>Order Notes:</strong> ${order.orderNotes}</p>
         <p><strong>Created At:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>

@@ -497,7 +497,67 @@
         }.btn-primary::before {
     content: '⬇️';
     font-size: 16px;
+}.payment-section {
+    display: flex;
+    justify-content: center; /* Center the button horizontally */
+    align-items: center;
+    margin-top: 20px;
+    margin-right: 400px;
+   
 }
+
+#payNowBtn {
+    background: linear-gradient(135deg, #c7b8b8, #2f00ff);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    width: 200px; /* Set a fixed width for a better look */
+    text-align: center;
+   
+}
+
+#payNowBtn:hover {
+    background: linear-gradient(135deg, #3b4cca, #2b3aa3);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#payNowBtn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.payment {
+    background: #ffcc00; /* Bright warning yellow */
+    color: #ffffff; /* Dark red text for urgency */
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: block;
+    width: fit-content;
+    margin: 20px auto; /* Centers the message */
+    border: 2px solid #ffffff;
+    text-transform: uppercase;
+    animation: pulse 1.5s infinite alternate; /* Makes it slightly fade in/out */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.05); opacity: 0.8; }
+}
+
 
 </style>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -509,6 +569,8 @@
         <div class="header">
             <h1>Order Successful</h1>
             <p>Thanks for making a purchase. You can check your order summary below.</p>
+
+            
         </div>
 
         <div class="order-container">
@@ -556,7 +618,7 @@
                                         <%= item.price %>
                                     </span></div>
                                         <% if(item.price!==item.totalPrice){%>
-                                             <div>Price After Coupen Applied: <span>
+                                             <div id="totalPrice">Price After Coupen Applied: <span>
                                         <%= item.totalPrice %>
                                     </span></div>
                                     <% } %>
@@ -656,23 +718,36 @@
                                     <% } %>
                                         <p>Paid using <%= order.paymentMethod %>
                                         </p>
+                                        <p>Peyment Status: <%=order.paymentStatus%></p>
                             </div>
-                            <p class="total-price">Total Price: <span class="price-highlight">
+                            <p class="total-price">Total Price: <span class="price-high">
                                 <%= overAllPrice %>
                             </span></p>
                             <p class="total-price">Total Price(R/C): <span class="price-highlight">
                                     <%= order.totalPrice %>
                                 </span></p>
                         </div>
-                        <% } %>
+                      
         </div>
-       
-<button  style="margin-left: 1100px;  margin-top: 50px;" onclick="window.location.href='/order/invoice/<%= order._id %>'" class="btn btn-primary">Download Invoice</button>
+        <button  style="margin-left: 1100px;  margin-top: 50px;" onclick="window.location.href='/order/invoice/<%= order._id %>'" class="btn btn-primary">Download Invoice</button>
+        <% if(order.totalPrice>0){ %>
+        <% if(order.paymentStatus==="pending"||order.paymentMethod==="cod"&&order.status!="Delivered"){%>
+        <div class="payment-section">
+           <% if(order.paymentMethod==="cod"){ %>
+            <p class="payment">⚠️ You can also make the payment online..</p>
+             <% }else{ %>
+                <p class="payment">⚠️ You need to complete the payment to place your order.</p>
+                <% } %>
+            <button class="payNowBtn" id="payNowBtn">Pay Now</button>
+        </div>
+        <% } %>
+        <% } %>
+<% } %>
     </div>
 
 
 
-
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
 
 document.querySelectorAll('.cancel-button').forEach(button => {
@@ -881,6 +956,107 @@ document.querySelectorAll('.cancel-button').forEach(button => {
 
 
 
+
+ document.getElementById('payNowBtn').addEventListener('click', async function () {
+        await handlePayment();
+    });
+
+    async function handlePayment() {
+      
+
+        const  totalPrice = document.querySelector(".total-price .price-highlight").innerText.trim();
+        const orderId = document.querySelector('.order-id').textContent.trim();
+
+        try {
+            const response = await fetch('/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: totalPrice, currency: 'INR' }),
+            });
+
+            const { order } = await response.json();
+            if (!order) throw new Error('Order creation failed.');
+
+            const options = {
+                key: 'rzp_test_oxcuHe4SxuHiWw',
+                amount: order.amount,
+                currency: order.currency,
+                name: 'Zay',
+                description: 'Payment Section',
+                order_id: order.id,
+                handler: async function (response) {
+                    try {
+                        console.log('Payment successful:', response);
+
+                        const placeOrderResponse = await fetch('/Retry-place-order', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                orderId:orderId,
+                                paymentMethod: 'razorpay',
+                                transactionId: response.razorpay_payment_id,
+                                paymentStatus: 'completed'
+                            }),
+                        });
+
+                        const result = await placeOrderResponse.json();
+                        if (placeOrderResponse.ok) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: result.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                            })
+                        } else {
+                            throw new Error(result.message || 'Failed to pay for the order.');
+                        }
+                    } catch (error) {
+                        console.error('Error placing order:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to Pay For the order. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'Retry',
+                        });
+                    }
+                },
+                prefill: {
+                    name: 'Fazil',
+                    email: 'mf645385@gmail.com',
+                    contact: '7736817302',
+                },
+                theme: { color: '#5469d4' },
+                modal: { escape: false },
+            };
+
+            const rzp = new Razorpay(options);
+
+            rzp.on('payment.failed', function (response) {
+                console.error('Payment failed:', response);
+                Swal.fire({
+                    title: 'Payment Failed!',
+                    text: response.error.description || 'Transaction was unsuccessful. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'Retry Payment',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        rzp.open(); 
+                    }
+                });
+            });
+
+            rzp.open();
+        } catch (error) {
+            console.error('Payment error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to initiate payment. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Retry',
+            });
+        }
+    }
+  
 
 
 

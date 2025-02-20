@@ -106,10 +106,16 @@
                                     <h4 class="order__title">Your order</h4>
                                     <div class="checkout__order__products">Product <span>Total</span></div>
 
+                                   
                                     <ul class="checkout__total__all">
-                                        <li id="totalPrice" value="<%= totalPrice %>">Total Price = <span>
+                                        <li  >Total Price : <span>
+                                            <%= priceTracker %>
+                                        </span></li>
+    
+                                        <li id="totalPrice" value="<%= totalPrice %>">Total Price(OFF) : <span>
                                                 <%= totalPrice %>
                                             </span></li>
+                                         
                                     </ul>
                                     <% if (datas) { %>
                                         <div class="flash-message">
@@ -155,16 +161,33 @@
                         </div>
 
                     </form>
-                    <h4>Available Coupons</h4>
-                    <% coupon.forEach((item)=> { %>
-                        <% if (item.expireOn> DateNow) { %>
-                            <ul>
-                                <li>
-                                    <%= item.code %>
-                                </li>
-                            </ul>
-                            <% } %>
-                                <% }); %>
+               
+                    <div class="coupons-container">
+                        <h4 class="text-2xl font-bold mb-6">Available Coupons</h4>
+                        <div class="coupon-grid">
+                            <% coupon.forEach((item) => { %>
+                                <% if (item.expireOn > DateNow) { %>
+                                    <div class="coupon-card">
+                                        <div class="coupon-content">
+                                            <h5 class="coupon-name"><%= item.name %></h5>
+                                            <div class="code-container">
+                                                <div class="coupon-code" onclick="copyCode(this)" data-code="<%= item.code %>">
+                                                    <span class="code-text"><%= item.code %></span>
+                                                    <span class="copy-icon">📋</span>
+                                                    <span class="copy-tooltip">Click to copy</span>
+                                                </div>
+                                            </div>
+                                            <div class="discount-badge">
+                                                <%= item.discountAmount %>
+                                                <%= item.discountType === 'percentage' ? '%' : '$' %> OFF
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% }) %>
+                        </div>
+                    </div>
+                    
 
                                     <div class="cart__discount">
                                         <h6 class="text-lg font-bold mb-2">Apply Discount Code</h6>
@@ -866,6 +889,21 @@
 
 
 
+
+
+                function copyCode(element) {
+    const code = element.getAttribute('data-code');
+    navigator.clipboard.writeText(code).then(() => {
+        element.classList.add('copied');
+        const tooltip = element.querySelector('.copy-tooltip');
+        tooltip.textContent = 'Copied!';
+        
+        setTimeout(() => {
+            element.classList.remove('copied');
+            tooltip.textContent = 'Click to copy';
+        }, 1500);
+    });
+}
 
             </script>
 </body>

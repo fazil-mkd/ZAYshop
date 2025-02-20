@@ -82,6 +82,8 @@ router.get('/update-profile/:id',userAuth,userController.loadUpdateProfile)
 
 
 //order
+router.post('/Retry-place-order',userAuth,userController.retryPeyment)
+
 
 router.get('/orderDetails',userAuth,userController.loaduserOrderDetails)
 router.post('/place-order',userAuth,userController.placeOrder)

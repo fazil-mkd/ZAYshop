@@ -40,7 +40,11 @@ const orderSchema = new Schema({
             color: {
                 type: String,  
                 required: false
-            },returnReason: {
+            },brand: {
+                type: String,  
+                required: false
+            }
+            ,returnReason: {
                 type: String, 
                 default: ''
             },
@@ -65,6 +69,10 @@ const orderSchema = new Schema({
         },isReturnRejected:{
             type: Boolean,
            default:false,
+    },paymentStatus: { 
+        type: String, 
+        enum: ['pending', 'completed', 'refund'],  
+        default: 'pending' 
     }
     }
     ],
@@ -92,7 +100,7 @@ const orderSchema = new Schema({
         default: 'Pending'
     },paymentStatus: { 
         type: String, 
-        enum: ['pending', 'completed'], 
+        enum: ['pending', 'completed', 'refund'],  
         default: 'pending' 
     },returnReason: {
         type: String, 

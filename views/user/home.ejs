@@ -25,6 +25,353 @@ TemplateMo 559 Zay Shop
 https://templatemo.com/tm-559-zay-shop
 
 -->
+<style>
+  
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            background-color: #f3f3f3;
+            background-image:
+            repeating-linear-gradient(
+                to right, transparent 0 100px,
+                #25283b22 100px 101px
+            ),
+            repeating-linear-gradient(
+                to bottom, transparent 0 100px,
+                #25283b22 100px 101px
+            );
+        }
+        
+        body::before{
+            position: absolute;
+            width: min(1400px, 90vw);
+            top: 10%;
+            left: 50%;
+            height: 90%;
+            transform: translateX(-50%);
+            content: '';
+            background-image: url(images/bg.png);
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: top center;
+            pointer-events: none;
+        }
+        @media screen and (max-width: 1023px) {
+    .banner .slider{
+        width: 160px;
+        height: 200px;
+        left: calc(50% - 80px);
+    }
+    .banner .slider .item{
+        transform: 
+            rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+            translateZ(300px);
+    }
+    .banner .content h1{
+        text-align: center;
+        width: 100%;
+        text-shadow: 0 10px 20px #000;
+        font-size: 7em;
+    }
+    .banner .content .author{
+        color: #ffffff;
+        padding: 20px;
+        text-shadow: 0 10px 20px #000;
+        z-index: 2;
+        max-width: unset;
+        width: 100%;
+        text-align: center;
+        padding: 0 30px;
+    }
+}
+@media screen and (max-width: 767px) {
+    .banner .slider{
+        width: 100px;
+        height: 150px;
+        left: calc(50% - 50px);
+    }
+    .banner .slider .item{
+        transform: 
+            rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+            translateZ(180px);
+    }
+    .banner .content h1{
+        font-size: 5em;
+    }
+
+
+}
+.banner .content h1{
+    font-family: 'ICA Rubrik';
+    font-size: 16em;
+    line-height: 1em;
+    color: #b7b7b7;
+    position: relative;
+}
+.banner .content h1::after{
+    position: absolute;
+    inset: 0 0 0 0;
+    content: attr(data-content);
+    z-index: 2;
+    -webkit-text-stroke: 2px #d2d2d2;
+    color: transparent;
+}
+.banner .content .author{
+    font-family: Poppins;
+    text-align: right;
+    max-width: 200px;
+}
+.banner .content h2{
+    font-size: 3em;
+}
+.banner .content .model{
+    background-image: url(images/model.png);
+    width: 100%;
+    height: 75vh;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-size: auto 130%;
+    background-repeat: no-repeat;
+    background-position: top center;
+    z-index: 1;
+}
+@keyframes autoRun{
+    from{
+        transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+    }to{
+        transform: perspective(1000px) rotateX(-16deg) rotateY(360deg);
+    }
+}
+
+.banner .slider .item{
+    position: absolute;
+    inset: 0 0 0 0;
+    transform: 
+        rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+        translateZ(550px);
+}
+.banner .slider .item img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.banner .content{
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1400px, 100vw);
+    height: max-content;
+    padding-bottom: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+@import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+@import url('https://fonts.cdnfonts.com/css/poppins');
+
+.banner{
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    background-color: #000;
+}
+.banner .slider{
+    position: absolute;
+    width: 200px;
+    height: 250px;
+    top: 10%;
+    left: calc(50% - 100px);
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+    animation: autoRun 20s linear infinite;
+    z-index: 2;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Alternative method using scrollbar-width only */
+.hide-scrollbar {
+    scrollbar-width: none;
+}
+
+/* Hide scrollbar but keep padding/gap */
+.minimal-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+/* For webkit browsers with custom styling */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0px;  /* width of the entire scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;  /* color of the tracking area */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;  /* color of the scroll thumb */
+    border: none;  /* creates padding around scroll thumb */
+}
+.author{
+    color: #ffffff;
+}
+/* Categories Section Styles */
+.container {
+    overflow: hidden;
+}
+
+.h1 {
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 40px;
+    font-weight: 700;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #28a745, #34ce57);
+    border-radius: 2px;
+}
+
+.h1:hover {
+    color: #28a745;
+}
+
+/* Category Item Styles */
+.category__item {
+    position: relative;
+    transition: transform 0.4s ease;
+    margin-bottom: 30px;
+}
+
+.category__item:hover {
+    transform: translateY(-10px);
+}
+
+.category__item__pic {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.category__item__pic img {
+    transition: transform 0.6s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.category__item:hover .category__item__pic img {
+    transform: scale(1.08);
+}
+
+/* Category Text Styles */
+.category__item__text {
+    padding: 15px 10px;
+}
+
+.category__item__text h5 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.category__item:hover .category__item__text h5 {
+    color: #28a745;
+}
+
+/* Button Styles */
+.btn-success {
+    transition: all 0.3s ease;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #28a745, #34ce57);
+    border: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(45deg, #34ce57, #28a745);
+}
+
+/* Loading Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category__item {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* Stagger animation for multiple items */
+.category__item:nth-child(1) { animation-delay: 0.1s; }
+.category__item:nth-child(2) { animation-delay: 0.2s; }
+.category__item:nth-child(3) { animation-delay: 0.3s; }
+.category__item:nth-child(4) { animation-delay: 0.4s; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .category__item__pic img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .category__item__text h5 {
+        font-size: 16px;
+    }
+    
+    .btn-success {
+        padding: 6px 15px;
+        font-size: 12px;
+    }
+}
+
+</style>
+
 </head>
 
 <body>
@@ -63,7 +410,32 @@ https://templatemo.com/tm-559-zay-shop
                     <div class="col-12">
                         <!-- Image with responsive width and auto height -->
 
-                        <img  class="img-fluid w-100"  src="/images/web.jpg" alt="Banner Image">
+                        <div class="banner">
+                            <div class="slider" style="--quantity: 10">
+                                <div class="item" style="--position: 1"><img src="/images/download (1).jpg" alt=""></div>
+                                <div class="item" style="--position: 2"><img src="/images/imagesfer.jpg" alt=""></div>
+                                <div class="item" style="--position: 3"><img src="/images/imagesf.jpg" alt=""></div>
+                                <div class="item" style="--position: 4"><img src="/images/imagesl.jpg" alt=""></div>
+                                <div class="item" style="--position: 5"><img src="/images/8988a42a0682e6c131395b8834469df7.jpg" alt=""></div>
+                                <div class="item" style="--position: 6"><img src="/images/GettyImages-2152791473.jpg.webp" alt=""></div>
+                                <div class="item" style="--position: 7"><img src="/images/imagescasado.jpg" alt=""></div>
+                                <div class="item" style="--position: 8"><img src="/images/imagesfelix.jpg" alt=""></div>
+                                <div class="item" style="--position: 9"><img src="/images/imageslew.jpg" alt=""></div>
+                                <div class="item" style="--position: 10"><img src="/images/imagesdej.jpg" alt=""></div>
+                            </div>
+                            <div class="content">
+                                <h1 data-content="BARCA">
+                                    Barca
+                                </h1>
+                                <div class="author">
+                                    <h2>visca Barca</h2>
+                                    <p><b>visca catalonia</b></p>
+                                   
+                                </div>
+                                <div class="model"></div>
+                            </div>
+                        </div>
+                    
                     </div>
                 </div>
             </div>
@@ -82,7 +454,7 @@ https://templatemo.com/tm-559-zay-shop
                 <% categories.forEach(category => { %>
                     <div class="col-md-4 col-sm-6 p-5 mt-3" style="width: 25%; margin-right: 40px;">
                         <div class="category__item">
-                            <a href="/shop/<%= category._id %>" class="category__item__pic">
+                            <a href="/shop?maxPrice=10000&categories=<%= category._id %>" class="category__item__pic">
                                 <% if (category.image) { %>
                                     <img src="<%= category.image %>" class="rounded-circle img-fluid border" alt="<%= category.name %>">
                                 <% } else { %>

@@ -12,132 +12,119 @@
 </head>
 <body>
     <button class="dash" onclick="window.location.href='/profile/<%= user._id %>'">Profile</button>
-    <div class="tab-pane active" id="address" role="tabpanel" aria-labelledby="address-tab">
-      
-        <div class="address-box">
-            
-            <!-- Address List -->
-         
-            <div id="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="card-title mb-0">Address Management</h4>
-                                    <div class="search-container">
-                                        <!-- <input type="text" class="form-control" placeholder="Search addresses" id="search-input"> -->
-                                        <!-- <button class="btn btn-primary" id="search-btn">
-                                            <i class="fas fa-search"></i> Search
-                                        </button> -->
-                                    
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <% if (addresses.length === 0) { %>
-                                            <p class="text-center text-muted">No addresses available</p>
-                                        <% } else { %>
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Name</th>
-                                                        <th>Address</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% addresses.forEach((address) => { %>
-                                                        <tr id="address_<%= address._id %>">
-                                                            <td><%= address.fullName %></td>
-                                                            <td class="addressDetail">
-                                                                <span class="bullet">•</span>Street: <%= address.streetAddress %> 
-                                                              
-                                                                <span class="bullet">•</span>  City: <%= address.city %> 
-                                                                
-                                                                <span class="bullet">•</span> State: <%= address.state %> 
-                                                              
-                                                                <span class="bullet">•</span>   Country: <%= address.country %> 
-                                                              
-                                                                <span class="bullet">•</span>  Pincode: <%= address.pincode %>
-
-                                                                <span class="bullet">•</span>  Phone: <%= address.phone %>
-
-                                                                <span class="bullet">•</span>  AltPhone: <%= address.altPhone %>
-
-                                                                <span class="bullet">•</span>  AddressType: <%= address.addressType %>
-                                                            </td>
-                                                            <td>
-                                                                <div class="d-flex gap-2">
-                                                                    <a href="/update-Address/<%= address._id %>" class="btn btn-sm btn-action btn-primary">Update Address</a>
-                                                                    <button class="btn btn-sm btn-action btn-delete" data-id="<%= address._id %>">
-                                                                        <i class="fas fa-trash"></i> Delete Address
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <% }); %>
-                                                </tbody>
-                                            </table>
-                                        <% } %>
-                                    </div>
-                                </div>
-
-           
-            <button type="button" class="address-btn" onclick="addAddress()">Add New Address</button>
-
-            
-            <form method="post" action="/add-address" id="addressForm" style="display:none;" onsubmit="submitForm(event)">
-                <h6>Enter New Address</h6>
-            
-                <label for="fullName">Full Name:</label>
-                <input type="text" name="fullName" id="fullName" placeholder="Enter your full name" required>
-                <span class="error-message" id="fullNameError"></span>
-            
-                <label for="streetAddress">Street Address:</label>
-                <input type="text" name="streetAddress" id="streetAddress" placeholder="Street Address" required>
-                <span class="error-message" id="streetAddressError"></span>
-            
-                <label for="aptNumber">Apartment/Unit Number (optional):</label>
-                <input type="text" name="aptNumber" id="aptNumber" placeholder="Apartment or Unit Number">
-                <span class="error-message" id="aptNumberError"></span>
-            
-                <label for="city">City:</label>
-                <input type="text" name="city" id="city" placeholder="Enter city" required>
-                <span class="error-message" id="cityError"></span>
-            
-                <label for="state">State/Province:</label>
-                <input type="text" name="state" id="state" placeholder="Enter state/province" required>
-                <span class="error-message" id="stateError"></span>
-            
-                <label for="pincode">Postal Code:</label>
-                <input type="text" name="pincode" id="pincode" placeholder="Postal/Zip Code" required>
-                <span class="error-message" id="pincodeError"></span>
-            
-                <label for="country">Country:</label>
-                <input type="text" name="country" id="country" placeholder="Enter country" required>
-                <span class="error-message" id="countryError"></span>
-            
-                <label for="phone">Phone Number:</label>
-                <input type="tel" name="phone" id="phone" placeholder="Enter phone number" required>
-                <span class="error-message" id="phoneError"></span>
-            
-                <label for="altPhone">Alternate Phone Number (optional):</label>
-                <input type="tel" name="altPhone" id="altPhone" placeholder="Alternate phone number">
-                <span class="error-message" id="altPhoneError"></span>
-            
-                <label for="addressType">Address Type:</label>
-                <select id="addressType" name="addressType" required>
-                    <option value="home">Home</option>
-                    <option value="work">Work</option>
-                    <option value="billing">Billing</option>
-                    <option value="shipping">Shipping</option>
-                </select>
-            
-                <button type="submit">Save Address</button>
-                <button type="button" onclick="cancelAdd()">Cancel</button>
-            </form>
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">Address Management</h1>
+            <button class="address-btn" onclick="addAddress()">Add New Address</button>
         </div>
+
+        <% if (addresses.length === 0) { %>
+            <p class="text-center text-muted">No addresses available</p>
+        <% } else { %>
+            <div class="address-grid">
+                <% addresses.forEach((address) => { %>
+                    <div class="address-card" id="address_<%= address._id %>">
+                        <div class="card-header">
+                            <div class="name-type">
+                                <h3 class="recipient-name"><%= address.fullName %></h3>
+                                <span class="address-type"><%= address.addressType %></span>
+                            </div>
+                        </div>
+                        <div class="address-details">
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>Street: <%= address.streetAddress %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>City: <%= address.city %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>State: <%= address.state %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>Country: <%= address.country %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>Pincode: <%= address.pincode %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="bullet">•</span>
+                                <span>Phone: <%= address.phone %></span>
+                            </div>
+                            <% if (address.altPhone) { %>
+                                <div class="detail-item">
+                                    <span class="bullet">•</span>
+                                    <span>Alt. Phone: <%= address.altPhone %></span>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="card-actions">
+                            <a style="text-decoration: none;" href="/update-Address/<%= address._id %>" class="btn-action btn-primary">Update Address</a>
+                            <button class="btn-action btn-delete" data-id="<%= address._id %>">
+                                Delete Address
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <form method="post" action="/add-address" id="addressForm" style="display:none;" onsubmit="submitForm(event)">
+            <h6>Enter New Address</h6>
+            
+            <label for="fullName">Full Name:</label>
+            <input type="text" name="fullName" id="fullName" placeholder="Enter your full name" >
+            <span class="error-message" id="fullNameError"></span>
+            
+            <label for="streetAddress">Street Address:</label>
+            <input type="text" name="streetAddress" id="streetAddress" placeholder="Street Address" >
+            <span class="error-message" id="streetAddressError"></span>
+            
+            <label for="aptNumber">Apartment/Unit Number (optional):</label>
+            <input type="text" name="aptNumber" id="aptNumber" placeholder="Apartment or Unit Number">
+            <span class="error-message" id="aptNumberError"></span>
+            
+            <label for="city">City:</label>
+            <input type="text" name="city" id="city" placeholder="Enter city" >
+            <span class="error-message" id="cityError"></span>
+            
+            <label for="state">State/Province:</label>
+            <input type="text" name="state" id="state" placeholder="Enter state/province" >
+            <span class="error-message" id="stateError"></span>
+            
+            <label for="pincode">Postal Code:</label>
+            <input type="text" name="pincode" id="pincode" placeholder="Postal/Zip Code" >
+            <span class="error-message" id="pincodeError"></span>
+            
+            <label for="country">Country:</label>
+            <input type="text" name="country" id="country" placeholder="Enter country" >
+            <span class="error-message" id="countryError"></span>
+            
+            <label for="phone">Phone Number:</label>
+            <input type="tel" name="phone" id="phone" placeholder="Enter phone number" >
+            <span class="error-message" id="phoneError"></span>
+            
+            <label for="altPhone">Alternate Phone Number (optional):</label>
+            <input type="tel" name="altPhone" id="altPhone" placeholder="Alternate phone number">
+            <span class="error-message" id="altPhoneError"></span>
+            
+            <label for="addressType">Address Type:</label>
+            <select id="addressType" name="addressType" >
+                <option value="home">Home</option>
+                <option value="work">Work</option>
+                <option value="billing">Billing</option>
+                <option value="shipping">Shipping</option>
+            </select>
+            
+            <div class="card-actions">
+                <button type="submit" class="btn-action btn-primary">Save Address</button>
+                <button type="button" class="cancel" onclick="cancelAdd()">Cancel</button>
+            </div>
+        </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/js/bootstrap.bundle.min.js"></script>
     

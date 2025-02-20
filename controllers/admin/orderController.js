@@ -17,12 +17,10 @@ const page = parseInt(req.query.page) || 1;
         const PerPage = 10;
         const skip = (page - 1) * PerPage;
 
-        const orders = await Order.find({}).skip(skip)
-        .limit(PerPage)
+        const orders = await Order.find({}).sort({ createdAt: -1 }).skip(skip).limit(PerPage)
+      
 
 
-
-        
         const total = await Order.countDocuments({});
         const totalPages = Math.ceil(total / PerPage);
 
@@ -40,7 +38,7 @@ const page = parseInt(req.query.page) || 1;
         console.log('Received orderId:', orderId); 
       
         try {
-          const order = await Order.findOne({ _id: new mongoose.Types.ObjectId(orderId) });
+          const order = await Order.findOne({ _id: new mongoose.Types.ObjectId(orderId) })
           console.log('Fetched Order:', order); 
           if (!order) {
             return res.status(404).json({ error: 'Order not found' });
@@ -59,29 +57,34 @@ const page = parseInt(req.query.page) || 1;
       
         try {
           console.log('Received request to change status', { orderId, newStatus });
-
+      
           if (!orderId || !newStatus) {
             return res.status(400).json({ error: 'Order ID and new status are required' });
           }
       
-
-          const updatedOrder = await Order.findByIdAndUpdate(
-            orderId,
-            { status: newStatus },
-            { new: true } 
-          );
-      
-          if (!updatedOrder) {
+          const existingOrder = await Order.findById(orderId);
+          if (!existingOrder) {
             return res.status(404).json({ error: 'Order not found' });
           }
       
+          const updatedFields = { status: newStatus };
+      
+
+          if (existingOrder.paymentMethod.toLowerCase() === 'cod' && newStatus === 'Delivered') {
+            updatedFields.paymentStatus = 'completed';
+          }
+      
+          const updatedOrder = await Order.findByIdAndUpdate(orderId, updatedFields, { new: true });
+      
           console.log('Updated Order:', updatedOrder);
           res.status(200).json({ message: 'Order status updated successfully', order: updatedOrder });
+      
         } catch (error) {
           console.error('Error updating order status:', error.message);
           res.status(500).json({ error: 'Something went wrong' });
         }
       };
+      
 
 
 
@@ -195,7 +198,7 @@ const approveReturn = async (req, res) => {
       date: new Date(),
     });
 
-
+       item.paymentStatus = 'refund';
         item.isReturnApproved = true;
         item.isReturnRejected = false;
 
@@ -203,8 +206,14 @@ const approveReturn = async (req, res) => {
         if (allReturned) {
           order.status = 'Returned';
         }
-    
+
+        const allPeyment = order.orderedItems.every((item) => item.paymentStatus==="refund");
+        if (allPeyment) {
+          order.paymentStatus = 'refund';
+        }
+
         order.totalPrice -= item.totalPrice ;
+
 
         await wallet.save();
     await order.save();
@@ -415,135 +424,172 @@ if (order.orderedItems.every(item => item.isCancelled === true)) {
 
 
 const invoice = async (req, res) => {
-    try {
-        const orderId = req.params.orderId;
-        const order = await Order.findById(orderId)
-            .populate('userId')
-            .populate('orderedItems.product');
+  try {
+      const orderId = req.params.orderId;
+      const order = await Order.findById(orderId)
+          .populate('userId')
+          .populate('orderedItems.product');
 
-        if (!order) {
-            return res.status(404).send('Order not found');
-        }
+      if (!order) {
+          return res.status(404).send('Order not found');
+      }
 
-       
-        const doc = new PDFDocument({ margin: 50 });
-
-     
-        res.setHeader('Content-Disposition', `attachment; filename=ZAY_invoice-${orderId}.pdf`);
-        res.setHeader('Content-Type', 'application/pdf');
-        doc.pipe(res);
-
-      
-
-      
-        doc.fontSize(20)
-           .text('ZAY', 50, 50, { align: 'center' })
-           .fontSize(10)
-           .text('catalonia, barcalona ,spain', { align: 'center' })
-           .text('Phone: 1212121212 | Email: support@zay.com', { align: 'center' });
-
-        
-        doc.moveDown()
-           .lineCap('butt')
-           .moveTo(50, doc.y)
-           .lineTo(550, doc.y)
-           .stroke();
-
-       
-        doc.moveDown()
-           .fontSize(16)
-           .text('INVOICE', { align: 'center' })
-           .fontSize(10)
-           .text(`Invoice Number: INV-${order.orderId}`, { align: 'right' })
-           .text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, { align: 'right' });
-
-       
-        doc.moveDown()
-           .fontSize(12)
-           .text('Bill To:', { continued: true })
-           .fontSize(10)
-           .text(`\n${order.userId.name}`)
-           .text(`${order.userId.email}`)
-           .text(`${order.address.streetAddress}`)
-           .text(`${order.address.city}, ${order.address.state} ${order.address.pincode}`);
+      const doc = new PDFDocument({ margin: 50 });
+      res.setHeader('Content-Disposition', `attachment; filename=ZAY_invoice-${orderId}.pdf`);
+      res.setHeader('Content-Type', 'application/pdf');
+      doc.pipe(res);
 
 
-       
-        doc.moveDown(2);
-        const tableTop = doc.y;
-        const itemCodeX = 50;
-        const descriptionX = 150;
-        const quantityX = 280;
-        const priceX = 350;
-        const amountX = 450;
+      doc.save()
+          .moveTo(0, 700)
+          .lineTo(0, 792)
+          .quadraticCurveTo(doc.page.width / 2, 750, doc.page.width, 792)
+          .lineTo(doc.page.width, 700)
+          .fillColor('#2B6CB0')
+          .fill();
 
-     
-        doc.fontSize(10)
-           .text('Item', itemCodeX, tableTop)
-           .text('Details', descriptionX, tableTop)
-           .text('Qty', quantityX, tableTop)
-           .text('Price', priceX, tableTop)
-           .text('Amount', amountX, tableTop);
+    
+      doc.rect(0, 0, doc.page.width, 100)
+          .fillColor('#F7FAFC')
+          .fill();
 
-        
-        doc.moveDown(0.5);
-        doc.lineCap('butt')
-           .moveTo(50, doc.y)
-           .lineTo(550, doc.y)
-           .stroke();
+    
+      doc.fontSize(28)
+          .fillColor('#2D3748') 
+          .font('Helvetica-Bold')
+          .text('ZAY', 50, 50)
+          .fontSize(10)
+          .font('Helvetica')
+          .fillColor('#4A5568') 
+          .text('NO. ' + order.orderId, doc.page.width - 150, 50);
 
-     
-        let currentY = doc.y + 10;
-        order.orderedItems.forEach((item, index) => {
-            doc.fontSize(10)
-               .text(item.product.name, itemCodeX, currentY)
-               .text(`${item.color || ''} ${item.size || ''}`.trim(), descriptionX, currentY)
-               .text(item.quantity.toString(), quantityX, currentY)
-               .text(`${item.price}`, priceX, currentY)
-               .text(`${order.totalPrice + order.couponDis}`, amountX, currentY);
-            
-            currentY += 20;
-        });
 
-     
-        doc.lineCap('butt')
-           .moveTo(50, currentY)
-           .lineTo(550, currentY)
-           .stroke();
+      doc.fontSize(28)
+          .font('Helvetica-Bold')
+          .fillColor('#2B6CB0')  
+          .text('BILLING STATEMENT', 50, 130);
 
-     
-        currentY += 20;
-        doc.fontSize(10);
 
-        if (order.iscouponApplied) {
-            doc.text('Subtotal:', 350, currentY)
-               .text(`${order.totalPrice + order.couponDis}`, amountX, currentY);
-            currentY += 20;
-            doc.text(`Discount (${order.CouponCode}):`, 350, currentY)
-               .text(`-${order.couponDis}`, amountX, currentY);
-            currentY += 20;
-        }
+      doc.fontSize(10)
+          .fillColor('#4A5568')
+          .font('Helvetica')
+          .text('Date:', 50, 180)
+          .fillColor('#2D3748')
+          .text(new Date(order.createdAt).toLocaleDateString(), 90, 180);
 
-        doc.fontSize(12)
-           .text('Total:', 350, currentY)
-           .text(`${order.totalPrice}`, amountX, currentY, { bold: true });
 
-      
-        doc.fontSize(10)
-           .text(
-               'Thank you for your business!',
-               50,
-               700,
-               { align: 'center', width: 500 }
-           );
+      doc.fontSize(10)
+          .fillColor('#4A5568')
+          .text('Billed to:', 50, 220)
+          .font('Helvetica-Bold')
+          .fillColor('#2D3748')
+          .text(order.address.fullName, 50, 235)
+          .font('Helvetica')
+          .fillColor('#4A5568')
+          .text(order.address.streetAddress + (order.address.aptNumber ? `, ${order.address.aptNumber}` : ''))
+          .text(`${order.address.city}, ${order.address.state} ${order.address.pincode}`)
+          .text(order.address.country)
+          .text(`Email: ${order.userId.email}`);
 
-     
-        doc.end();
+  
+      doc.fontSize(10)
+          .fillColor('#4A5568')
+          .text('From:', doc.page.width - 250, 220)
+          .font('Helvetica-Bold')
+          .fillColor('#2D3748')
+          .text('ZAY Fashion', doc.page.width - 250, 235)
+          .font('Helvetica')
+          .fillColor('#4A5568')
+          .text('catalonia, barcelona, spain')
+          .text('Phone: 1212121212')
+          .text('Email: support@zay.com');
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error generating invoice');
-    }
+   
+      doc.rect(50, 320, doc.page.width - 100, 20)
+          .fillColor('#EBF8FF')  
+          .fill();
+
+ 
+          const tableTop = 325;
+          doc.fontSize(10)
+              .fillColor('#2B6CB0')  
+              .font('Helvetica-Bold')
+              .text('Item', 60, tableTop)
+              .text('Color', 200, tableTop)
+              .text('Size', 300, tableTop)
+              .text('Quantity', 400, tableTop)
+              .text('Price', 500, tableTop)
+              
+          
+          let currentY = tableTop + 40;
+          let subtotal = 0;
+          let isEvenRow = true;
+          
+          order.orderedItems.forEach((item) => {
+              if (isEvenRow) {
+                  doc.rect(50, currentY - 5, doc.page.width - 100, 25)
+                      .fillColor('#F7FAFC')
+                      .fill();
+              }
+          
+              const itemStatus = item.isCancelled ? ' (Cancelled)' : 
+                                item.isReturnApproved ? ' (Returned)' : '';
+          
+              doc.fontSize(10)
+                  .fillColor('#2D3748')  
+                  .text(item.product.name + itemStatus, 60, currentY)
+                  .text(`${item.color || 'N/A'}`, 200, currentY)
+                  .text(`${item.size || 'N/A'}`, 300, currentY)
+                  .text(item.quantity.toString(), 400, currentY)
+                  .text(`${item.price.toFixed(2)}`, 500, currentY)
+                 
+
+          if (!item.isCancelled) {
+              subtotal += item.totalPrice;
+          }
+
+          currentY += 25;
+          isEvenRow = !isEvenRow;
+      });
+
+
+
+      if (order.iscouponApplied) {
+          currentY += 20;
+          doc.fillColor('#4A5568')
+              .text(`Discount (${order.CouponCode}):`, 400, currentY)
+              .fillColor('#2D3748')
+              .text(`-${order.couponDis.toFixed(2)}`, 480, currentY);
+      }
+
+
+      currentY += 30;
+      doc.fontSize(12)
+          .font('Helvetica-Bold')
+          .fillColor('#2B6CB0')
+          .text('Total:', 400, currentY)
+          .text(`${order.totalPrice.toFixed(2)}`, 480, currentY);
+
+
+      doc.fontSize(10)
+          .fillColor('#4A5568')
+          .font('Helvetica')
+          .text('Payment method:', 50, currentY + 40)
+          .fillColor('#2D3748')
+          .text(order.paymentMethod.toUpperCase(), 140, currentY + 40);
+
+      doc.fontSize(10)
+          .fillColor('#4A5568')
+          .text('Note:', 50, currentY + 60)
+          .fillColor('#2D3748')
+          .text('Thank you for choosing ZAY!', 90, currentY + 60);
+
+      doc.end();
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Error generating invoice');
+  }
 };
 
 
@@ -552,7 +598,7 @@ const invoice = async (req, res) => {
 
 
 
-
+ 
 
 
 

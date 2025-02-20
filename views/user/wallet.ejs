@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -177,135 +178,279 @@
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
             font-size: 1rem;
-        }  .dash {
-    /* Base button styles */
-    display: inline-flex;
-    align-items: center;
-    padding: 12px 24px;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dash {
+            /* Base button styles */
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .dash::before {
+            /* Back arrow styles */
+            content: "←";
+            margin-right: 8px;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        /* Hover effects */
+        .dash:hover {
+            background-color: #357abd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .dash:hover::before {
+            transform: translateX(-4px);
+        }
+
+        /* Active state */
+        .dash:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Focus state for accessibility */
+        .dash:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Container styles */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* Navigation links */
+        .pagination a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background-color: #f8f9fa;
+            color: #1a73e8;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .pagination a:hover {
+            background-color: #e8f0fe;
+            color: #1557b0;
+            border-color: #1a73e8;
+        }
+
+        /* Current page indicator */
+        .pagination span {
+            padding: 0.5rem 1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Disabled state for links */
+        .pagination a[disabled] {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            .pagination {
+                color: #e2e8f0;
+            }
+
+            .pagination a {
+                background-color: #2d3748;
+                color: #63b3ed;
+                border-color: #4a5568;
+            }
+
+            .pagination a:hover {
+                background-color: #2c5282;
+                color: #90cdf4;
+                border-color: #63b3ed;
+            }
+
+            .pagination span {
+                color: #e2e8f0;
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 640px) {
+            .pagination {
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+
+            .pagination a {
+                padding: 0.375rem 0.75rem;
+            }
+        }.dash {
+  /* Base styles */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
   
-  }
-  
-  .dash::before {
-    /* Back arrow styles */
-    content: "←";
-    margin-right: 8px;
-    font-size: 20px;
-    transition: transform 0.3s ease;
-  }
-  
-  /* Hover effects */
-  .dash:hover {
-    background-color: #357abd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(-1px);
-  }
-  
-  .dash:hover::before {
-    transform: translateX(-4px);
-  }
-  
-  /* Active state */
-  .dash:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Focus state for accessibility */
-  .dash:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
-  }
+  /* Add back arrow icon */
+  position: relative;
+  padding-left: 36px;
+}
+
+/* Back arrow using pseudo-element */
+.dash::before {
+  content: "←";
+  position: absolute;
+  left: 16px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Hover effects */
+.dash:hover {
+  background-color: #1557b0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateX(-2px);
+}
+
+/* Active state */
+.dash:active {
+  transform: translateX(-1px);
+  background-color: #1244a0;
+}
+
+/* Focus state for accessibility */
+.dash:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.4);
+}
     </style>
 </head>
+
 <body>
     <button class="dash" onclick="window.location.href='/profile/<%= user._id %>'">Profile</button>
-        <div class="container">
-            <!-- Wallet Header -->
-            <div class="wallet-header">
-                <div class="wallet-balance">₹<%= wallet.walletBalance.toFixed(2) %></div>
-                <div class="wallet-label">Available Balance</div>
+    <div class="container">
+        <!-- Wallet Header -->
+        <div class="wallet-header">
+            <div class="wallet-balance">₹<%= wallet.walletBalance.toFixed(2) %>
             </div>
-        
-            <!-- Wallet Actions -->
-            <div class="wallet-actions">
-                <div class="wallet-card">
-                   
-                    <div class="flex flex-col gap-4">
-                        <button onclick="openAddMoneyModal()" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Money
-                        </button>
-                      
-                    </div>
+            <div class="wallet-label">Available Balance</div>
+        </div>
+
+        <!-- Wallet Actions -->
+        <div class="wallet-actions">
+            <div class="wallet-card">
+
+                <div class="flex flex-col gap-4">
+                    <button onclick="openAddMoneyModal()" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Money
+                    </button>
+
                 </div>
-        
-                <div class="wallet-card">
-                    <h2 class="text-xl font-bold mb-4">Wallet Stats</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <div class="text-sm text-gray-600">This Month Spent</div>
-                            <div class="text-xl font-bold">₹<%= wallet.transactions
-                                .filter(t => t.type === 'debit')
+            </div>
+
+            <div class="wallet-card">
+                <h2 class="text-xl font-bold mb-4">Wallet Stats</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-sm text-gray-600">This Month Spent</div>
+                        <div class="text-xl font-bold">₹<%= wallet.transactions .filter(t=> t.type === 'debit')
                                 .reduce((sum, t) => sum + t.amount, 0)
                                 .toFixed(2) %>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="text-sm text-gray-600">Last Transaction</div>
-                            <% if (wallet.transactions.length > 0) { %>
-                                <div class="text-xl font-bold">
-                                    ₹<%= wallet.transactions[wallet.transactions.length - 1].amount.toFixed(2) %>
-                                </div>
-                            <% } else { %>
-                                <div class="text-gray-500">No transactions</div>
-                            <% } %>
                         </div>
                     </div>
-                </div>
-            </div>
-        
-            <!-- Transaction History -->
-            <div class="transaction-history">
-                <h2 class="text-xl font-bold mb-4">Transaction History</h2>
-                <div class="transaction-list">
-                    <% if (wallet.transactions.length > 0) { %>
-                        <% wallet.transactions.forEach(transaction => { %>
-                            <div class="transaction-item">
-                                <div class="transaction-details">
-                                    <div class="transaction-icon <%= transaction.type === 'credit' ? 'icon-credit' : 'icon-debit' %>">
-                                        <i class="fas <%= transaction.type === 'credit' ? 'fa-plus' : 'fa-shopping-cart' %>"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold">
-                                            <%= transaction.description || (transaction.type === 'credit' ? 'Added Money' : 'Debit Transaction') %>
-                                        </div>
-                                        <div class="text-sm text-gray-600">
-                                            <%= new Date(transaction.date).toLocaleString() %>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="<%= transaction.type === 'credit' ? 'amount-credit' : 'amount-debit' %>">
-                                    <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
-                                </div>
+                    <div>
+                        <div class="text-sm text-gray-600">Last Transaction</div>
+                        <% if (wallet.transactions.length> 0) { %>
+                            <div class="text-xl font-bold">
+                                ₹<%= wallet.transactions[wallet.transactions.length - 1].amount.toFixed(2) %>
                             </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="no-transactions text-gray-500">No transactions yet.</div>
-                    <% } %>
+                            <% } else { %>
+                                <div class="text-gray-500">No transactions</div>
+                                <% } %>
+                    </div>
                 </div>
             </div>
         </div>
-    <!-- Add Money Modal -->
+
+        <!-- Transaction History -->
+        <!-- Transaction History -->
+        <div class="transaction-history">
+            <h2 class="text-xl font-bold mb-4">Transaction History</h2>
+            <div class="transaction-list">
+                <% if (transactions.length> 0) { %>
+                    <% transactions.forEach(transaction=> { %>
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <div
+                                    class="transaction-icon <%= transaction.type === 'credit' ? 'icon-credit' : 'icon-debit' %>">
+                                    <i
+                                        class="fas <%= transaction.type === 'credit' ? 'fa-plus' : 'fa-shopping-cart' %>"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold">
+                                        <%= transaction.description || (transaction.type==='credit' ? 'Added Money'
+                                            : 'Debit Transaction' ) %>
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <%= new Date(transaction.date).toLocaleString() %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="<%= transaction.type === 'credit' ? 'amount-credit' : 'amount-debit' %>">
+                                <%= transaction.type==='credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="no-transactions text-gray-500">No transactions yet.</div>
+                                <% } %>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <% if (currentPage> 1) { %>
+                <a href="/wallet?page=<%= currentPage - 1 %>">Previous</a>
+                <% } %>
+                    <span> Page <%= currentPage %> of <%= totalPages %> </span>
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/wallet?page=<%= currentPage + 1 %>">Next</a>
+                        <% } %>
+        </div>
+
+    </div>
+
     <div id="addMoneyModal" class="modal">
         <div class="modal-content">
             <h2 class="text-xl font-bold mb-4">Add Money to Wallet</h2>
@@ -321,80 +466,80 @@
     </div>
 
     <script>
-  function openAddMoneyModal() {
-    document.getElementById('addMoneyModal').style.display = 'flex';
-}
-
-function closeAddMoneyModal() {
-    document.getElementById('addMoneyModal').style.display = 'none';
-}
-
-function initiatePayment() {
-    const amount = document.getElementById('amount').value;
-    if (amount < 100) {
-        alert('Minimum amount should be ₹100');
-        return;
-    }
-
-    var options = {
-        key: 'rzp_test_oxcuHe4SxuHiWw', 
-        amount: amount * 100,  
-        currency: "INR",
-        name: "Zay",
-        description: "Add Money to Wallet",
-        handler: function(response) {
-           
-            updateWalletBalance(amount);
-            addTransaction(amount);
-            closeAddMoneyModal();
-
-       
-       fetch('/update-wallet', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        paymentId: response.razorpay_payment_id,
-        amount: parseFloat(amount), 
-    }),
-}).then(response => response.json())
-    .then(data => {
-        console.log('Backend response:', data);
-        if (data.success) {
-            console.log('Wallet updated successfully.');
-        } else {
-            console.error('Failed to update wallet:', data.error);
+        function openAddMoneyModal() {
+            document.getElementById('addMoneyModal').style.display = 'flex';
         }
-    })
-    .catch(error => {
-        console.error('Error sending payment details to backend:', error);
-    });
-        },
-        prefill: {
-            name: "Fazil",
-            email: "mf645385@gmail.com",
-            contact: "9946484216"
-        },
-    };
 
-    var rzp = new Razorpay(options);
-    rzp.open();
-}
+        function closeAddMoneyModal() {
+            document.getElementById('addMoneyModal').style.display = 'none';
+        }
 
-function updateWalletBalance(amount) {
-    const balanceElement = document.querySelector('.wallet-balance');
-    const currentBalance = parseFloat(balanceElement.textContent.replace('₹', '').replace(',', ''));
-    const newBalance = currentBalance + parseFloat(amount);
-    balanceElement.textContent = `₹${newBalance.toFixed(2)}`;
-}
+        function initiatePayment() {
+            const amount = document.getElementById('amount').value;
+            if (amount < 100) {
+                alert('Minimum amount should be ₹100');
+                return;
+            }
 
-function addTransaction(amount) {
-    const transactionList = document.querySelector('.transaction-list');
-    const now = new Date();
-    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    const transactionHTML = `
+            var options = {
+                key: 'rzp_test_oxcuHe4SxuHiWw',
+                amount: amount * 100,
+                currency: "INR",
+                name: "Zay",
+                description: "Add Money to Wallet",
+                handler: function (response) {
+
+                    updateWalletBalance(amount);
+                    addTransaction(amount);
+                    closeAddMoneyModal();
+
+
+                    fetch('/update-wallet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            paymentId: response.razorpay_payment_id,
+                            amount: parseFloat(amount),
+                        }),
+                    }).then(response => response.json())
+                        .then(data => {
+                            console.log('Backend response:', data);
+                            if (data.success) {
+                                console.log('Wallet updated successfully.');
+                            } else {
+                                console.error('Failed to update wallet:', data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending payment details to backend:', error);
+                        });
+                },
+                prefill: {
+                    name: "Fazil",
+                    email: "mf645385@gmail.com",
+                    contact: "9946484216"
+                },
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        function updateWalletBalance(amount) {
+            const balanceElement = document.querySelector('.wallet-balance');
+            const currentBalance = parseFloat(balanceElement.textContent.replace('₹', '').replace(',', ''));
+            const newBalance = currentBalance + parseFloat(amount);
+            balanceElement.textContent = `₹${newBalance.toFixed(2)}`;
+        }
+
+        function addTransaction(amount) {
+            const transactionList = document.querySelector('.transaction-list');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const transactionHTML = `
         <div class="transaction-item">
             <div class="transaction-details">
                 <div class="transaction-icon icon-credit">
@@ -408,9 +553,10 @@ function addTransaction(amount) {
             <div class="amount-credit">+₹${parseFloat(amount).toFixed(2)}</div>
         </div>
     `;
-    
-    transactionList.insertAdjacentHTML('afterbegin', transactionHTML);
-}
+
+            transactionList.insertAdjacentHTML('afterbegin', transactionHTML);
+        }
     </script>
 </body>
+
 </html>

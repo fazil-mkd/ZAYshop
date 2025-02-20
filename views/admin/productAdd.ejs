@@ -25,6 +25,17 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10">
+                <% if (successMessage) { %>
+                    <div class="alert alert-success"><%= successMessage %></div>
+                <% } else { %>
+                    <div class="alert alert-success hidden"></div>
+                <% } %>
+                
+                <% if (errorMessage) { %>
+                    <div class="alert alert-error"><%= errorMessage %></div>
+                <% } else { %>
+                    <div class="alert alert-error hidden"></div>
+                <% } %>
                 <div class="product-form-container">
                     <h2 class="text-center mb-4">Add New Product</h2>
                     <div id="errorMessages"></div>
@@ -391,11 +402,9 @@ form.addEventListener('submit', async (event) => {
     if (!isValid) return; 
 
 
-      if(isValid){
-        location.reload()
-        window.location.href = '/admin/products?reload=true';
-      }
-
+if(ifisValid){
+    window.location.reload()
+}
  
   
         const formData = new FormData(form);
@@ -443,7 +452,7 @@ Swal.fire({
     text: "Product added succesfully",
     icon: 'success',
 }).then(()=>{
-    window.location.href='/admin/products'
+    window.location.href = '/admin/products?reload=true';
 })
 
     });
@@ -523,6 +532,51 @@ Swal.fire({
 
     });
         
+
+
+  
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    
+    alerts.forEach(alert => {
+       
+        if (!alert.textContent.trim()) {
+            alert.classList.add('hidden');
+        }
+    });
+});
+
+
+function showAlert(message, type = 'success') {
+    const alert = document.querySelector(`.alert-${type}`);
+    alert.textContent = message;
+    alert.classList.remove('hidden');
+}
+
+
+function hideAlert(type = 'success') {
+    const alert = document.querySelector(`.alert-${type}`);
+    alert.classList.add('hidden');
+
+    setTimeout(() => {
+        alert.textContent = '';
+    }, 300);
+}
+
+
+function autoHideAlerts() {
+    const alerts = document.querySelectorAll('.alert:not(.hidden)');
+    alerts.forEach(alert => {
+        if (alert.textContent.trim()) {
+            setTimeout(() => {
+                alert.classList.add('hidden');
+            }, 5000);
+        }
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', autoHideAlerts);
     </script>
 </body>
 </html>

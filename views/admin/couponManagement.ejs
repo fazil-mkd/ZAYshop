@@ -269,6 +269,7 @@
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
+                location.reload()
                 document.getElementById('updateFormContainer').remove();
                
             });
@@ -324,6 +325,11 @@
     }
 });
 
+
+let today = new Date().toISOString().split("T")[0];
+
+
+document.getElementById("expiry").setAttribute("min", today);
 
 
        

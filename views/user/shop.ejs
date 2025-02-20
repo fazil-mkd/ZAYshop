@@ -444,60 +444,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
 async function toggleWishlist(button) {
-    const productId = button.getAttribute("data-product-id");
-    const heartIcon = button.querySelector("i");
-    const isInWishlist = heartIcon.classList.contains("text-red-500");
+  const productId = button.getAttribute("data-product-id");
+  const heartIcon = button.querySelector("i");
+  const isInWishlist = heartIcon.classList.contains("text-red-500");
 
-    const endpoint = isInWishlist ? "/wishlist/remove" : "/wishlist/add";
-    
-    button.disabled = true;
-    
-    try {
+  const endpoint = isInWishlist ? "/wishlist/remove" : "/wishlist/add";
 
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId: getUserId(), 
-                productId,
-            }),
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-         
-            if (isInWishlist) {
-               
-                heartIcon.classList.remove("text-red-500", "fill-red-500");
-                heartIcon.classList.add("text-gray-600", "hover:text-red-500");
-                button.setAttribute("aria-label", "Add to wishlist");
-                showNotification("Product removed from wishlist!", "success");
-            } else {
-               
-                heartIcon.classList.remove("text-gray-600", "hover:text-red-500");
-                heartIcon.classList.add("text-red-500", "fill-red-500");
-                button.setAttribute("aria-label", "Remove from wishlist");
-                showNotification("Product added to wishlist!", "success");
-            }
-           
-            heartIcon.classList.add("animate-beat");
-         
-            setTimeout(() => heartIcon.classList.remove("animate-beat"), 1000);
-        } else {
-            showNotification("Failed to update wishlist", "error");
-        }
-    } catch (error) {
-        showNotification("Error toggling wishlist", "error");
-        console.error("Error:", error);
-    } finally {
-       
-        button.disabled = false;
+  button.disabled = true;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: getUserId(),
+        productId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+    
+      const updatedWishlist = data.isInWishlist;
+      localStorage.setItem(`wishlist_${productId}`, updatedWishlist);
+
+     
+      if (updatedWishlist) {
+        heartIcon.classList.remove("text-gray-600", "hover:text-red-500");
+        heartIcon.classList.add("text-red-500", "fill-red-500");
+        button.setAttribute("aria-label", "Remove from wishlist");
+        showNotification("Product added to wishlist!", "success");
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        heartIcon.classList.remove("text-red-500", "fill-red-500");
+        heartIcon.classList.add("text-gray-600", "hover:text-red-500");
+        button.setAttribute("aria-label", "Add to wishlist");
+        showNotification("Product removed from wishlist!", "success");
+        setTimeout(() => window.location.reload(), 1000);
+      }
+
+      heartIcon.classList.add("animate-beat");
+      setTimeout(() => heartIcon.classList.remove("animate-beat"), 1000);
+    } else {
+      showNotification("Product already in wishlist", "error");
     }
+  } catch (error) {
+    showNotification("Error toggling wishlist", "error");
+    console.error("Error:", error);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 
@@ -615,7 +615,28 @@ function initializeFlashMessages() {
 
 
 
+    
+        document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".wishlist-button");
 
+  buttons.forEach(button => {
+    const productId = button.getAttribute("data-product-id");
+    const heartIcon = button.querySelector("i");
+
+  
+    const isInWishlist = localStorage.getItem(`wishlist_${productId}`) === 'true';
+
+    if (isInWishlist) {
+      heartIcon.classList.add("text-red-500", "fill-red-500");
+      heartIcon.classList.remove("text-gray-600", "hover:text-red-500");
+      button.setAttribute("aria-label", "Remove from wishlist");
+    } else {
+      heartIcon.classList.add("text-gray-600", "hover:text-red-500");
+      heartIcon.classList.remove("text-red-500", "fill-red-500");
+      button.setAttribute("aria-label", "Add to wishlist");
+    }
+  });
+});
 
 
 

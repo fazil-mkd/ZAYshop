@@ -6,7 +6,67 @@
     <title>Offer Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
      <link rel="stylesheet" href="/assets/css/admin/offer.css">
-   
+   <style>
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Make sure modal is on top of everything */
+#editModal {
+    z-index: 9999;
+}
+
+
+
+
+   </style>
+
+
+
 </head>
 <body>
     <%- include('./layout/sidenav.ejs') %>
@@ -102,6 +162,16 @@
                             <span><i class="fas fa-percentage"></i> <%= product.discountPercentage %> OFF</span>
                             <span><i class="fas fa-calendar"></i> <%= new Date(product.offerStartDate).toLocaleDateString() %> - <%= new Date(product.offerEndDate).toLocaleDateString() %></span>
                         </div>
+                        <button class="tab-button edit-button"
+                        data-id="<%= product._id %>"
+                        data-type="product"
+                        data-name="<%= product.name %>"
+                        data-discount="<%= product.discountPercentage %>"
+                        data-start="<%= product.offerStartDate %>"
+                        data-end="<%= product.offerEndDate %>"
+                        onclick="handleEdit(this)">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
                         <button class="tab-button" onclick="deleteOffer('<%=product._id%>','product' )">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -118,6 +188,16 @@
                             <span><i class="fas fa-percentage"></i> <%= Category.discountPercentage %> OFF</span>
                             <span><i class="fas fa-calendar"></i> <%= new Date(Category.offerStartDate).toLocaleDateString() %> - <%= new Date(Category.offerEndDate).toLocaleDateString() %></span>
                         </div>
+                        <button class="tab-button edit-button"
+                        data-id="<%= Category._id %>"
+                        data-type="category"
+                        data-name="<%= Category.name %>"
+                        data-discount="<%= Category.discountPercentage %>"
+                        data-start="<%= Category.offerStartDate %>"
+                        data-end="<%= Category.offerEndDate %>"
+                        onclick="handleEdit(this)">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
                         <button class="tab-button" onclick="deleteOffer('<%=Category._id%>','category')">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -127,6 +207,44 @@
             </div>
         </div>
 
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <h2>Edit Offer</h2>
+                <form id="editOfferForm">
+                    <input type="hidden" id="editItemId">
+                    <input type="hidden" id="editItemType">
+                    
+                    <div class="form-group">
+                        <label>Name:</label>
+                        <input type="text" id="editName" readonly>
+                    </div>
+        
+                    <div class="form-group">
+                        <label>Discount Percentage:</label>
+                        <input type="number" id="editDiscount" min="0" max="100" required>
+                        <span id="editDiscountError" class="error-message"></span>
+                    </div>
+                    <div id="discountErrorEdit" class="error-message" style="display:none; color:red;"></div>
+                    <div class="form-group">
+                        <label>Start Date:</label>
+                        <input type="date" id="editStartDate" required>
+                        <span id="editStartDateError" class="error-message"></span>
+                    </div>
+        
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" id="editEndDate" required>
+                        <span id="editEndDateError" class="error-message"></span>
+                    </div>
+                    <div id="dateErrorEdit" class="error-message" style="display:none; color:red;"></div>
+                    <div class="button-group">
+                        <button type="submit" class="tab-button edit-button">Save Changes</button>
+                        <button type="button" class="tab-button delete-button" onclick="closeEditModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -386,7 +504,7 @@ function initializeFlashMessages() {
                     setTimeout(() => {
                         alertElement.classList.remove('show');
                         alertElement.setAttribute('data-message', '');
-                    }, 5000);
+                    }, 2000);
                 }
             }
 
@@ -395,6 +513,168 @@ function initializeFlashMessages() {
         }
 
         document.addEventListener('DOMContentLoaded', initializeFlashMessages);
+
+
+
+
+function handleEdit(button) {
+    const data = button.dataset;
+    openEditModal(
+        data.id,
+        data.type,
+        data.name,
+        parseFloat(data.discount),
+        data.start,
+        data.end
+    );
+}
+
+
+function openEditModal(id, type, name, discount, startDate, endDate) {
+    const modal = document.getElementById('editModal');
+    const itemId = document.getElementById('editItemId');
+    const itemType = document.getElementById('editItemType');
+    const nameInput = document.getElementById('editName');
+    const discountInput = document.getElementById('editDiscount');
+    const startDateInput = document.getElementById('editStartDate');
+    const endDateInput = document.getElementById('editEndDate');
+
+
+    itemId.value = id;
+    itemType.value = type;
+    nameInput.value = name;
+    discountInput.value = discount;
+    
+
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+    startDateInput.value = startDateObj.toISOString().split('T')[0];
+    endDateInput.value = endDateObj.toISOString().split('T')[0];
+
+    modal.style.display = 'block';
+}
+
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+
+document.getElementById('editOfferForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const resultDiv = document.getElementById('offerResult');
+
+
+    const itemId = document.getElementById('editItemId').value.trim();
+    const type = document.getElementById('editItemType').value.trim().toLowerCase();
+    const discount = document.getElementById('editDiscount').value.trim();
+    const start = document.getElementById('editStartDate').value.trim();
+    const end = document.getElementById('editEndDate').value.trim();
+
+ 
+
+    let valid = true;
+
+ 
+    if (!type) {
+        valid = false;
+        document.getElementById('offerTypeErrorEdit').innerText = 'Please select an offer type.';
+        document.getElementById('offerTypeErrorEdit').style.display = 'block';
+    }
+
+   
+
+    const discountRegex = /^[0-9]{1,3}$/;
+    if (!discountRegex.test(discount) || discount < 1 || discount > 100) {
+        valid = false;
+        document.getElementById('discountErrorEdit').innerText = 'Please enter a valid discount percentage between 1 and 100.';
+        document.getElementById('discountErrorEdit').style.display = 'block';
+    }
+
+    
+    if (!start || !end) {
+        valid = false;
+        document.getElementById('dateErrorEdit').innerText = 'Please select both start and end dates for the offer.';
+        document.getElementById('dateErrorEdit').style.display = 'block';
+    } else if (new Date(start) > new Date(end)) {
+        valid = false;
+        document.getElementById('dateErrorEdit').innerText = 'The start date cannot be later than the end date.';
+        document.getElementById('dateErrorEdit').style.display = 'block';
+    }
+
+   
+    if (valid) {
+
+    const offerDetails = {
+        type: type,
+        item: itemId,
+        discount: discount ,
+        start: start,
+        end: end
+    };
+
+   
+    console.log('Sending:', offerDetails);
+
+try {
+    const response = await fetch('/admin/offers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(offerDetails),
+    });
+
+    console.log('Response:', response); 
+
+    const data = await response.json();
+    console.log('Response Data:', data);
+
+    if (response.ok) {
+        resultDiv.innerHTML = `<div class="result-success">Offer Updated Successfully!</div>`;
+        setTimeout(() => window.location.reload(), 2000);
+    } else {
+        resultDiv.innerHTML = `<div class="result-error" style="color:red;">${data.error}</div>`;
+    }
+} catch (error) {
+    console.error('Fetch Error:', error);
+    resultDiv.innerHTML = `<div class="result-error" style="color:red;">An error occurred: ${error.message}</div>`;
+}
+
+
+    closeEditModal();
+}
+});
+
+
+
+function displayError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.innerText = message;
+    }
+}
+
+
+
+window.onclick = function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}
+
+
+
+
+let today = new Date().toISOString().split("T")[0];
+
+
+document.getElementById("editStartDate").setAttribute("min", today);
+document.getElementById("editEndDate").setAttribute("min", today);
+
+
+document.getElementById("startDate").setAttribute("min", today);
+document.getElementById("endDate").setAttribute("min", today);
 
     </script>
 </body>

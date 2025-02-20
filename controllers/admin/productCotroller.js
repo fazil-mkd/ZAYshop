@@ -53,7 +53,7 @@ const addProduct = async (req, res, next) => {
 
         if (existingProduct) {
             req.flash('error', 'Product with this name already exists!');
-            return res.redirect('/admin/products');
+            return res.redirect('/admin/products/add');
         }
 
         const uploadImageToCloudinary = (file) => {
@@ -105,7 +105,7 @@ const addProduct = async (req, res, next) => {
 
         console.log('Product added successfully!');
         req.flash('success', 'Product added successfully!');
-        return res.redirect('/admin/products');
+        return res.redirect('/admin/products/add');
 
     } catch (err) {
         console.error("Error in addProduct function:", err);
