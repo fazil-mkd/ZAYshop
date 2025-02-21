@@ -1706,6 +1706,7 @@ const placeOrder = async (req, res, next) => {
         size: item.productSize,
         color: item.productColor,
         brand:item.brand,
+      paymentStatus:paymentStatus,
       })),
       address: addressDocument.address.find((addr) => addr._id.toString() === selectedAddress),
       orderNotes,
@@ -2955,6 +2956,7 @@ const retryPeyment = async (req, res) => {
       }
     }
 
+    order.orderedItems.forEach((item)=>item.paymentStatus=paymentStatus ||'completed')
     order.paymentStatus = paymentStatus || 'completed';
     order.status = 'Processing';
 
