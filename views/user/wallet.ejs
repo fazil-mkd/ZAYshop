@@ -383,13 +383,7 @@
             <div class="wallet-card">
                 <h2 class="text-xl font-bold mb-4">Wallet Stats</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <div class="text-sm text-gray-600">This Month Spent</div>
-                        <div class="text-xl font-bold">₹<%= wallet.transactions .filter(t=> t.type === 'debit')
-                                .reduce((sum, t) => sum + t.amount, 0)
-                                .toFixed(2) %>
-                        </div>
-                    </div>
+                
                     <div>
                         <div class="text-sm text-gray-600">Last Transaction</div>
                         <% if (wallet.transactions.length> 0) { %>
@@ -464,6 +458,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function openAddMoneyModal() {
@@ -477,8 +472,11 @@
         function initiatePayment() {
             const amount = document.getElementById('amount').value;
             if (amount < 100) {
-                alert('Minimum amount should be ₹100');
+                Swal.fire('Minimum amount should be ₹100');
                 return;
+            }else if(amount>10000){
+                Swal.fire('cant add more than amount ₹10000');
+                return
             }
 
             var options = {
@@ -493,6 +491,7 @@
                     addTransaction(amount);
                     closeAddMoneyModal();
 
+                
 
                     fetch('/update-wallet', {
                         method: 'POST',
@@ -533,6 +532,12 @@
             const newBalance = currentBalance + parseFloat(amount);
             balanceElement.textContent = `₹${newBalance.toFixed(2)}`;
         }
+
+fun
+
+
+
+
 
         function addTransaction(amount) {
             const transactionList = document.querySelector('.transaction-list');
