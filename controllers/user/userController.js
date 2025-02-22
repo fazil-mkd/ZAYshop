@@ -1593,13 +1593,13 @@ const placeOrder = async (req, res, next) => {
     console.log('Cart:', cart);
 
     if (!cart || cart.items.length === 0) {
-      throw new NotFoundError('Cart is empty, cannot place order.');
+      return res.status(400).json('Cart is empty, cannot place order.');
     }
 
     const addressDocument = await Address.findOne({ "address._id": selectedAddress });
 
     if (!addressDocument) {
-      throw new NotFoundError('Selected address not found.');
+      return res.status(400).json('Selected address not found.');
     }
 
     if (paymentStatus === "completed" || paymentMethod === "cod") {
@@ -1607,7 +1607,7 @@ const placeOrder = async (req, res, next) => {
 
     for (const item of cart.items) {
       if (!item.productId) {
-        throw new NotFoundError('Product not found in cart.');
+        return res.status(400).json('Product not found in cart.');
       }
 
       const { productColor, productSize, quantity } = item;
