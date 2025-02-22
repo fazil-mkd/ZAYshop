@@ -106,16 +106,16 @@
                                     <h4 class="order__title">Your order</h4>
                                     <div class="checkout__order__products">Product <span>Total</span></div>
 
-                                   
+
                                     <ul class="checkout__total__all">
-                                        <li  >Total Price : <span>
-                                            <%= priceTracker %>
-                                        </span></li>
-    
+                                        <li>Total Price : <span>
+                                                <%= priceTracker %>
+                                            </span></li>
+
                                         <li id="totalPrice" value="<%= totalPrice %>">Total Price(OFF) : <span>
                                                 <%= totalPrice %>
                                             </span></li>
-                                         
+
                                     </ul>
                                     <% if (datas) { %>
                                         <div class="flash-message">
@@ -161,153 +161,150 @@
                         </div>
 
                     </form>
-               
+
                     <div class="coupons-container">
                         <h4 class="text-2xl font-bold mb-6">Available Coupons</h4>
                         <div class="coupon-grid">
-                            <% coupon.forEach((item) => { %>
-                                <% if (item.expireOn > DateNow) { %>
+                            <% coupon.forEach((item)=> { %>
+                                <% if (item.expireOn> DateNow) { %>
                                     <div class="coupon-card">
                                         <div class="coupon-content">
-                                            <h5 class="coupon-name"><%= item.name %></h5>
+                                            <h5 class="coupon-name">
+                                                <%= item.name %>
+                                            </h5>
                                             <div class="code-container">
-                                                <div class="coupon-code" onclick="copyCode(this)" data-code="<%= item.code %>">
-                                                    <span class="code-text"><%= item.code %></span>
+                                                <div class="coupon-code" onclick="copyCode(this)"
+                                                    data-code="<%= item.code %>">
+                                                    <span class="code-text">
+                                                        <%= item.code %>
+                                                    </span>
                                                     <span class="copy-icon">📋</span>
                                                     <span class="copy-tooltip">Click to copy</span>
                                                 </div>
                                             </div>
                                             <div class="discount-badge">
                                                 <%= item.discountAmount %>
-                                                <%= item.discountType === 'percentage' ? '%' : '$' %> OFF
+                                                    <%= item.discountType==='percentage' ? '%' : '$' %> OFF
                                             </div>
                                         </div>
                                     </div>
-                                <% } %>
-                            <% }) %>
+                                    <% } %>
+                                        <% }) %>
                         </div>
                     </div>
-                    
-
-                                    <div class="cart__discount">
-                                        <h6 class="text-lg font-bold mb-2">Apply Discount Code</h6>
-                                        <form id="apply-coupon-form" class="flex items-center gap-2">
-                                            <input type="text" id="coupon-code-input" placeholder="Enter coupon code"
-                                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                                            <button type="submit"
-                                                class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-                                                onclick="applyCoupon()">
-                                                Apply
-                                            </button>
-                                        </form>
 
 
-                                        <%if(datas) { %>
-                                            <button class="remove-coupon-btn" id="removeCouponBtn">
-                                                <svg width="16" height="16" viewBox="0 0 16 16">
-
-                                                    <path
-                                                        d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5M4 4l1 9a2 2 0 002 2h2a2 2 0 002-2l1-9"
-                                                        stroke="currentColor" fill="none" stroke-width="1.5" />
-                                                </svg>
-                                                Remove Coupon
-                                            </button>
-                                            <% } %>
-
-
-                                                <input type="hidden" id="colorSizeStockMap"
-                                                    value='<%= JSON.stringify(colorSizeStockMap) %>'>
-                                                <input type="hidden" id="userCart"
-                                                    value='<%= JSON.stringify(userCart) %>'>
-
-                                                <% if (successMessage) { %>
-                                                    <div id="success-alert" class="flash-message">
-                                                        <%= successMessage %>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <div id="success-alert" class="flash-message"
-                                                            style="display:none;"></div>
-                                                        <% } %>
+                    <div class="cart__discount">
+                        <h6 class="text-lg font-bold mb-2">Apply Discount Code</h6>
+                        <form id="apply-coupon-form" class="flex items-center gap-2">
+                            <input type="text" id="coupon-code-input" placeholder="Enter coupon code"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                                onclick="applyCoupon()">
+                                Apply
+                            </button>
+                        </form>
 
 
-                                                            <p class="text-sm text-gray-500 mt-2">* Only one coupon can
-                                                                be applied per
-                                                                order.</p>
+                        <%if(datas) { %>
+                            <button class="remove-coupon-btn" id="removeCouponBtn">
+                                <svg width="16" height="16" viewBox="0 0 16 16">
+
+                                    <path
+                                        d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5M4 4l1 9a2 2 0 002 2h2a2 2 0 002-2l1-9"
+                                        stroke="currentColor" fill="none" stroke-width="1.5" />
+                                </svg>
+                                Remove Coupon
+                            </button>
+                            <% } %>
+
+
+                                <input type="hidden" id="colorSizeStockMap"
+                                    value='<%= JSON.stringify(colorSizeStockMap) %>'>
+                                <input type="hidden" id="userCart" value='<%= JSON.stringify(userCart) %>'>
+
+                                <% if (successMessage) { %>
+                                    <div id="success-alert" class="flash-message">
+                                        <%= successMessage %>
                                     </div>
+                                    <% } else { %>
+                                        <div id="success-alert" class="flash-message" style="display:none;"></div>
+                                        <% } %>
+
+
+                                            <p class="text-sm text-gray-500 mt-2">* Only one coupon can
+                                                be applied per
+                                                order.</p>
+                    </div>
 
 
 
-                                    <form method="post" action="/checkout/add-address" id="addressForm">
-                                        <div class="form-grid">
-                                            <h6>New Address</h6>
+                    <form method="post" action="/checkout/add-address" id="addressForm">
+                        <div class="form-grid">
+                            <h6>New Address</h6>
 
-                                            <div class="form-group">
-                                                <label for="fullName">Full Name:</label>
-                                                <input type="text" name="fullName" id="fullName"
-                                                    placeholder="Enter your full name">
-                                            </div>
+                            <div class="form-group">
+                                <label for="fullName">Full Name:</label>
+                                <input type="text" name="fullName" id="fullName" placeholder="Enter your full name">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="phone">Phone Number:</label>
-                                                <input type="tel" name="phone" id="phone"
-                                                    placeholder="Enter phone number">
-                                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number:</label>
+                                <input type="tel" name="phone" id="phone" placeholder="Enter phone number">
+                            </div>
 
-                                            <div class="form-group full-width">
-                                                <label for="streetAddress">Street Address:</label>
-                                                <input type="text" name="streetAddress" id="streetAddress"
-                                                    placeholder="Street Address">
-                                            </div>
+                            <div class="form-group full-width">
+                                <label for="streetAddress">Street Address:</label>
+                                <input type="text" name="streetAddress" id="streetAddress" placeholder="Street Address">
+                            </div>
 
-                                            <div class="form-group full-width">
-                                                <label for="aptNumber">Apartment/Unit Number (optional):</label>
-                                                <input type="text" name="aptNumber" id="aptNumber"
-                                                    placeholder="Apartment or Unit Number">
-                                            </div>
+                            <div class="form-group full-width">
+                                <label for="aptNumber">Apartment/Unit Number (optional):</label>
+                                <input type="text" name="aptNumber" id="aptNumber"
+                                    placeholder="Apartment or Unit Number">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="city">City:</label>
-                                                <input type="text" name="city" id="city" placeholder="Enter city">
-                                            </div>
+                            <div class="form-group">
+                                <label for="city">City:</label>
+                                <input type="text" name="city" id="city" placeholder="Enter city">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="state">State/Province:</label>
-                                                <input type="text" name="state" id="state"
-                                                    placeholder="Enter state/province">
-                                            </div>
+                            <div class="form-group">
+                                <label for="state">State/Province:</label>
+                                <input type="text" name="state" id="state" placeholder="Enter state/province">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="pincode">Postal Code:</label>
-                                                <input type="text" name="pincode" id="pincode"
-                                                    placeholder="Postal/Zip Code">
-                                            </div>
+                            <div class="form-group">
+                                <label for="pincode">Postal Code:</label>
+                                <input type="text" name="pincode" id="pincode" placeholder="Postal/Zip Code">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="country">Country:</label>
-                                                <input type="text" name="country" id="country"
-                                                    placeholder="Enter country">
-                                            </div>
+                            <div class="form-group">
+                                <label for="country">Country:</label>
+                                <input type="text" name="country" id="country" placeholder="Enter country">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="altPhone">Alternate Phone Number (optional):</label>
-                                                <input type="tel" name="altPhone" id="altPhone"
-                                                    placeholder="Alternate phone number" pattern="^\+?[0-9]{10,15}$"
-                                                    title="Alternate phone number should be between 10 to 15 digits and can start with +.">
-                                            </div>
+                            <div class="form-group">
+                                <label for="altPhone">Alternate Phone Number (optional):</label>
+                                <input type="tel" name="altPhone" id="altPhone" placeholder="Alternate phone number"
+                                    pattern="^\+?[0-9]{10,15}$"
+                                    title="Alternate phone number should be between 10 to 15 digits and can start with +.">
+                            </div>
 
-                                            <div class="form-group">
-                                                <label for="addressType">Address Type:</label>
-                                                <select id="addressType" name="addressType" required>
-                                                    <option value="home">Home</option>
-                                                    <option value="work">Work</option>
-                                                    <option value="billing">Billing</option>
-                                                    <option value="shipping">Shipping</option>
-                                                </select>
-                                            </div>
+                            <div class="form-group">
+                                <label for="addressType">Address Type:</label>
+                                <select id="addressType" name="addressType" required>
+                                    <option value="home">Home</option>
+                                    <option value="work">Work</option>
+                                    <option value="billing">Billing</option>
+                                    <option value="shipping">Shipping</option>
+                                </select>
+                            </div>
 
-                                            <button type="submit">Save Address</button>
-                                        </div>
-                                    </form>
+                            <button type="submit">Save Address</button>
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -550,7 +547,7 @@
                                                         transactionId: response.razorpay_payment_id,
                                                         selectedAddress,
                                                         orderNotes,
-                                                        paymentStatus:'completed'
+                                                        paymentStatus: 'completed'
                                                     }),
                                                 });
 
@@ -591,7 +588,7 @@
                                     try {
                                         const rzp = new Razorpay(options);
 
-                                      
+
                                         rzp.on('payment.failed', function (response) {
                                             console.error('Payment failed:', response);
 
@@ -604,18 +601,18 @@
                                                 cancelButtonText: 'Pay Later',
                                             }).then(async (result) => {
                                                 if (result.isConfirmed) {
-                                                    rzp.open(); 
+                                                    rzp.open();
                                                 } else {
-                                                  
+
                                                     await placeOrderWithoutPayment();
                                                 }
                                             });
                                         });
 
-                                        
+
                                         rzp.open();
 
-                                       
+
                                         Swal.fire({
                                             title: 'Want to pay later?',
                                             text: 'You can proceed with your order without immediate payment.',
@@ -655,7 +652,7 @@
                                                     paymentMethod: 'razorpay',
                                                     selectedAddress,
                                                     orderNotes,
-                                                    paymentStatus:'pending'
+                                                    paymentStatus: 'pending'
                                                 }),
                                             });
 
@@ -708,7 +705,7 @@
                                                 paymentMethod: 'cod',
                                                 selectedAddress,
                                                 orderNotes,
-                                                paymentStatus:'pending',
+                                                paymentStatus: 'pending',
                                             }),
                                         });
 
@@ -745,7 +742,7 @@
                                             paymentMethod: 'wallet',
                                             selectedAddress,
                                             orderNotes,
-                                            paymentStatus:'completed'
+                                            paymentStatus: 'completed'
                                         }),
                                     });
 
@@ -760,7 +757,12 @@
                                             window.location.href = `/order/${result.orderId}`;
                                         });
                                     } else {
-                                        throw new Error(result.message || 'Failed to place the order.');
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: result.message || 'Something went wrong!',
+                                            icon: 'error',
+                                            confirmButtonText: 'Try Again',
+                                        });
                                     }
                                 } catch (error) {
                                     console.error('Error placing order:', error);
@@ -892,18 +894,18 @@
 
 
                 function copyCode(element) {
-    const code = element.getAttribute('data-code');
-    navigator.clipboard.writeText(code).then(() => {
-        element.classList.add('copied');
-        const tooltip = element.querySelector('.copy-tooltip');
-        tooltip.textContent = 'Copied!';
-        
-        setTimeout(() => {
-            element.classList.remove('copied');
-            tooltip.textContent = 'Click to copy';
-        }, 1500);
-    });
-}
+                    const code = element.getAttribute('data-code');
+                    navigator.clipboard.writeText(code).then(() => {
+                        element.classList.add('copied');
+                        const tooltip = element.querySelector('.copy-tooltip');
+                        tooltip.textContent = 'Copied!';
+
+                        setTimeout(() => {
+                            element.classList.remove('copied');
+                            tooltip.textContent = 'Click to copy';
+                        }, 1500);
+                    });
+                }
 
             </script>
 </body>
