@@ -1641,7 +1641,7 @@ const placeOrder = async (req, res, next) => {
         !colorSizeStockMap[productColor][productSize] ||
         colorSizeStockMap[productColor][productSize] < quantity
       ) {
-        throw new NotFoundError(`Insufficient stock for product ${item.productId.name} (${productColor}, ${productSize}).`);
+        return res.status(400).json(`Insufficient stock for product ${item.productId.name} (${productColor}, ${productSize}).`);
       }
 
       colorSizeStockMap[productColor][productSize] -= quantity;
@@ -1678,7 +1678,10 @@ const placeOrder = async (req, res, next) => {
       }
 
       if (userWallet.walletBalance < totalPrice) {
-        throw new NotFoundError('Insufficient wallet balance. Please add funds or use another payment method.');
+        return res.status(400).json({ 
+          message: `Insufficient wallet balance (${userWallet.walletBalance}). Please add funds to place this order.` 
+      });
+      
       }
 
       userWallet.walletBalance -= totalPrice;
