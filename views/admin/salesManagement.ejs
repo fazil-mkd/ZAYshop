@@ -552,7 +552,7 @@
 
 
                     <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate" name="endDate">
+                    <input type="date" id="endDate"  name="endDate">
 
                 </div>
 
@@ -1174,7 +1174,7 @@ function downloadExcel() {
     }
 }
 
-// Add click event listener as backup
+
 document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('toggleNav');
     if (btn) {
@@ -1182,6 +1182,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+
+const today = new Date().toISOString().split('T')[0];
+  
+
+  document.getElementById("endDate").min = today;
      
     </script>
 
