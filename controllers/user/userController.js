@@ -401,7 +401,7 @@ const PostforgetPassword = async (req, res,next) => {
 
     const findUser = await User.findOne({ email });
     if (!findUser) {
-      return res.render('forget-pass', { message: 'User with this email does not exist' });
+      return res.render('forget-pass', { message: "No account found with this email address." });
     }
 
     const otp = generateOtp();
@@ -2183,7 +2183,7 @@ const createOrder = async (req, res,next) => {
 
 
 const forgetPassword = async (req, res,next) => {
-  res.render('forget-pass')
+  res.render('forget-pass',{message:''})
 }
 
 
