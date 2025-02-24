@@ -334,7 +334,7 @@
 async function deleteOffer(Id, type) {
     const { value: confirmed } = await Swal.fire({
         title: 'Are you sure?',
-        text: `You won't be able to revert this ${type}!`,
+        text: `Do you want to delete this ${type}'s offer!`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: `Yes, delete the ${type}!`,
@@ -351,7 +351,7 @@ async function deleteOffer(Id, type) {
               
                 Swal.fire({
                     title: 'Deleted!',
-                    text: `${type.charAt(0).toUpperCase() + type.slice(1)} has been deleted.`,
+                    text: `${type.charAt(0).toUpperCase() + type.slice(1)} offer has been deleted.`,
                     icon: 'success'
                 }).then(() => {
                     location.reload();  

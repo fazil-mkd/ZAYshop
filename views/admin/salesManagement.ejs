@@ -516,6 +516,101 @@
     margin-bottom: 20px;
     margin-left: 80px;
     margin-top: 15px;
+}/* Pagination Container */
+.pagination-container {
+    padding: 1.5rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Basic Pagination Styling */
+.pagination {
+    display: inline-flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+    margin: 0;
+    gap: 0.25rem;
+    margin-left: 1500px;
+}
+
+.page-item {
+    margin: 0 2px;
+}
+
+/* Page Link Styling */
+.page-link {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    color: #007bff;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
+
+/* Hover Effects */
+.page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    z-index: 2;
+}
+
+/* Active State */
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Disabled State */
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+/* Previous/Next Buttons */
+.page-link[href*="prev"],
+.page-link[href*="next"] {
+    font-weight: 500;
+}
+
+/* Page Count Text */
+.pagination-container span {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+    .pagination {
+        gap: 0.125rem;
+    }
+    
+    .page-link {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Optional: Add smooth hover transition */
+.page-link {
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    transform: translateY(0);
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
 }
     </style>
 </head>
@@ -776,6 +871,7 @@
                         <div class="card-header">
                             <span class="card-title">Detailed Sales</span>
                         </div>
+
                         <table class="sales-table">
                             <thead>
                                 <tr>
@@ -791,7 +887,34 @@
                             <tbody id="salesTableBody">
 
                             </tbody>
+                   
                         </table>
+
+                        <div class="pagination-container text-center">
+                            <span class="me-2" style="color: white;">Page <%= page %> of <%= totalPages %></span>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm justify-content-center">
+                                    <% if (page > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/admin/sales?period=<%= periodForPage %>&page=<%= page - 1 %>&limit=<%= limit %>">&laquo; Prev</a>
+                                        </li>
+                                    <% } %>
+                        
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= i === page ? 'active' : '' %>">
+                                            <a class="page-link" href="/admin/sales?period=<%= periodForPage %>&page=<%= i %>&limit=<%= limit %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                        
+                                    <% if (page < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/admin/sales?period=<%= periodForPage %>&page=<%= page + 1 %>&limit=<%= limit %>">Next &raquo;</a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                        
                     </div>
     </div>
     <div id="salesData" data-sales="<%= salesData %>" style="display:none;"></div>
@@ -969,7 +1092,7 @@ doc.text("ZAY", centerX, 15);
 
     const tableHead = [
         ["Period", "Sales ", "Orders", "Customers", "Avg. Order Value ", 
-         "Product Name",  "Color", "Size","Price ", "Qty",'Total','status']
+         "Product Name",  "Color", "Size","Price ", "Qty",'Total','status', 'Peyment Status']
     ];
 
     const tableBody = [];
@@ -989,6 +1112,7 @@ doc.text("ZAY", centerX, 15);
                 product.quantitySold,
                    `${product.price.toLocaleString()}`,
                    product.productStatus,
+                   product.productPeyment,
             ]);
         });
 
@@ -1039,7 +1163,7 @@ function downloadExcel() {
     const wb = XLSX.utils.book_new();
     
     const wsData = [
-        ["S.No", "Date", "Sales", "Orders", "Customers", "Avg Sales/Order", "Product Name","Color", "Size","Price ", "Qty","Total",'Status']
+        ["S.No", "Date", "Sales", "Orders", "Customers", "Avg Sales/Order", "Product Name","Color", "Size","Price ", "Qty","Total",'Status','Peyment Status']
     ];
 
     let rowIndex = 1;
@@ -1060,6 +1184,7 @@ function downloadExcel() {
                 product.quantitySold,
                 product.price,
                 product.productStatus,
+                product.productPeyment,
             ]);
         });
     });

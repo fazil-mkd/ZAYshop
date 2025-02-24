@@ -291,6 +291,10 @@ const createCoupon = async (req, res) => {
           matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
       }
       
+
+      const page = parseInt(req.query.page) || 1;  
+    const limit = parseInt(req.query.limit) || 10; 
+     const skip = (page - 1) * limit; 
       
 
       
@@ -398,11 +402,44 @@ const createCoupon = async (req, res) => {
                   productsSold: 1
               }
           },
-          { $sort: { latestCreatedAt: -1 } }
+          { $sort: { latestCreatedAt: -1 } }, 
+          { $skip: skip }, 
+          { $limit: limit } 
       ]);
       
 
-      
+      const totalCount = await Order.aggregate([
+        { $match: matchStage },
+        { $unwind: "$orderedItems" },
+        {
+            $lookup: {
+                from: "products",
+                localField: "orderedItems.product",
+                foreignField: "_id",
+                as: "productDetails"
+            }
+        },
+        { $unwind: "$productDetails" },
+        {
+            $group: {
+                _id: {
+                    year: { $year: "$createdAt" },
+                    month: { $month: "$createdAt" },
+                    day: { $dayOfMonth: "$createdAt" },
+                    week: { $isoWeek: "$createdAt" }
+                },
+            }
+        },
+        { $count: "totalRecords" }
+    ]);
+    
+    const totalPages = Math.ceil((totalCount[0]?.totalRecords || 0) / limit);
+
+
+
+
+
+
 
 
 const topSellingProducts = await Order.aggregate([
@@ -561,6 +598,11 @@ const SaleTotal = Data.reduce((sum, item) => sum + item.sales, 0);
           topSellingProducts,
           topSellingCategories,
           topSellingBrands,
+          page,
+          limit,
+          totalPages,
+          totalRecords: totalCount[0]?.totalRecords || 0,
+          periodForPage:period,
       });
       
       
