@@ -152,10 +152,7 @@ const updateCategory = async (req, res) => {
     const updatedCategory = await category.save();
     console.log('Category updated successfully:', updatedCategory);
 
-    res.status(200).json({
-      message: 'Category updated successfully',
-      category: updatedCategory,
-    });
+
   } catch (error) {
     console.error('Error updating category:', error);
     res.status(500).json({ message: 'Failed to update category', error: error.message });

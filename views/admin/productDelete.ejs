@@ -70,7 +70,7 @@ document.querySelectorAll('.btn-recover').forEach(button => {
         const productId = this.getAttribute('data-id');
         const spinner = this.querySelector('.spinner-border');
 
-        // Show spinner before asking for confirmation
+  
         spinner.classList.remove('d-none');
 
         const result = await Swal.fire({

@@ -601,48 +601,47 @@
     const form = event.target;
     const formData = new FormData(form);
 
-    // Capture colors
+
     const productColors = [...document.querySelectorAll('input[name="productColors[]"]')]
         .map(input => input.value.trim())
-        .filter(color => color !== "");  // Remove empty values
+        .filter(color => color !== "");  
 
     console.log("productColors:", productColors);
 
-    // Capture sizes
     const productSizes = [];
     document.querySelectorAll('.variant-item').forEach(variant => {
-        let sizes = {};  // Store sizes for this color
+        let sizes = {};  
 
         variant.querySelectorAll('.size-input').forEach(input => {
-            const size = input.dataset.size; // Get size name (S, M, L, etc.)
-            const stock = input.value.trim(); // Get stock quantity
+            const size = input.dataset.size;
+            const stock = input.value.trim();
 
-            if (stock !== "" && !isNaN(stock)) {  // Ignore empty or invalid values
+            if (stock !== "" && !isNaN(stock)) {  
                 sizes[size] = stock;
             }
         });
 
-        // Store sizes as a JSON string in hidden input
+      
         const hiddenInput = variant.querySelector('.size-string-input');
         hiddenInput.value = JSON.stringify(sizes);
 
-        // Add to productSizes array
+  
         productSizes.push(sizes);
     });
 
-    console.log("productSizes:", productSizes); // Debugging output
+    console.log("productSizes:", productSizes); 
 
-    // Add colors and sizes to formData manually if needed
+
     formData.append('productColors', JSON.stringify(productColors));
     formData.append('productSizes', JSON.stringify(productSizes));
 
-    // Debugging: Log formData values
+
     for (let pair of formData.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
     }
 
-    // Submit the form
-    fetch(form.action, {
+
+    fetch("/admin/products/<%= product._id %>?_method=PUT", {
         method: 'POST',
         body: formData,
     })
