@@ -592,41 +592,71 @@
         });
     });
 
+
+
+
+
     document.querySelector('.updatePdt').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
 
-       
-        Object.keys(croppedImages).forEach((index) => {
-    formData.delete(`fileInput${index}`); 
-    formData.append(`fileInput${index}`, dataURLtoBlob(croppedImages[index]), `croppedImage${index}.jpg`);
-});
+    // Capture colors
+    const productColors = [...document.querySelectorAll('input[name="productColors[]"]')]
+        .map(input => input.value.trim())
+        .filter(color => color !== "");  // Remove empty values
 
-  
-Object.keys(existingImages).forEach((index) => {
-        const imageUrl = existingImages[index].split('/').pop(); 
-        formData.append('existingImages[]', imageUrl);
+    console.log("productColors:", productColors);
+
+    // Capture sizes
+    const productSizes = [];
+    document.querySelectorAll('.variant-item').forEach(variant => {
+        let sizes = {};  // Store sizes for this color
+
+        variant.querySelectorAll('.size-input').forEach(input => {
+            const size = input.dataset.size; // Get size name (S, M, L, etc.)
+            const stock = input.value.trim(); // Get stock quantity
+
+            if (stock !== "" && !isNaN(stock)) {  // Ignore empty or invalid values
+                sizes[size] = stock;
+            }
+        });
+
+        // Store sizes as a JSON string in hidden input
+        const hiddenInput = variant.querySelector('.size-string-input');
+        hiddenInput.value = JSON.stringify(sizes);
+
+        // Add to productSizes array
+        productSizes.push(sizes);
     });
 
- 
+    console.log("productSizes:", productSizes); // Debugging output
+
+    // Add colors and sizes to formData manually if needed
+    formData.append('productColors', JSON.stringify(productColors));
+    formData.append('productSizes', JSON.stringify(productSizes));
+
+    // Debugging: Log formData values
     for (let pair of formData.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
     }
 
-     
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Form submitted successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error submitting form:', error);
-        });
+    // Submit the form
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Form submitted successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
     });
+});
+
+
+
 
     function dataURLtoBlob(dataUrl) {
         const byteString = atob(dataUrl.split(',')[1]);

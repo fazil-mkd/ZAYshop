@@ -232,7 +232,7 @@ const updateProduct = async (req, res, next) => {
     try {
 
         const { id } = req.params;
-        const { 
+        let { 
             productName, 
             productPrice, 
             productDescription, 
@@ -347,32 +347,26 @@ const updateProduct = async (req, res, next) => {
        
         const updatedProduct = await product.save();
 
-      
-        if (productColors && productSizes) {
-            const colorsArray = Array.isArray(productColors) 
-                ? productColors 
-                : productColors.split(',');
-            const sizesArray = Array.isArray(productSizes) 
-                ? productSizes 
-                : productSizes.split(',');
 
-            if (colorsArray.length > 0 && sizesArray.length > 0) {
-            
-                await Variant.deleteMany({ productId: new mongoose.Types.ObjectId(updatedProduct._id) });
+        console.log("varientsssssssssss",productColors,productSizes)
 
-              
-                const newVariants = colorsArray.flatMap(color => 
-                    sizesArray.map(size => ({
-                        productId: updatedProduct._id,
-                        color: color.trim(),
-                        size: size.trim()
-                    }))
-                );
+        productColors = typeof productColors === 'string' ? JSON.parse(productColors) : productColors;
+        productSizes = typeof productSizes === 'string' ? JSON.parse(productSizes) : productSizes;
 
-                await Variant.insertMany(newVariants);
-                console.log('varient updated')
-            }
-        }
+
+        await Variant.deleteMany({ productId: updatedProduct._id });
+
+        const formattedSizes = productSizes.map(size => `${size.trim()}:20`).join(',');
+
+        const uniqueColors = [...new Set(productColors.map(color => color.trim()))];
+
+        const newVariants = uniqueColors.map(color => ({
+            productId: updatedProduct._id,
+            color,
+            size: formattedSizes, 
+        }));
+
+        await Variant.insertMany(newVariants);
 
      
         req.flash('success', 'Product updated successfully!');

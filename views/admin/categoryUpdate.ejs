@@ -272,7 +272,7 @@
         
         let isValid = true;
 
-        // Validate Category Name (Min 3, Max 50, no spaces/dots-only)
+ 
         if (!categoryName || categoryName.length < 3 || categoryName.length > 50 || invalidInputRegex.test(categoryName)) {
             nameError.textContent = "Category name must be 3-50 characters and cannot be empty or contain only dots/spaces.";
             nameError.style.display = "block";
@@ -281,7 +281,6 @@
             nameError.style.display = "none";
         }
 
-        // Validate Category Description (Min 10, Max 200, no spaces/dots-only)
         if (!categoryDescription || categoryDescription.length < 10 || categoryDescription.length > 200 || invalidInputRegex.test(categoryDescription)) {
             descError.textContent = "Description must be 10-200 characters and cannot be empty or contain only dots/spaces.";
             descError.style.display = "block";
@@ -290,23 +289,22 @@
             descError.style.display = "none";
         }
 
-        // Enable/disable submit button based on validity
+     
         submitBtn.disabled = !isValid;
         return isValid;
     }
 
-    // Attach event listener for real-time validation
+
     updateCategoryForm.addEventListener("input", checkValidity);
 
     updateCategoryForm.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        // Validate before submitting
         if (!checkValidity()) return;
 
         const formData = new FormData(updateCategoryForm);
 
-        // Handle image field (optional image update)
+
         if (!categoryImageInput.files.length) {
             formData.delete("image"); 
         }
