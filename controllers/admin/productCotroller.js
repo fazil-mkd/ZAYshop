@@ -12,6 +12,7 @@ const Variant = require('../../models/ProductVariants.js');
 
 
 const addProduct = async (req, res, next) => {
+
     try {
       
         const {
@@ -43,6 +44,7 @@ const addProduct = async (req, res, next) => {
             return res.status(400).json({ error: "All fields are required." });
         }
 
+        console.log(req.body)
   
         const existingProduct = await Products.findOne({
             name: productName
@@ -132,6 +134,7 @@ const addProduct = async (req, res, next) => {
 
         
         const products = await Products.find({ isDeleted: false })
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(productsPerPage)
             .populate('category');

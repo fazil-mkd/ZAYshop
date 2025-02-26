@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cropConfirmBtn = document.getElementById('cropConfirmBtn');
         let cropper;
 
-        // Handle image selection and preview
+    
         categoryImageInput.addEventListener('change', function (event) {
             const file = event.target.files[0];
             if (file) {
@@ -132,10 +132,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 reader.onload = function (e) {
                     roundPreview.src = e.target.result;
                     roundPreview.style.display = 'block';
-                    photoUploadContainer.style.display = 'none'; // Hide upload text
-                    removeImageBtn.style.display = 'inline-block'; // Show remove button
-                    cropModalImage.src = e.target.result; // Set image to crop modal
-                    cropModal.show(); // Show crop modal
+                    photoUploadContainer.style.display = 'none';
+                    removeImageBtn.style.display = 'inline-block'; 
+                    cropModalImage.src = e.target.result; 
+                    cropModal.show(); 
                     cropper = new Cropper(cropModalImage, {
                         aspectRatio: 1,
                         viewMode: 2,
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Handle image removal
+      
         removeImageBtn.addEventListener('click', function () {
             categoryImageInput.value = '';
             roundPreview.src = ''; 
@@ -156,56 +156,62 @@ document.addEventListener("DOMContentLoaded", function () {
             imageError.style.display = 'none'; 
         });
 
-        // Crop and save image
+  
         cropConfirmBtn.addEventListener('click', function () {
             const croppedCanvas = cropper.getCroppedCanvas();
             croppedCanvas.toBlob(function (blob) {
                 const formData = new FormData(categoryForm);
                 formData.append('categoryImage', blob);
-                // Send the form data including the image to the server
-                submitForm(formData);  // Call submitForm function with the data
+         
+                submitForm(formData);  
             });
             cropper.destroy();
             cropModal.hide(); 
         });
 
-        // Form validation
+
         categoryForm.addEventListener('submit', function (event) {
-            event.preventDefault();  // Prevent default submission to manually handle it
+    event.preventDefault();
 
-            let valid = true;
+    let valid = true;
+    const noDotOrSpaceRegex = /^[^.\s]+$/; 
 
-            // Check category name
-            if (categoryNameInput.value.length < 3 || categoryNameInput.value.length > 50) {
-                nameError.style.display = 'block';
-                valid = false;
-            } else {
-                nameError.style.display = 'none';
-            }
+    if (
+        categoryNameInput.value.length < 3 ||
+        categoryNameInput.value.length > 50 ||
+        !noDotOrSpaceRegex.test(categoryNameInput.value)
+    ) {
+        nameError.style.display = 'block';
+        valid = false;
+    } else {
+        nameError.style.display = 'none';
+    }
 
-            // Check description
-            if (categoryDescriptionInput.value.length < 10 || categoryDescriptionInput.value.length > 200) {
-                descError.style.display = 'block';
-                valid = false;
-            } else {
-                descError.style.display = 'none';
-            }
+    if (
+        categoryDescriptionInput.value.length < 10 ||
+        categoryDescriptionInput.value.length > 200 ||
+        !noDotOrSpaceRegex.test(categoryDescriptionInput.value)
+    ) {
+        descError.style.display = 'block';
+        valid = false;
+    } else {
+        descError.style.display = 'none';
+    }
 
-            // Check if image is uploaded
-            if (!categoryImageInput.files[0]) {
-                imageError.style.display = 'block';
-                valid = false;
-            } else {
-                imageError.style.display = 'none';
-            }
+    if (!categoryImageInput.files[0]) {
+        imageError.style.display = 'block';
+        valid = false;
+    } else {
+        imageError.style.display = 'none';
+    }
 
-            // If form is valid, trigger submission
-            if (valid) {
-                categoryForm.submit();
-            }
-        });
+    if (valid) {
+        categoryForm.submit();
+    }
+});
+
         
-        // Helper function to submit form
+     
         function submitForm(formData) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/admin/category/add', true);
@@ -217,16 +223,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    categoryForm.reset();  // Reset form after successful submission
+                    categoryForm.reset(); 
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Failed to add category',
-                        text: xhr.responseText
-                    });
+                   console.log('mot working')
                 }
             };
-            xhr.send(formData);  // Send form data with image
+            xhr.send(formData); 
         }
     });
 
