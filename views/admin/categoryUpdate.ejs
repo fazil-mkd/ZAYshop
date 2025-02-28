@@ -280,7 +280,7 @@
             nameError.style.display = "none";
         }
 
-        if (!categoryDescription || categoryDescription.length < 10 || categoryDescription.length > 200 ) {
+        if (!categoryDescription || categoryDescription.length < 10 || categoryDescription.length > 200 ||invalidInputRegex.test(categoryDescription)) {
             descError.textContent = "Description must be 10-200 characters and cannot be empty or contain only dots/spaces.";
             descError.style.display = "block";
             isValid = false;
