@@ -349,7 +349,7 @@ form.addEventListener('submit', async (event) => {
     const productName = document.getElementById('productName');
     const nameError = document.getElementById('name-error');
 
-    if (!productName.value.trim()||invalidInputRegex.test()) {
+    if (!productName.value.trim()||invalidInputRegex.test(productName.value)) {
         isValid = false;
         nameError.textContent = 'Product Name is required.';
         nameError.style.color = 'red';

@@ -223,7 +223,7 @@
     const invalidInputRegex = /^[.\s]+$/;
    
     const validators = {
-        isEmpty: value => !value.trim()||invalidInputRegex.test(),
+        isEmpty: value => !value.trim()||invalidInputRegex.test(value),
         isInvalidPrice: value => isNaN(parseFloat(value)) || parseFloat(value) <= 0,
         isInvalidImage: file => {
             if (!file) return false;

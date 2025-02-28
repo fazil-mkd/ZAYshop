@@ -192,7 +192,7 @@ const loadUpdateProduct = async (req, res) => {
     try {
 
         const product = await Products.findById(productId).populate('category');
-        const categories = await Category.find();
+        const categories = await Category.find({isListed: true });
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
