@@ -220,9 +220,10 @@
         }
     });
 
+    const invalidInputRegex = /^[.\s]+$/;
    
     const validators = {
-        isEmpty: value => !value.trim(),
+        isEmpty: value => !value.trim()||invalidInputRegex.test(),
         isInvalidPrice: value => isNaN(parseFloat(value)) || parseFloat(value) <= 0,
         isInvalidImage: file => {
             if (!file) return false;
@@ -598,7 +599,7 @@
 
 
     document.querySelector('.updatePdt').addEventListener('submit', async (event) => {
-    event.preventDefault(); // ✅ Prevents form from navigating away
+    event.preventDefault(); 
 
     const form = event.target;
     const formData = new FormData(form);

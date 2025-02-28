@@ -42,10 +42,16 @@ router.get('/auth/google/callback',
                 return res.redirect('/register'); 
             }
 
+            if (findUser.isBlocked) {
+                req.session.destroy(); 
+                return res.redirect('/?error=blocked'); 
+            }
+
             req.session.user = findUser;
             req.session.userId = findUser._id;
-            res.redirect('/'); 
+            res.redirect('/');
         } catch (error) {
+            console.error('Google Auth Error:', error);
             res.redirect('/');  
         }
     }
