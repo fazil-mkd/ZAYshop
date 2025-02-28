@@ -172,7 +172,7 @@ const loadProductManagement = async (req, res, next) => {
 
 const loadAddProductsPage = async (req, res) => {
     try {
-        const categories = await Category.find({  isListed: true });
+        const categories = await Category.find();
         res.render('productAdd', { categories: categories, });
     } catch (error) {
         console.error('Error loading product adding page:', error);
@@ -192,7 +192,7 @@ const loadUpdateProduct = async (req, res) => {
     try {
 
         const product = await Products.findById(productId).populate('category');
-        const categories = await Category.find({isListed: true });
+        const categories = await Category.find();
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
