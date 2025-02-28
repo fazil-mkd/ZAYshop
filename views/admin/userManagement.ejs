@@ -2,183 +2,198 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Management</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/assets/css/admin/userManagement.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/admin/userManagement.css">
 </head>
 
 <body>
 
-  <%- include('./layout/sidenav.ejs') %>
+    <%- include('./layout/sidenav.ejs') %>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card shadow-lg border-0">
-          <div class="card-body">
-            <h4 class="card-title" style="margin-left: 80px;">User Management</h4>
-            
-            <form action="/admin/userManagement" method="GET" class="d-flex mb-3" id="searchForm">
-              <input type="text" name="search" value="<%= searchQuery %>" class="form-control me-2" placeholder="Search users...">
-              <button type="submit" class="btn btn-primary">Search</button>
-            </form>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body">
+                            <h4 class="card-title" style="margin-left: 80px;">User Management</h4>
 
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Join Date</th>
-                    <th>Ban</th>
-                    <th>View</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (!users || users.length === 0) { %>
-                    <tr>
-                        <td colspan="6" class="text-center">No users available</td>
-                    </tr>
-                  <% } else { %>
-                    <% users.forEach(user => { %>
-                      <tr>
-                        <td><%= user.name || 'No Name' %></td>
-                        <td><%= user.email || 'No Email' %></td>
-                        <td>
-                          <% const createdAt = new Date(user.createdOn);
-                          const day = createdAt.getDate();
-                          const month = createdAt.getMonth() + 1;
-                          const year = createdAt.getFullYear();
-                          const formattedDate = day + ":" + month + ":" + year; %>
-                          <%= formattedDate %>
-                        </td>
-                        <td>
-                          <button data-id="<%= user.email %>" class="btn btn-ban">
-                            <%= user.isBlocked ? 'Un Block' : 'Block' %>
-                          </button>
-                       </td>
-                       <td>
-                          <button data-id="<%= user.email %>" class="btn btn-view">View</button>
-                       </td>
-                      </tr>
-                    <% }); %>
-                  <% } %>
-                </tbody> 
-              </table>
+                            <form action="/admin/userManagement" method="GET" class="d-flex mb-3" id="searchForm">
+                                <input type="text" name="search" value="<%= searchQuery %>" class="form-control me-2"
+                                    placeholder="Search users..." required>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="button" class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                            </form>
 
-              <div class="pagination-container text-center">
-                <span class="me-2" style="color:white;">Page <%= currentPage %> of <%= totalPages %></span>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm justify-content-center">
-                        <% if (currentPage > 1) { %>
-                            <li class="page-item">
-                                <a class="page-link" href="/admin/userManagement?page=<%= currentPage - 1 %>&search=<%= searchQuery %>" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                        <% } %>
-                        
-                        <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <a class="page-link" href="/admin/userManagement?page=<%= i %>&search=<%= searchQuery %>"><%= i %></a>
-                            </li>
-                        <% } %>
-            
-                        <% if (currentPage < totalPages) { %>
-                            <li class="page-item">
-                                <a class="page-link" href="/admin/userManagement?page=<%= currentPage + 1 %>&search=<%= searchQuery %>" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </nav>
-              </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Join Date</th>
+                                            <th>Ban</th>
+                                            <th>View</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (!users || users.length===0) { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center">No users available</td>
+                                            </tr>
+                                            <% } else { %>
+                                                <% users.forEach(user=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= user.name || 'No Name' %>
+                                                        </td>
+                                                        <td>
+                                                            <%= user.email || 'No Email' %>
+                                                        </td>
+                                                        <td>
+                                                            <% const createdAt=new Date(user.createdOn); const
+                                                                day=createdAt.getDate(); const
+                                                                month=createdAt.getMonth() + 1; const
+                                                                year=createdAt.getFullYear(); const formattedDate=day
+                                                                + ":" + month + ":" + year; %>
+                                                                <%= formattedDate %>
+                                                        </td>
+                                                        <td>
+                                                            <button data-id="<%= user.email %>" class="btn btn-ban">
+                                                                <%= user.isBlocked ? 'Un Block' : 'Block' %>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button data-id="<%= user.email %>"
+                                                                class="btn btn-view">View</button>
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                                        <% } %>
+                                    </tbody>
+                                </table>
+
+                                <div class="pagination-container text-center">
+                                    <span class="me-2" style="color:white;">Page <%= currentPage %> of <%= totalPages %>
+                                    </span>
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination pagination-sm justify-content-center">
+                                            <% if (currentPage> 1) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                        href="/admin/userManagement?page=<%= currentPage - 1 %>&search=<%= searchQuery %>"
+                                                        aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                            <a class="page-link"
+                                                                href="/admin/userManagement?page=<%= i %>&search=<%= searchQuery %>">
+                                                                <%= i %>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+
+                                                            <% if (currentPage < totalPages) { %>
+                                                                <li class="page-item">
+                                                                    <a class="page-link"
+                                                                        href="/admin/userManagement?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"
+                                                                        aria-label="Next">
+                                                                        <span aria-hidden="true">&raquo;</span>
+                                                                    </a>
+                                                                </li>
+                                                                <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <div class="userInfoView" id="userInfoView"></div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="userInfoView" id="userInfoView"></div>
-
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const banButtons = document.querySelectorAll('.btn-ban');
-        const viewButtons = document.querySelectorAll('.btn-view');
-        const userInfoView = document.querySelector('.userInfoView');
-        const searchInput = document.querySelector('input[type="text"]');
-        const searchButton = document.querySelector('button.btn');
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const banButtons = document.querySelectorAll('.btn-ban');
+                const viewButtons = document.querySelectorAll('.btn-view');
+                const userInfoView = document.querySelector('.userInfoView');
+                const searchInput = document.querySelector('input[type="text"]');
+                const searchButton = document.querySelector('button.btn');
 
-       
-        document.getElementById('searchForm').addEventListener('submit', function(event) {
-            event.stopPropagation(); 
-        });
 
-       
-        banButtons.forEach(button => {
-            button.addEventListener('click', async () => {
-                const email = button.dataset.id;
-
-                const result = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You want to change the status',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes'
+                document.getElementById('searchForm').addEventListener('submit', function (event) {
+                    event.stopPropagation();
                 });
 
-                if (result.isConfirmed) {
-                    try {
-                        const response = await fetch('/admin/userManagement/ban', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email })
+
+                banButtons.forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const email = button.dataset.id;
+
+                        const result = await Swal.fire({
+                            title: 'Are you sure?',
+                            text: 'You want to change the status',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Yes'
                         });
 
-                        const result = await response.json();
-                        if (response.ok) {
-                          
-                            button.textContent = button.textContent === 'Block' ? 'Un Block' : 'Block';
-                            location.reload()
-                        } else {
-                            Swal.fire('Error', result.error, 'error');
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await fetch('/admin/userManagement/ban', {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ email })
+                                });
+
+                                const result = await response.json();
+                                if (response.ok) {
+
+                                    button.textContent = button.textContent === 'Block' ? 'Un Block' : 'Block';
+                                    location.reload()
+                                } else {
+                                    Swal.fire('Error', result.error, 'error');
+                                }
+                            } catch (error) {
+                                Swal.fire('Error', 'Something went wrong', 'error');
+                            }
                         }
-                    } catch (error) {
-                        Swal.fire('Error', 'Something went wrong', 'error');
-                    }
-                }
-            });
-        });
+                    });
+                });
 
-  
-        viewButtons.forEach(button => {
-            button.addEventListener('click', async () => {
-                const email = button.dataset.id;
 
-                try {
-                    const response = await fetch(`/admin/userManagement/view?email=${encodeURIComponent(email)}`);
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        Swal.fire('Error', errorData.error || 'Unknown error', 'error');
-                    }
+                viewButtons.forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const email = button.dataset.id;
 
-                    const user = await response.json();
+                        try {
+                            const response = await fetch(`/admin/userManagement/view?email=${encodeURIComponent(email)}`);
 
-                    if (!user) {
-                        Swal.fire('Error', 'Invalid user data received', 'error');
-                        return;
-                    }
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                Swal.fire('Error', errorData.error || 'Unknown error', 'error');
+                            }
 
-                    userInfoView.innerHTML = `
+                            const user = await response.json();
+
+                            if (!user) {
+                                Swal.fire('Error', 'Invalid user data received', 'error');
+                                return;
+                            }
+
+                            userInfoView.innerHTML = `
                         <div class="card mt-4">
                             <div class="card-body">
                                 <h5>User Details</h5>
@@ -190,37 +205,48 @@
                             </div>
                         </div>
                     `;
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire('Error', 'Something went wrong', 'error');
-                }
-            });
-        });
+                        } catch (error) {
+                            console.error('Error:', error);
+                            Swal.fire('Error', 'Something went wrong', 'error');
+                        }
+                    });
+                });
 
-   
-        searchButton.addEventListener('click', async (event) => {
-            event.preventDefault();
-            const query = searchInput.value.trim();
 
-            try {
-                const response = await fetch('/admin/userManagement/Search');
-                const users = await response.json();
+                searchButton.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const query = searchInput.value.trim();
 
-                if (response.ok) {
-                    const filteredUsers = users.filter(user =>
-                        user.name.toLowerCase().includes(query.toLowerCase()) ||
-                        user.email.toLowerCase().includes(query.toLowerCase())
-                    );
 
-                    const tableBody = document.querySelector('tbody');
-                    tableBody.innerHTML = '';
+                    if (!query) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Empty Search!",
+                            text: "Please enter a search term before searching.",
+                        });
+                        return;
+                    }
 
-                    if (filteredUsers.length > 0) {
-                        filteredUsers.forEach(user => {
-                            const createdAt = new Date(user.createdAt);
-                            const formattedDate = `${createdAt.getDate()}:${createdAt.getMonth() + 1}:${createdAt.getFullYear()}`;
 
-                            tableBody.innerHTML += `
+                    try {
+                        const response = await fetch('/admin/userManagement/Search');
+                        const users = await response.json();
+
+                        if (response.ok) {
+                            const filteredUsers = users.filter(user =>
+                                user.name.toLowerCase().includes(query.toLowerCase()) ||
+                                user.email.toLowerCase().includes(query.toLowerCase())
+                            );
+
+                            const tableBody = document.querySelector('tbody');
+                            tableBody.innerHTML = '';
+
+                            if (filteredUsers.length > 0) {
+                                filteredUsers.forEach(user => {
+                                    const createdAt = new Date(user.createdAt);
+                                    const formattedDate = `${createdAt.getDate()}:${createdAt.getMonth() + 1}:${createdAt.getFullYear()}`;
+
+                                    tableBody.innerHTML += `
                                 <tr>
                                     <td>${user.name || 'No Name'}</td>
                                     <td>${user.email || 'No Email'}</td>
@@ -235,61 +261,66 @@
                                     </td>
                                 </tr>
                             `;
-                        });
+                                });
 
-                        
-                        document.querySelectorAll('.btn-ban').forEach(banButton => {
-                            banButton.addEventListener('click', (event) => {
-                                const userEmail = event.target.dataset.id;
-                                Swal.fire({
-                                    title: 'Are you sure?',
-                                    text: "You want to toggle the ban status for this user.",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#d33',
-                                    cancelButtonColor: '#3085d6',
-                                    confirmButtonText: 'Yes'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        fetch(`/admin/userManagement/toggleBan?email=${userEmail}`, {
-                                            method: 'POST'
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                Swal.fire('Success', 'User ban status changed.', 'success');
-                                            } else {
-                                                Swal.fire('Error', 'Failed to toggle ban status.', 'error');
+
+                                document.querySelectorAll('.btn-ban').forEach(banButton => {
+                                    banButton.addEventListener('click', (event) => {
+                                        const userEmail = event.target.dataset.id;
+                                        Swal.fire({
+                                            title: 'Are you sure?',
+                                            text: "You want to toggle the ban status for this user.",
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#d33',
+                                            cancelButtonColor: '#3085d6',
+                                            confirmButtonText: 'Yes'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                fetch(`/admin/userManagement/toggleBan?email=${userEmail}`, {
+                                                    method: 'POST'
+                                                })
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        if (data.success) {
+                                                            Swal.fire('Success', 'User ban status changed.', 'success');
+                                                        } else {
+                                                            Swal.fire('Error', 'Failed to toggle ban status.', 'error');
+                                                        }
+                                                    })
+                                                    .catch(error => Swal.fire('Error', 'Something went wrong.', 'error'));
                                             }
-                                        })
-                                        .catch(error => Swal.fire('Error', 'Something went wrong.', 'error'));
-                                    }
+                                        });
+                                    });
                                 });
-                            });
-                        });
 
-                        document.querySelectorAll('.btn-view').forEach(viewButton => {
-                            viewButton.addEventListener('click', (event) => {
-                                const userEmail = event.target.dataset.id; 
-                                Swal.fire({
-                                    title: 'User Details',
-                                    text: `You are viewing the details of ${userEmail}.`,
-                                    icon: 'info'
+                                document.querySelectorAll('.btn-view').forEach(viewButton => {
+                                    viewButton.addEventListener('click', (event) => {
+                                        const userEmail = event.target.dataset.id;
+                                        Swal.fire({
+                                            title: 'User Details',
+                                            text: `You are viewing the details of ${userEmail}.`,
+                                            icon: 'info'
+                                        });
+                                    });
                                 });
-                            });
-                        });
-                    } else {
-                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No users found</td></tr>';
+                            } else {
+                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No users found</td></tr>';
+                            }
+                        } else {
+                            Swal.fire('Error', 'Failed to fetch users', 'error');
+                        }
+                    } catch (error) {
+                        Swal.fire('Error', 'Something went wrong', 'error');
                     }
-                } else {
-                    Swal.fire('Error', 'Failed to fetch users', 'error');
-                }
-            } catch (error) {
-                Swal.fire('Error', 'Something went wrong', 'error');
+                });
+            });
+
+            function clearSearch() {
+                window.location.href = "/admin/userManagement";
             }
-        });
-    });
-  </script>
+
+        </script>
 
 </body>
 

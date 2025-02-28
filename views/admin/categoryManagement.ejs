@@ -21,10 +21,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Category Management</h4>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" class="form-control" placeholder="Search categories...">
+                    <div class="search-container">
+                        <input type="text" class="form-control" placeholder="Search categories" id="category-search-input" value="<%= searchQuery %>">
                     </div>
+                    
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -84,6 +84,50 @@
                 <button onclick="window.location.href='/admin/category/del'" class="btn btn-custom btn-unlist" id="btn-del-cat">
                     <i class="fas fa-archive me-1"></i> Unlisted Categories
                 </button>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center align-items-center mt-3">
+            <div class="pagination-container text-center">
+                <span class="me-2" style="color:white;">Page <%= currentPage %> of <%= totalPages %></span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm justify-content-center">
+                        
+                        <!-- Previous Button -->
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        <% } %>
+        
+                        <!-- Page Numbers -->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                            </li>
+                        <% } %>
+        
+                        <!-- Next Button -->
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        <% } %>
+        
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -207,6 +251,31 @@ async function fetchUnlistedCategories() {
 
 
 
+
+
+let searchTimeout;
+let lastSearchValue = "<%= searchQuery %>"; 
+
+document.getElementById('category-search-input').addEventListener('input', function () {
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(() => {
+        const searchValue = document.getElementById('category-search-input').value.trim();
+
+   
+        if (searchValue === lastSearchValue) return;
+        lastSearchValue = searchValue;
+
+        if (searchValue) {
+            const newUrl = `/admin/category?search=${encodeURIComponent(searchValue)}`;
+            history.replaceState(null, "", newUrl);
+            window.location.href = newUrl;
+        } else {
+            history.replaceState(null, "", "/admin/category"); 
+            window.location.href = "/admin/category";
+        }
+    }, 500);
+});
 
 </script>
 

@@ -22,6 +22,8 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10 col-sm-12">
+                    <input type="hidden" name="productId" id="productId" value="<%= product._id %>"> 
+
                     <div class="product-update-container">
                         <h4 class="text-center mb-4">Update Product</h4>
                         <form class="updatePdt" action="/admin/products/<%= product._id %>?_method=PUT" method="POST"
@@ -147,27 +149,27 @@
                                     <div class="size-grid">
                                         <div>
                                             <label class="form-label">S</label>
-                                            <input type="number" class="form-control size-input" data-size="S" min="0">
+                                            <input type="number" name="sizes[][S]" class="form-control size-input" data-size="S" min="0">
                                         </div>
                                         <div>
                                             <label class="form-label">M</label>
-                                            <input type="number" class="form-control size-input" data-size="M" min="0">
+                                            <input type="number" name="sizes[][M]" class="form-control size-input" data-size="M" min="0">
                                         </div>
                                         <div>
                                             <label class="form-label">L</label>
-                                            <input type="number" class="form-control size-input" data-size="L" min="0">
+                                            <input type="number" name="sizes[][L]" class="form-control size-input" data-size="L" min="0">
                                         </div>
                                         <div>
                                             <label class="form-label">X</label>
-                                            <input type="number" class="form-control size-input" data-size="X" min="0">
+                                            <input type="number" name="sizes[][X]" class="form-control size-input" data-size="X" min="0">
                                         </div>
                                         <div>
                                             <label class="form-label">XL</label>
-                                            <input type="number" class="form-control size-input" data-size="XL" min="0">
+                                            <input type="number" name="sizes[][XL]" class="form-control size-input" data-size="XL" min="0">
                                         </div>
                                         <div>
                                             <label class="form-label">XXL</label>
-                                            <input type="number" class="form-control size-input" data-size="XXL" min="0">
+                                            <input type="number" name="sizes[][XXL]" class="form-control size-input" data-size="XXL" min="0">
                                         </div>
                                     </div>
                                     <input type="hidden" name="productSizes[]" class="size-string-input">
@@ -181,7 +183,7 @@
                             </button>
                             <p id="color-size-error" class="text-danger mt-2 small"></p>
                         </div>
-
+                        
 
 
                             <div class="text-center mt-4">
@@ -595,64 +597,76 @@
 
 
 
+    document.querySelector('.updatePdt').addEventListener('submit', async (event) => {
+    event.preventDefault(); // ✅ Prevents form from navigating away
 
-    document.querySelector('.updatePdt').addEventListener('submit', (event) => {
-    event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
+    const productId = document.querySelector("#productId").value;
 
+    try {
+        const response = await fetch(`/admin/products/${productId}?_method=PUT`, {
+            method: "POST", 
+            headers: {
+                "Accept": "application/json"
+            },
+            body: formData
+        });
 
-    const productColors = [...document.querySelectorAll('input[name="productColors[]"]')]
-        .map(input => input.value.trim())
-        .filter(color => color !== "");  
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server response is not valid JSON");
+        }
 
-    console.log("productColors:", productColors);
+        const data = await response.json();
 
-    const productSizes = [];
-    document.querySelectorAll('.variant-item').forEach(variant => {
-        let sizes = {};  
-
-        variant.querySelectorAll('.size-input').forEach(input => {
-            const size = input.dataset.size;
-            const stock = input.value.trim();
-
-            if (stock !== "" && !isNaN(stock)) {  
-                sizes[size] = stock;
+        Swal.fire({
+            title: data.success ? "Success!" : "Error!",
+            text: data.message || "Something went wrong!",
+            icon: data.success ? "success" : "error",
+        }).then(() => {
+            if (data.success) {
+                form.reset();
+   
             }
         });
 
-      
-        const hiddenInput = variant.querySelector('.size-string-input');
-        hiddenInput.value = JSON.stringify(sizes);
-
-  
-        productSizes.push(sizes);
-    });
-
-    console.log("productSizes:", productSizes); 
-
-
-    formData.append('productColors', JSON.stringify(productColors));
-    formData.append('productSizes', JSON.stringify(productSizes));
-
-
-    for (let pair of formData.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
+    } catch (error) {
+        console.error("❌ Error submitting form:", error);
+        // Swal.fire({
+        //     title: "Error!",
+        //     text: "An error occurred. Please try again.",
+        //     icon: "error",
+        // });
     }
-
-
-    fetch("/admin/products/<%= product._id %>?_method=PUT", {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Form submitted successfully:', data);
-    })
-    .catch(error => {
-        console.error('Error submitting form:', error);
-    });
 });
+
+
+
+
+
+// // ✅ Add New Color & Size Fields Dynamically
+// document.querySelector('#addColorSize').addEventListener('click', () => {
+//     const colorSizeSection = document.querySelector('#colorSizeSection');
+
+//     // Clone the first variant-item to maintain structure
+//     const newVariant = document.querySelector('.variant-item').cloneNode(true);
+
+//     // Clear inputs in the cloned element
+//     newVariant.querySelector('.color-input').value = ""; // Clear color input
+//     newVariant.querySelectorAll('.size-input').forEach(input => input.value = ""); // Clear size inputs
+//     newVariant.querySelector('.size-string-input').value = ""; // Clear hidden size data
+
+//     // Append the new variant to the section
+//     colorSizeSection.appendChild(newVariant);
+// });
+
+// // ✅ Remove Color & Size Section
+// document.querySelector('#colorSizeSection').addEventListener('click', (event) => {
+//     if (event.target.classList.contains('remove-color-size')) {
+//         event.target.closest('.variant-item').remove();
+//     }
+// });
 
 
 

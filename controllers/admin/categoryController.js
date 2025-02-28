@@ -32,40 +32,63 @@ async function deleteCategoryById(id, isPermanent = false) {
 
 
 
-const loadCategoryManagement = async (req, res)=> {
+const loadCategoryManagement = async (req, res) => {
   try {
     if (!req.session.admin) {
-        return res.status(200).render('admin-login',{message: "" });
+      return res.status(200).render("admin-login", { message: "" });
     }
-      const categories = await Category.find({ isListed: true });
-      
-      if (!categories || categories.length === 0) {
-          
-          return res.status(200).render("categoryManagement", { 
-              categoriesWithCounts: [], 
-              msg: "No categories found" 
-          });
-      }
-      const categoriesWithCounts = await Promise.all(
-        categories.map(async (category) => {
-          const productCount = await Products.countDocuments({ category: category._id });
-      
-          return {
-            ...category.toObject(),
-            productCount,
-          };
-        })
-      );
-      
-      return res.status(200).render("categoryManagement", { 
-          categoriesWithCounts,
-          msg: null
+
+    const page = parseInt(req.query.page) || 1;
+    const categoriesPerPage = 8;
+    const skip = (page - 1) * categoriesPerPage;
+    const searchQuery = req.query.search ? req.query.search.trim() : "";
+
+    let filter = { isListed: true }; 
+
+    if (searchQuery) {
+      filter.name = { $regex: searchQuery, $options: "i" }; 
+    }
+
+    const categories = await Category.find(filter)
+      .sort({ createdAt: -1 }) 
+      .skip(skip)
+      .limit(categoriesPerPage);
+
+    const totalCategories = await Category.countDocuments(filter);
+    const totalPages = Math.ceil(totalCategories / categoriesPerPage);
+
+    if (!categories || categories.length === 0) {
+      return res.status(200).render("categoryManagement", {
+        categoriesWithCounts: [],
+        msg: "No categories found",
+        currentPage: page,
+        totalPages,
+        searchQuery,
       });
+    }
+
+    const categoriesWithCounts = await Promise.all(
+      categories.map(async (category) => {
+        const productCount = await Products.countDocuments({ category: category._id });
+        return { ...category.toObject(), productCount };
+      })
+    );
+
+    return res.status(200).render("categoryManagement", {
+      categoriesWithCounts,
+      msg: null,
+      currentPage: page,
+      totalPages,
+      searchQuery,
+    });
   } catch (error) {
-      console.error("Error loading category management page:", error);
-      return res.status(500).send("Internal Server Error");
+    console.error("Error loading category management page:", error);
+    return res.status(500).send("Internal Server Error");
   }
-}
+};
+
+
+
 
 const loadUpdateCategory = async (req, res) => {
   try {
@@ -152,6 +175,7 @@ const updateCategory = async (req, res) => {
     const updatedCategory = await category.save();
     console.log('Category updated successfully:', updatedCategory);
 
+    return res.redirect("/admin/category");
 
   } catch (error) {
     console.error('Error updating category:', error);
@@ -252,15 +276,8 @@ const updateCategory = async (req, res) => {
             });
         }
 
-        return res.status(201).json({
-            success: true,
-            message: 'Category added successfully!',
-            category: {
-                name: newCategory.name,
-                description: newCategory.description,
-                image: imageUrl,  
-            },
-        });
+        res.redirect('/admin/category')
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({

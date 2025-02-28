@@ -14,7 +14,7 @@ const Variant = require('../../models/ProductVariants.js');
 const addProduct = async (req, res, next) => {
 
     try {
-      
+
         const {
             productName,
             productPrice,
@@ -28,7 +28,7 @@ const addProduct = async (req, res, next) => {
 
         const productImages = req.files;
 
-     
+
         if (
             !productName ||
             !productPrice ||
@@ -45,7 +45,7 @@ const addProduct = async (req, res, next) => {
         }
 
         console.log(req.body)
-  
+
         const existingProduct = await Products.findOne({
             name: productName
         }).collation({
@@ -54,9 +54,12 @@ const addProduct = async (req, res, next) => {
         });
 
         if (existingProduct) {
-            req.flash('error', 'Product with this name already exists!');
-            return res.redirect('/admin/products/add');
+            return res.status(400).json({
+                success: false,
+                message: 'Product with this name already exists!'
+            });
         }
+
 
         const uploadImageToCloudinary = (file) => {
             return new Promise((resolve, reject) => {
@@ -70,10 +73,10 @@ const addProduct = async (req, res, next) => {
             });
         };
 
-  
+
         const imageUrls = await Promise.all(productImages.map(uploadImageToCloudinary));
 
-       
+
         const newProduct = new Products({
             name: productName,
             description: productDescription,
@@ -93,7 +96,7 @@ const addProduct = async (req, res, next) => {
 
         await Variant.insertMany(newVariants);
 
-  
+
         const categoryOffer = await Category.findById(productCategory);
         if (categoryOffer && categoryOffer.isOfferCategory) {
             const discountPercentage = categoryOffer.discountPercentage;
@@ -102,12 +105,15 @@ const addProduct = async (req, res, next) => {
             newProduct.offerEndDate = categoryOffer.offerEndDate;
         }
 
- 
+
         await newProduct.save();
 
         console.log('Product added successfully!');
-        req.flash('success', 'Product added successfully!');
-        return res.redirect('/admin/products/add');
+        return res.status(201).json({
+            success: true,
+            message: 'Product added successfully!'
+        });
+
 
     } catch (err) {
         console.error("Error in addProduct function:", err);
@@ -120,46 +126,54 @@ const addProduct = async (req, res, next) => {
 
 
 
- 
- const loadProductManagement = async(req, res)=>{
+
+const loadProductManagement = async (req, res, next) => {
     try {
         if (!req.session.admin) {
             return res.status(200).render('admin-login', { message: "" });
         }
-        
-  
+
         const page = parseInt(req.query.page) || 1;
-        const productsPerPage = 8;
+        const productsPerPage = 10;
         const skip = (page - 1) * productsPerPage;
 
         
-        const products = await Products.find({ isDeleted: false })
+        const searchQuery = req.query.search ? req.query.search.trim() : "";
+
+        let filter = { isDeleted: false };
+        if (searchQuery) {
+            filter.name = { $regex: searchQuery, $options: "i" }; 
+        }
+
+      
+        const products = await Products.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(productsPerPage)
             .populate('category');
 
-        
-        const totalProducts = await Products.countDocuments({ isDeleted: false });
+        const totalProducts = await Products.countDocuments(filter);
         const totalPages = Math.ceil(totalProducts / productsPerPage);
 
-        if (!products || products.length === 0) {
-            return res.status(200).render('productManagement', { msg: 'No products found', products: [], currentPage: page, totalPages });
-        }
-       
-        return res.status(200).render('productManagement', { products, currentPage: page, totalPages });
+        return res.status(200).render('productManagement', {
+            products,
+            currentPage: page,
+            totalPages,
+            searchQuery 
+        });
     } catch (error) {
-        console.log('Error loading product management ' + error);
-        next(err); 
+        console.log('Error loading product management: ', error);
+        next(error);
     }
-}
+};
 
 
 
-const  loadAddProductsPage = async (req, res)=>{
+
+const loadAddProductsPage = async (req, res) => {
     try {
         const categories = await Category.find({ isDeleted: false });
-        res.render('productAdd', { categories: categories ,});
+        res.render('productAdd', { categories: categories, });
     } catch (error) {
         console.error('Error loading product adding page:', error);
         res.status(500).json({ message: 'Error loading product adding page' });
@@ -168,7 +182,7 @@ const  loadAddProductsPage = async (req, res)=>{
 
 const loadUpdateProduct = async (req, res) => {
     const productId = req.params.id;
-   
+
 
     if (!mongoose.Types.ObjectId.isValid(productId) || productId.length !== 24) {
         console.error('Invalid productId:', productId);
@@ -176,7 +190,7 @@ const loadUpdateProduct = async (req, res) => {
     }
 
     try {
-       
+
         const product = await Products.findById(productId).populate('category');
         const categories = await Category.find();
 
@@ -184,109 +198,112 @@ const loadUpdateProduct = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
- const productVariants = await Variant.find({ productId:productId });
+        const productVariants = await Variant.find({ productId: productId });
 
-  
 
-     
-let colorSizeStockMap = {};
 
-let processedVariants = {};
 
-productVariants.forEach((variant) => {
-    if (variant.size && variant.color) {
-        const sizeStockData = variant.size.split(',');
-        
-        sizeStockData.forEach((item) => {
-            const [size, stock] = item.split(':').map(part => part.trim());
+        let colorSizeStockMap = {};
 
-            const colorSizeKey = `${variant.color}-${size}`;
+        let processedVariants = {};
 
-            if (!processedVariants[colorSizeKey]) {
-                if (!colorSizeStockMap[variant.color]) {
-                    colorSizeStockMap[variant.color] = {};
-                }
-                colorSizeStockMap[variant.color][size] = (colorSizeStockMap[variant.color][size] || 0) + parseInt(stock, 10);
-                
-                processedVariants[colorSizeKey] = true;
+        productVariants.forEach((variant) => {
+            if (variant.size && variant.color) {
+                const sizeStockData = variant.size.split(',');
+
+                sizeStockData.forEach((item) => {
+                    const [size, stock] = item.split(':').map(part => part.trim());
+
+                    const colorSizeKey = `${variant.color}-${size}`;
+
+                    if (!processedVariants[colorSizeKey]) {
+                        if (!colorSizeStockMap[variant.color]) {
+                            colorSizeStockMap[variant.color] = {};
+                        }
+                        colorSizeStockMap[variant.color][size] = (colorSizeStockMap[variant.color][size] || 0) + parseInt(stock, 10);
+
+                        processedVariants[colorSizeKey] = true;
+                    }
+                });
             }
         });
-    }
-});
-         
-     console.log( colorSizeStockMap)
 
-        res.render('productUpdate', { product, categories,colorSizeStockMap});
+        console.log(colorSizeStockMap)
+
+        res.render('productUpdate', { product, categories, colorSizeStockMap });
     } catch (err) {
         console.error('Error loading product update page:', err);
-        next(err); 
+        next(err);
     }
 };
 
 
 
 
-
-
 const updateProduct = async (req, res, next) => {
-    try {
+    console.log('🔄 Updating product...');
 
+    try {
         const { id } = req.params;
-        let { 
-            productName, 
-            productPrice, 
-            productDescription, 
-            productCategory, 
-            productSizes, 
-            productColors, 
-            productTags, 
+        let {
+            productName,
+            productPrice,
+            productDescription,
+            productCategory,
+            productTags,
             productbrand,
             existingImages,
-            removedImages 
+            removedImages
         } = req.body;
 
-       
-        if (!productName || !productPrice || !productDescription || !productCategory) {
-            return res.status(400).json({
-                success: false,
-                message: 'Required fields are missing'
+        console.log('📦 Received data:', req.body);
+
+   
+        let productColors = req.body.productColors ? req.body.productColors : [];
+
+        let productVariants = productColors.map((color, index) => {
+            let sizes = {};
+
+            Object.keys(req.body).forEach(key => {
+                if (key.startsWith('sizes[][')) {
+                    const sizeName = key.match(/\[([^\]]+)\]/)[1]; 
+                    sizes[sizeName] = Number(req.body[key][index]); 
+                }
             });
+
+            return {
+                color,
+                sizes,
+            };
+        });
+
+        productVariants = productVariants.filter(variant => Object.keys(variant.sizes).length > 0);
+
+        console.log("✅ Processed productColors:", productColors);
+        console.log("✅ Processed productVariants:", productVariants);
+
+      
+        if (!productName || !productPrice || !productDescription || !productCategory) {
+            return res.status(400).json({ success: false, message: 'Required fields are missing' });
         }
 
-       
+      
         const product = await Products.findById(id);
         if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found'
-            });
+            return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-       
-        let finalImages = [];
+      
+        let finalImages = existingImages ?
+            (Array.isArray(existingImages) ? existingImages : [existingImages])
+            : [...product.images];
 
-       
-        if (existingImages) {
-            const existingImagesArray = Array.isArray(existingImages) 
-                ? existingImages 
-                : [existingImages];
-            finalImages = [...existingImagesArray];
-        } else {
-            finalImages = [...product.images];
-        }
-
-       
         if (removedImages) {
-            const removedIndexes = Array.isArray(removedImages)
-                ? removedImages.map(Number)
-                : [Number(removedImages)];
-            
-            finalImages = finalImages.filter((_, index) => 
-                !removedIndexes.includes(index)
-            );
+            const removedIndexes = Array.isArray(removedImages) ? removedImages.map(Number) : [Number(removedImages)];
+            finalImages = finalImages.filter((_, index) => !removedIndexes.includes(index));
         }
 
-        
+   
         if (req.files && req.files.length > 0) {
             const uploadImageToCloudinary = (file) => {
                 return new Promise((resolve, reject) => {
@@ -301,21 +318,14 @@ const updateProduct = async (req, res, next) => {
                             ]
                         },
                         (error, result) => {
-                            if (error) {
-                                console.error('Cloudinary upload error:', error);
-                                return reject(error);
-                            }
+                            if (error) return reject(error);
                             resolve(result.secure_url);
                         }
                     );
                     stream.end(file.buffer);
                 });
             };
-
-            const newImageUrls = await Promise.all(
-                req.files.map(file => uploadImageToCloudinary(file))
-            );
-
+            const newImageUrls = await Promise.all(req.files.map(file => uploadImageToCloudinary(file)));
             finalImages = [...finalImages, ...newImageUrls];
         }
 
@@ -328,54 +338,52 @@ const updateProduct = async (req, res, next) => {
         product.brand = productbrand || product.brand;
         product.images = finalImages;
 
-       
         const categoryOffer = await Category.findById(productCategory);
         if (categoryOffer?.isOfferCategory) {
             const discountPercentage = categoryOffer.discountPercentage;
-            const discountedPrice = product.price * (1 - (discountPercentage / 100));
-            
-            product.offerPrice = Math.round(discountedPrice * 100) / 100;
+            product.offerPrice = Math.round((product.price * (1 - discountPercentage / 100)) * 100) / 100;
             product.offerStartDate = categoryOffer.offerStartDate;
             product.offerEndDate = categoryOffer.offerEndDate;
         } else {
-          
             product.offerPrice = null;
             product.offerStartDate = null;
             product.offerEndDate = null;
         }
 
-       
-        const updatedProduct = await product.save();
+        await product.save();
 
+  
+        if (!Array.isArray(productColors) || productVariants.length === 0) {
+            console.error("❌ Error: Product colors or sizes are missing/invalid.");
+            return res.status(400).json({ success: false, message: "Invalid product colors or sizes." });
+        }
 
-        console.log("varientsssssssssss",productColors,productSizes)
+  
+        await Variant.deleteMany({ productId: product._id });
 
-        productColors = typeof productColors === 'string' ? JSON.parse(productColors) : productColors;
-        productSizes = typeof productSizes === 'string' ? JSON.parse(productSizes) : productSizes;
-
-
-        await Variant.deleteMany({ productId: updatedProduct._id });
-
-        const formattedSizes = productSizes.map(size => `${size.trim()}:20`).join(',');
-
-        const uniqueColors = [...new Set(productColors.map(color => color.trim()))];
-
-        const newVariants = uniqueColors.map(color => ({
-            productId: updatedProduct._id,
-            color,
-            size: formattedSizes, 
+   
+        let variants = productVariants.map(variant => ({
+            productId: product._id,
+            color: variant.color,
+            size: Object.entries(variant.sizes)
+                .map(([size, stock]) => `${size}:${stock}`)
+                .join(",") 
         }));
 
-        await Variant.insertMany(newVariants);
+        if (variants.length > 0) {
+            await Variant.insertMany(variants);
+            console.log("✅ Variants successfully updated:", variants);
+        } else {
+            console.warn("⚠️ No valid variants to insert.");
+        }
 
-     
-        req.flash('success', 'Product updated successfully!');
-        return res.redirect('/admin/products');
+
+        res.redirect("/admin/products");
+
 
     } catch (error) {
-        console.error('Error updating product:', error);
-        req.flash('error', 'Failed to update product');
-        return next(error);
+        console.error('❌ Error updating product:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
@@ -384,18 +392,18 @@ const updateProduct = async (req, res, next) => {
 
 
 
-const loadDelProductPage = async (req, res)=>{
+const loadDelProductPage = async (req, res) => {
     try {
         const deletedProducts = await Products.find({ isDeleted: true });
         res.render("productDelete", { deletedProducts });
     } catch (error) {
         console.error("Error fetching deleted products:", error);
-        next(err); 
+        next(err);
     }
 }
 
 
-const  deleteProduct = async (req, res)=>{
+const deleteProduct = async (req, res) => {
     try {
         const { productId } = req.body;
 
@@ -408,7 +416,7 @@ const  deleteProduct = async (req, res)=>{
         res.status(200).json({ success: true, message: 'Product successfully soft-deleted' });
     } catch (error) {
         console.error(error);
-        next(err); 
+        next(err);
     }
 }
 
@@ -451,15 +459,15 @@ const recoverProduct = async (req, res, next) => {
 
 
 
-module.exports={
+module.exports = {
     loadProductManagement,
     loadAddProductsPage,
     loadUpdateProduct,
     updateProduct,
     loadDelProductPage,
     deleteProduct,
-  addProduct,
-  recoverProduct,
+    addProduct,
+    recoverProduct,
 }
 
 

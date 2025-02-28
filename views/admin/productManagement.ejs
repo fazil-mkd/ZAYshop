@@ -26,21 +26,11 @@
             <div class="card-header d-flex justify-content-between align-items-center">
               <h4 class="card-title mb-0">Product Management</h4>
               <div class="search-container">
-                <input type="text" class="form-control" placeholder="Search products" id="search-input">
-                <button class="btn btn-primary" id="search-btn">
-                  <i class="fas fa-search"></i> Search
-                </button>
-              </div>
-              <% if (successMessage) { %>
-                <div id="success-alert" class="alert alert-success"><%= successMessage %></div>
-              <% } else { %>
-                <div id="success-alert" class="alert alert-success" style="display:none;"></div>
-              <% } %>
-              <% if (errorMessage) { %>
-                <div id="success-alert" class="alert alert-success"><%= errorMessage %></div>
-              <% } else { %>
-                <div id="success-alert" class="alert alert-success" style="display:none;"></div>
-              <% } %>
+                <input type="text" class="form-control" placeholder="Search products" id="search-input" value="<%= searchQuery %>">
+            </div>
+            
+            
+             
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -239,14 +229,32 @@
 
 
 
-    const params = new URLSearchParams(window.location.search);
 
-if (params.get('reload') === 'true') {
-  params.delete('reload')
-  const newUrl = window.location.pathname + '?' + params.toString();
-  window.history.replaceState({}, '', newUrl); 
-  location.reload(); 
-}
+
+    let searchTimeout;
+let lastSearchValue = "<%= searchQuery %>"; 
+
+document.getElementById('search-input').addEventListener('input', function () {
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(() => {
+        const searchValue = document.getElementById('search-input').value.trim();
+
+     
+        if (searchValue === lastSearchValue) return;
+        lastSearchValue = searchValue;
+
+        if (searchValue) {
+            const newUrl = `/admin/products?search=${encodeURIComponent(searchValue)}`;
+            history.replaceState(null, "", newUrl);
+            window.location.href = newUrl;
+        } else {
+            history.replaceState(null, "", "/admin/products"); 
+            window.location.href = "/admin/products";
+        }
+    }, 500);
+});
+
 
   </script>
 

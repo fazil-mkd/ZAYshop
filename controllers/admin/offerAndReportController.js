@@ -11,8 +11,8 @@ const mongoose= require('mongoose')
 const loadOffer = async (req, res) => {
   try {
    
-    const products = await Product.find();
-    const categories = await Category.find();
+    const products = await Product.find({isDeleted:false});
+    const categories = await Category.find({isListed:true});
 
     const offerAppliedProduct = await Product.find({isOffer:true})
     const offerAppliedCategory = await Category.find({isOfferCategory:true})

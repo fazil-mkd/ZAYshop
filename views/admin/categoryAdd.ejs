@@ -189,8 +189,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (
         categoryDescriptionInput.value.length < 10 ||
-        categoryDescriptionInput.value.length > 200 ||
-        !noDotOrSpaceRegex.test(categoryDescriptionInput.value)
+        categoryDescriptionInput.value.length > 200 
+      
     ) {
         descError.style.display = 'block';
         valid = false;

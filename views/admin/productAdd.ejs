@@ -402,10 +402,6 @@ form.addEventListener('submit', async (event) => {
     if (!isValid) return; 
 
 
-if(isValid){
-    window.location.reload()
-}
- 
   
         const formData = new FormData(form);
 
@@ -433,25 +429,32 @@ if(isValid){
 });
 
 if (!response.ok) {
+    const errorMessage = `HTTP error! Status: ${response.status}`;
     Swal.fire({
         title: 'Error!',
-        text: `HTTP error! Status: ${response.status}`,
+        text: errorMessage,
         icon: 'error',
     });
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    throw new Error(errorMessage);
 }
 
 const contentType = response.headers.get('content-type');
 if (!contentType || !contentType.includes('application/json')) {
-  console.log('its okkey')
+    console.log('Unexpected response format');
+} else {
+    const data = await response.json();
+    Swal.fire({
+        title: data.success ? 'Success!' : 'Error!',
+        text: data.message || "Something went wrong!",
+        icon: data.success ? 'success' : 'error',
+    }).then(() => {
+        if (data.success) {
+            form.reset(); 
+        }
+    });
 }
 
-const data = await response.json();
-Swal.fire({
-    title: 'Response Received',
-    text: "Product added succesfully",
-    icon: 'success',
-})
+
 
     });
 

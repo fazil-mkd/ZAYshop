@@ -204,10 +204,9 @@
         const submitBtn = updateCategoryForm.querySelector("button[type='submit']");
         let cropper;
 
-        // Disable the submit button initially
         submitBtn.disabled = true;
 
-        // Cropper Initialization
+
         const fileInput = document.getElementById("categoryImage");
         const cropModal = new bootstrap.Modal(document.getElementById("cropModal"));
         const cropModalImage = document.getElementById("cropModalImage");
@@ -281,7 +280,7 @@
             nameError.style.display = "none";
         }
 
-        if (!categoryDescription || categoryDescription.length < 10 || categoryDescription.length > 200 || invalidInputRegex.test(categoryDescription)) {
+        if (!categoryDescription || categoryDescription.length < 10 || categoryDescription.length > 200 ) {
             descError.textContent = "Description must be 10-200 characters and cannot be empty or contain only dots/spaces.";
             descError.style.display = "block";
             isValid = false;
@@ -312,19 +311,9 @@
         fetch(`/admin/category/update/${updateCategoryForm.categoryId.value}`, {
             method: "PUT",
             body: formData,
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                feedbackMessage.classList.remove("alert-success", "alert-danger");
-                feedbackMessage.classList.add(data.success ? "alert-success" : "alert-danger");
-                feedbackMessage.textContent = data.message || (data.success ? "Category updated successfully!" : "Something went wrong!");
-                feedbackMessage.style.display = "block";
-            })
-            .catch((error) => {
-                feedbackMessage.classList.add("alert-danger");
-                feedbackMessage.textContent = "Error while updating category!";
-                feedbackMessage.style.display = "block";
-            });
+        }).then(()=>window.location.href="/admin/category")
+            
+           
     });
 });
 
