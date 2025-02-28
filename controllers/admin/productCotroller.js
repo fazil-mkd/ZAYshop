@@ -172,7 +172,7 @@ const loadProductManagement = async (req, res, next) => {
 
 const loadAddProductsPage = async (req, res) => {
     try {
-        const categories = await Category.find({ isDeleted: false });
+        const categories = await Category.find({  isListed: true });
         res.render('productAdd', { categories: categories, });
     } catch (error) {
         console.error('Error loading product adding page:', error);
