@@ -132,6 +132,18 @@ _
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/templatemo.js"></script>
 <script src="assets/js/custom.js"></script>
+
+
+<script>
+    
+const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error") === "blocked") {
+        Swal.fire("Access Denied", "Your account is blocked. Contact support.", "error");
+    }
+
+
+
+</script>
 <!-- End Script -->
 </body>
 
