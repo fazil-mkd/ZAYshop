@@ -111,7 +111,8 @@
                         <!-- Product Description -->
                         <div class="form-group">
                             <label for="productDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="productDescription" name="productDescription" rows="4"></textarea>
+                            <textarea class="form-control" id="productDIS" name="productDescription" rows="4"></textarea>
+                            <p id="DIS-error"></p>
                         </div>
 
                         <!-- Other Details -->
@@ -354,6 +355,19 @@ form.addEventListener('submit', async (event) => {
         nameError.textContent = 'Product Name is required.';
         nameError.style.color = 'red';
     }
+
+    const productDIS = document.getElementById('productDIS');
+    const DISError = document.getElementById('DIS-error');
+
+
+    if (!productDIS.value.trim()||invalidInputRegex.test(productDIS.value)) {
+        isValid = false;
+        DISError.textContent = 'Discription  is required.';
+        DISError.style.color = 'red';
+    }
+
+
+
 
 
     const productPrice = document.getElementById('productPrice');
