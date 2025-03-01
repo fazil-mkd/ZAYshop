@@ -256,7 +256,7 @@
 
                             if (filteredUsers.length > 0) {
                                 filteredUsers.forEach(user => {
-                                    const createdAt = new Date(user.createdAt);
+                                    const createdAt = new Date(user.createdOn);
                                     const formattedDate = `${createdAt.getDate()}:${createdAt.getMonth() + 1}:${createdAt.getFullYear()}`;
 
                                     tableBody.innerHTML += `
@@ -265,9 +265,10 @@
                                     <td>${user.email || 'No Email'}</td>
                                     <td>${formattedDate}</td>
                                     <td>
-                                        <button data-id="${user.email}" class="btn btn-ban">
-                                            ${user.isBlocked ? 'Un Block' : 'Block'}
-                                        </button>
+                                        <button type="button" data-id="${ user.email}"
+                                                                class="btn btn-ban">
+                                                                ${ user.isBlocked ? 'Un Block' : 'Block' }
+                                                            </button>
                                     </td>
                                     <td>
                                         <button data-id="${user.email}" class="btn btn-view">View</button>
@@ -277,53 +278,90 @@
                                 });
 
 
-                                document.addEventListener('click', (event) => {
-                                    if (event.target.classList.contains('btn-ban')) {
-                                        event.preventDefault();  
-                                        event.stopPropagation(); 
 
-                                        console.log("Ban button clicked!");
 
-                                        const userEmail = event.target.dataset.id;
 
-                                        Swal.fire({
-                                            title: 'Are you sure?',
-                                            text: "You want to toggle the ban status for this user.",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#d33',
-                                            cancelButtonColor: '#3085d6',
-                                            confirmButtonText: 'Yes'
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                console.log("Swal confirmed, making API request..."); 
+                                document.addEventListener('DOMContentLoaded', function () {
+    try {
+        function setupBanButtons() {
+            const banButtons = document.querySelectorAll('.btn.btn-ban');
 
-                                                fetch(`/admin/userManagement/ban`, {
-                                                    method: 'PUT',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({ email: userEmail })
-                                                })
-                                                    .then(response => response.json())
-                                                    .then(data => {
-                                                        console.log('API Response:', data); 
+            banButtons.forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                newButton.addEventListener('click', handleBanButtonClick);
+            });
 
-                                                        if (data.success) {
-                                                            Swal.fire('Success', 'User ban status changed.', 'success');
+            console.log(`Set up ${banButtons.length} ban buttons`);
+        }
 
-                                                            const clickedButton = event.target;
-                                                            clickedButton.textContent = clickedButton.textContent.trim() === 'Block' ? 'Unblock' : 'Block';
-                                                        } else {
-                                                            Swal.fire('Error', data.error || 'Failed to toggle ban status.', 'error');
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error('Fetch error:', error);
-                                                        Swal.fire('Error', 'Something went wrong.', 'error');
-                                                    });
-                                            }
-                                        });
-                                    }
-                                });
+        function handleBanButtonClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const banButton = this;
+            const userEmail = banButton.getAttribute('data-id');
+
+            console.log(`Ban button clicked for: ${userEmail}`);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to toggle the ban status for this user.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                   
+                    const isCurrentlyBlocked = banButton.textContent.trim() === 'Un Block';
+                    banButton.textContent = isCurrentlyBlocked ? 'Block' : 'Un Block';
+                    
+             
+                    banButton.disabled = true;
+
+          
+                    fetch('/admin/userManagement/ban', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: userEmail })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server responded with status: ' + response.status);
+                        }
+                        
+                        console.log('Ban status updated successfully');
+                        // Optional: Show a toast notification for success
+                        // Use toastr or similar for a less intrusive notification
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        
+                        // Revert button text if the request failed
+                        const isCurrentlyBlocked = banButton.textContent.trim() === 'Un Block';
+                        banButton.textContent = isCurrentlyBlocked ? 'Block' : 'Un Block';
+                        
+                        Swal.fire('Error', 'Failed to update user ban status', 'error');
+                    })
+                    .finally(() => {
+                        banButton.disabled = false;
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        setupBanButtons();
+        console.log('Ban button handlers initialized');
+    } catch (e) {
+        console.error('Error setting up ban buttons:', e);
+    }
+});
 
 
                                 document.querySelectorAll('.btn-view').forEach(viewButton => {
@@ -351,6 +389,8 @@
             function clearSearch() {
                 window.location.href = "/admin/userManagement";
             }
+
+
 
         </script>
 
