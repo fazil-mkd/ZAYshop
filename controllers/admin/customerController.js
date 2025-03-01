@@ -65,32 +65,38 @@ const getUsersAsJson = async (req, res) => {
 };
 
 
-
 const userBan = async (req, res) => {
-    console.log('...............')
+
     try {
         const { email } = req.body;
 
+        if (!email) {
+            return res.status(400).json({ success: false, error: 'Email is required' });
+        }
+
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
 
         if (user.isAdmin) {
-            return res.status(400).json({ error: 'Cannot ban an admin user' });
+            return res.status(400).json({ success: false, error: 'Cannot ban an admin user' });
         }
 
-        user.isBlocked = !user.isBlocked; 
+        user.isBlocked = !user.isBlocked;
         await user.save();
-        
+
         res.json({
+            success: true,  // ✅ Add success
             message: `User ${user.isBlocked ? 'Blocked' : 'Activated'} successfully!`,
         });
+        console.log('hiiiiii')
     } catch (error) {
         console.error('Error updating user status:', error);
-        res.status(500).json({ error: 'Error updating user status' });
+        res.status(500).json({ success: false, error: 'Error updating user status' });
     }
 };
+
 
 
 

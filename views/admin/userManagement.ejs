@@ -61,7 +61,8 @@
                                                                 <%= formattedDate %>
                                                         </td>
                                                         <td>
-                                                            <button data-id="<%= user.email %>" class="btn btn-ban">
+                                                            <button type="button" data-id="<%= user.email %>"
+                                                                class="btn btn-ban">
                                                                 <%= user.isBlocked ? 'Un Block' : 'Block' %>
                                                             </button>
                                                         </td>
@@ -278,8 +279,10 @@
 
                                 document.addEventListener('click', (event) => {
                                     if (event.target.classList.contains('btn-ban')) {
-                                        event.preventDefault();
-                                        event.stopPropagation();
+                                        event.preventDefault();  
+                                        event.stopPropagation(); 
+
+                                        console.log("Ban button clicked!");
 
                                         const userEmail = event.target.dataset.id;
 
@@ -293,21 +296,30 @@
                                             confirmButtonText: 'Yes'
                                         }).then((result) => {
                                             if (result.isConfirmed) {
-                                                fetch(`/admin/userManagement/toggleBan?email=${userEmail}`, {
-                                                    method: 'POST'
+                                                console.log("Swal confirmed, making API request..."); 
+
+                                                fetch(`/admin/userManagement/ban`, {
+                                                    method: 'PUT',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ email: userEmail })
                                                 })
                                                     .then(response => response.json())
                                                     .then(data => {
+                                                        console.log('API Response:', data); 
+
                                                         if (data.success) {
                                                             Swal.fire('Success', 'User ban status changed.', 'success');
 
                                                             const clickedButton = event.target;
                                                             clickedButton.textContent = clickedButton.textContent.trim() === 'Block' ? 'Unblock' : 'Block';
                                                         } else {
-                                                            Swal.fire('Error', 'Failed to toggle ban status.', 'error');
+                                                            Swal.fire('Error', data.error || 'Failed to toggle ban status.', 'error');
                                                         }
                                                     })
-                                                    .catch(error => Swal.fire('Error', 'Something went wrong.', 'error'));
+                                                    .catch(error => {
+                                                        console.error('Fetch error:', error);
+                                                        Swal.fire('Error', 'Something went wrong.', 'error');
+                                                    });
                                             }
                                         });
                                     }
