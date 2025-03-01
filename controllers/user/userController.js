@@ -1585,7 +1585,8 @@ const loadcheckout = async (req, res) => {
 
 
 
-    const priceTracker = userCart.items.reduce((total, item) => total + item.price, 0);
+    const priceTracker = userCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+
     
 
     const addresses = (userAddresses.length > 0 && userAddresses[0].address) ? userAddresses[0].address : [];
