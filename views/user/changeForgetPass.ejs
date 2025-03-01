@@ -5,72 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Your Password</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .reset-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            overflow: hidden;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-        }
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        .reset-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(to right, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        .error-message {
-            color: red;
-            font-size: 0.8em;
-            margin-top: 5px;
-            display: none;
-        }
-        #successMessage {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
-        }
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.reset-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    overflow: hidden;
+}
+
+.reset-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #ff3366, #ff9966);
+}
+
+.card-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.card-header h2 {
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.card-header p {
+    color: #777;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #444;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    background-color: #f9f9f9;
+}
+
+.form-input:focus {
+    border-color: #ff3366;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 38px;
+    color: #777;
+    cursor: pointer;
+}
+
+.reset-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(to right, #ff3366, #ff9966);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reset-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 51, 102, 0.3);
+}
+
+.reset-button:active {
+    transform: translateY(0);
+}
+
+.password-requirements {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.password-requirements h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.password-requirements ul {
+    padding-left: 18px;
+    color: #777;
+}
+
+.password-requirements li {
+    margin-bottom: 4px;
+}
+
+.password-requirements li.valid {
+    color: #4CAF50;
+}
+
+.error-message {
+    color: #ff3366;
+    font-size: 13px;
+    margin-top: 5px;
+    display: none;
+}
+
+#successMessage {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .reset-card {
+        padding: 30px 20px;
+    }
+}  .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+        font-size: 1.2em;
+    }
+
+    .form-input {
+        width: 100%;
+        padding-right: 35px; /* Prevents text overlap with the icon */
+    }
     </style>
 </head>
 <body>
@@ -78,37 +201,43 @@
         <form id="passwordResetForm">
             <div class="form-group">
                 <label for="password">New Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    class="form-input"
-                    required 
-                    minlength="8"
-                    placeholder="Enter new password"
-                />
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input"
+                        required 
+                        minlength="8"
+                        placeholder="Enter new password"
+                    />
+                    <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+                </div>
                 <div id="passwordError" class="error-message">
                     Password must be at least 8 characters
                 </div>
             </div>
-
+    
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    class="form-input"
-                    required 
-                    placeholder="Confirm new password"
-                />
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        class="form-input"
+                        required 
+                        placeholder="Confirm new password"
+                    />
+                    <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁️</span>
+                </div>
                 <div id="confirmPasswordError" class="error-message">
                     Passwords do not match
                 </div>
             </div>
-
+    
             <button type="submit" class="reset-button">
                 Reset Password
             </button>
-
+    
             <div id="successMessage">
                 Password reset successful! You can now log in with your new password.
             </div>
@@ -179,6 +308,17 @@
             alert("Error during password reset. Please try again.");
         }
     };
+
+    function togglePassword(fieldId, icon) {
+        const passwordField = document.getElementById(fieldId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.textContent = "🙈"; 
+        } else {
+            passwordField.type = "password";
+            icon.textContent = "👁️"; 
+        }
+    }
 </script>
 </body>
 </html>

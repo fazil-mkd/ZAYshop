@@ -413,6 +413,7 @@ const PostforgetPassword = async (req, res,next) => {
 
 
     req.session.resetData = { email, otp };
+   
 
     req.session.save((err) => {
       if (err) {
@@ -420,9 +421,7 @@ const PostforgetPassword = async (req, res,next) => {
         return res.render('forget-password', { message: 'Failed to save session.' });
       }
 
-      console.log('OTP Sent for Password Reset:', otp);
-      console.log('Session after saving:', req.session);
-
+    
 
     });
   } catch (err) {
@@ -430,6 +429,50 @@ const PostforgetPassword = async (req, res,next) => {
     next(err);
   }
 };
+
+
+
+
+
+const forgetResendOtp = async (req, res,next) => {
+  try {
+
+
+    const email = req.session.resetData?.email;
+
+
+
+    console.log("Email in session:", email);
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email not found in session" });
+    }
+
+
+    const otp = generateOtp();
+
+
+    const emailSent = await sendVerificationEmail(email, otp);
+console.log('data sended')
+    if (emailSent) {
+      console.log("Resend OTP:", otp);
+      res.status(200).json({ success: true, message: "OTP Resend Successfully" });
+    } else {
+      res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again." });
+    }
+  } catch (error) {
+    console.error("Error resending OTP", error);
+    next(error);
+  }
+};
+
+
+
+
+
+
+
+
 
 const forgetOtp = (req, res,next) => {
   try {
@@ -3043,5 +3086,5 @@ module.exports = {
   CheckoutaddAddress,
   invoice,
   retryPeyment,
-
+  forgetResendOtp,
 }

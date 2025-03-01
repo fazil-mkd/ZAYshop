@@ -15,6 +15,8 @@ router.get('/shop',userController.loadShopping)
 router.post('/signup',userController.signup)
 router.post("/verify-otp",userController.verifyOtp);
 router.post("/resend-otp",userController.resendOtp);
+router.post("/forgotResend-otp",userController.forgetResendOtp);
+
 router.get("/userlogin",userController.userlogin);
 
 const { userAuth, adminAuth } = require('../middlewares/auth');
