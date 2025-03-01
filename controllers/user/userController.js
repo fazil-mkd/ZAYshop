@@ -493,7 +493,7 @@ const forgetOtp = (req, res,next) => {
     if (otp === storedOtp) {
       return res.render('changeForgetPass', { message: 'OTP verified successfully. Please reset your password.' });
     } else {
-      return res.status(400).json({ success: false, message: 'Invalid OTP.' });
+      return res.render('forget-pass', { message: 'invalid OTP.' });
     }
   } catch (err) {
     console.error('forgetOtp error:', err);

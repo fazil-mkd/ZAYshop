@@ -304,6 +304,7 @@
 </head>
 <body>
     <div class="container">
+       
         <div class="card">
             <div class="image-section">
                 <div class="image-overlay"></div>
@@ -329,15 +330,11 @@
                 <div id="otp-step" style="display:none;">
                     <h2>Enter OTP sent to your email</h2>
                     <form id="otp-form" action='/verify-forget-otp' method="POST">
-                        <input type="text" id="otp" name="otp" placeholder="Enter OTP"  />
+                        <input type="text" id="otp" name="otp" placeholder="Enter OTP"  required/>
                         <button type="submit" class="btn-reset">Verify OTP</button>
                     </form>
                     <div id="otp-timer"></div>
-                    <!-- <div class="resend-text">
-                        Didn't receive the code? 
-                        <span class="resend-link" onclick="resendOTP()">Resend Code</span>
-                        <span id="timer"></span>
-                    </div> -->
+                   
                 </div>
     
                 <div class="back-to-login">
