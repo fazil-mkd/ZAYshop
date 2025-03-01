@@ -93,4 +93,10 @@ router.post('/offers',adminAuth,offerController.applyOffer)
 router.delete('/offer/:type/:id',adminAuth,offerController.deleteOffer)
 
 
+
+
+router.use((req, res) => {
+    res.status(404).render("page-404", { message: "Admin route not found" });
+  });
+  
 module.exports = router;

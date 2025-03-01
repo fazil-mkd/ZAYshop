@@ -96,7 +96,7 @@ const loadUpdateCategory = async (req, res) => {
 
    
     if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-      return res.status(400).json({ message: 'Invalid category ID' });
+      return res.status(400).render("page-404", { message: "Invalid ID" });
     }
 
     const category = await Category.findById(categoryId);

@@ -87,7 +87,7 @@ const userBan = async (req, res) => {
         await user.save();
 
         res.json({
-            success: true,  // ✅ Add success
+            success: true, 
             message: `User ${user.isBlocked ? 'Blocked' : 'Activated'} successfully!`,
         });
         console.log('hiiiiii')

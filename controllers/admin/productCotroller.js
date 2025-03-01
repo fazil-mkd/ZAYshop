@@ -186,8 +186,9 @@ const loadUpdateProduct = async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(productId) || productId.length !== 24) {
         console.error('Invalid productId:', productId);
-        return res.status(400).json({ message: 'Invalid product ID' });
+        return res.status(400).render("page-404", { message: "Invalid ID" });
     }
+      
 
     try {
 

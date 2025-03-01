@@ -177,8 +177,16 @@
     <div class="container">
         <h1>Oops</h1>
         <p><%= message %></p>
-        <p><a href="/">Return to Home</a></p>
+        <p>
+          <a id="return-link" href="/">Return </a>
+        </p>
+        
     </div>
+ <script>
 
+const isAdmin = window.location.pathname.startsWith("/admin");
+  document.getElementById("return-link").href = isAdmin ? "/admin/dashboard" : "/";
+  document.getElementById("return-link").innerText = isAdmin ? "Return to Dashboard" : "Return to Home";
+ </script>
 </body>
 </html>

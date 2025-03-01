@@ -36,8 +36,12 @@ const page = parseInt(req.query.page) || 1;
       const viewOderDetails = async (req, res) => {
         const { orderId } = req.params;
         console.log('Received orderId:', orderId); 
+        
       
         try {
+          if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).render("page-404", { message: "Invalid ID" });
+          }
           const order = await Order.findOne({ _id: new mongoose.Types.ObjectId(orderId) })
           console.log('Fetched Order:', order); 
           if (!order) {
@@ -93,7 +97,10 @@ const OrderProductDetail = async(req,res)=>{
   const  orderId = req.params.id;
 
   try {
-    console.log("OrderId being searched:", orderId);
+     if (!mongoose.Types.ObjectId.isValid(orderId)) {
+         return res.status(400).render("page-404", { message: "Invalid ID" });
+       }
+
       const order = await Order.findOne({ _id: new mongoose.Types.ObjectId(orderId) }).populate('orderedItems.product');
     console.log(order);
          
