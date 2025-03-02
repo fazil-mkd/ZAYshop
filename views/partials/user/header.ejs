@@ -170,6 +170,9 @@ https://templatemo.com/tm-559-zay-shop
   .nav-link::after {
     display: none;
   }
+  .sign-in-link{
+    display: none;
+  }
   
   .dropdown-content {
     position: static;
@@ -233,7 +236,7 @@ https://templatemo.com/tm-559-zay-shop
                         <% if (locals.user && locals.user.name) {  console.log(locals.user.name)%>
 
                             <div class="dropdown">
-                                <a href="/#" style="font-size: 80px; text-decoration: none;" class="sign-in-link"><%= user.name %></a>
+                                <a style="font-size: 80px; text-decoration: none;" ><%= user.name %></a>
                                   </a>
                                   
 
