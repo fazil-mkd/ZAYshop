@@ -629,6 +629,52 @@
     100% {
         opacity: 1;
     }
+}.dash {
+  /* Base styles */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Add back arrow icon */
+  position: relative;
+  padding-left: 36px;
+}
+
+/* Back arrow using pseudo-element */
+.dash::before {
+  content: "←";
+  position: absolute;
+  left: 16px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Hover effects */
+.dash:hover {
+  background-color: #1557b0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateX(-2px);
+}
+
+/* Active state */
+.dash:active {
+  transform: translateX(-1px);
+  background-color: #1244a0;
+}
+
+/* Focus state for accessibility */
+.dash:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.4);
 }
 
 </style>
@@ -637,6 +683,7 @@
 </head>
 
 <body>
+    <button class="dash" onclick="window.location.href=' /orderDetails'">Orders</button>
     <div class="container">
         <div class="header">
             <h1>Order Successful</h1>
@@ -803,7 +850,7 @@
         </div>
         <button  style="margin-left: 1100px;  margin-top: 50px;" onclick="window.location.href='/order/invoice/<%= order._id %>'" class="btn btn-primary">Download Invoice</button>
         <% if(order.totalPrice>0){ %>
-        <% if(order.paymentStatus==="pending"||order.paymentMethod==="cod"&&order.status!="Delivered"){%>
+        <% if(order.paymentStatus==="pending"||order.paymentMethod==="cod"&&order.status==="pending"){%>
         <div class="payment-section">
            <% if(order.paymentMethod==="cod"){ %>
             <p class="payment">⚠️ You can also make the payment online..</p>
@@ -1080,6 +1127,8 @@ document.querySelectorAll('.cancel-button').forEach(button => {
                                 text: result.message,
                                 icon: 'success',
                                 confirmButtonText: 'OK',
+                            }).then(()=>{
+                                window.location.reload()
                             })
                         } else {
                             throw new Error(result.message || 'Failed to pay for the order.');

@@ -39,7 +39,7 @@
         <label>Phone Number</label>
       </div>
      <div class="user-box">
-        <div id="error4" class="error message"></div>
+       
         <input type="text" id="referel" name="referralCode">
         <label>referralCode</label>
       </div>
@@ -123,26 +123,48 @@ function phoneValidateChecking(event){
     }
 }
 
-function passValidateChecking(event){
-    const passval = passid.value;
-    const cpassval = cpassid.value;
-    const alpha = /[a-zA-Z]/;
-    const digit = /\d/;
+function passValidateChecking(event) {
+    const passval = passid.value.trim();
+    const cpassval = cpassid.value.trim();
+    const errorMessages = [];
 
-    if(passval.length < 8){
+   
+    const minLength = /.{8,}/;             
+    const hasUpper = /[A-Z]/;            
+    const hasLower = /[a-z]/;            
+    const hasDigit = /\d/;                 
+    const hasSpecialChar = /[@#$%^&*]/;   
+
+
+    if (!minLength.test(passval)) {
+        errorMessages.push("Password should be at least 8 characters long.");
+    }
+    if (!hasUpper.test(passval)) {
+        errorMessages.push("Password should contain at least one uppercase letter.");
+    }
+    if (!hasLower.test(passval)) {
+        errorMessages.push("Password should contain at least one lowercase letter.");
+    }
+    if (!hasDigit.test(passval)) {
+        errorMessages.push("Password should contain at least one number.");
+    }
+    if (!hasSpecialChar.test(passval)) {
+        errorMessages.push("Password should contain at least one special character (@, #, $, etc.).");
+    }
+
+   
+    if (errorMessages.length > 0) {
         error4.style.display = "block";
-        error4.innerHTML = "Should contain at least 8 characters";
-    } else if(!alpha.test(passval) || !digit.test(passval)){
-        error4.style.display = "block";
-        error4.innerHTML = "Should contain numbers and alphabets";
+        error4.innerHTML = errorMessages.join("<br>");
     } else {
         error4.style.display = "none";
         error4.innerHTML = "";
     }
 
-    if(passval !== cpassval){
+
+    if (passval !== cpassval) {
         error5.style.display = "block";
-        error5.innerHTML = "Passwords do not match";
+        error5.innerHTML = "Passwords do not match.";
     } else {
         error5.style.display = "none";
         error5.innerHTML = "";

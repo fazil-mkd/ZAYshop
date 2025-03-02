@@ -380,7 +380,12 @@ const signup = async (req, res,next) => {
     }
 
     req.session.userOtp = otp;
-    req.session.userData = { name, phone, email, password,referralCode };
+    req.session.userData = { name, phone, email, password };
+   
+
+    if (referralCode) {
+      req.session.userData.referralCode = referralCode; 
+    }
 
     res.render("verify-otp")
     console.log("OTP Sent", otp);
@@ -576,12 +581,13 @@ const verifyOtp = async (req, res,next) => {
       const passwordHash = await securePassword(user.password)
 
      const referralCode = user.referralCode;
-
-      let referredByUser = null;
-      if (referralCode) {
-        referredByUser = await User.findOne({ referalCode:referralCode });
-      }
   
+ 
+      let referredByUser = null;
+      if (referralCode && referralCode.trim() !== "") {  
+        referredByUser = await User.findOne({ referalCode: referralCode });
+      }
+      
       const generateReferralCode = () => {
         return Math.random().toString(36).substr(2, 8).toUpperCase();
       };
@@ -597,6 +603,8 @@ const verifyOtp = async (req, res,next) => {
 
       await newUser.save()
 
+      if(referralCode && referralCode.trim() !== ""){
+
       const newWallet = new Wallet({ user: newUser._id, walletBalance: 0, transactions: [] });
       newWallet.walletBalance+=50
       newWallet.transactions.push({
@@ -607,6 +615,7 @@ const verifyOtp = async (req, res,next) => {
       });
       await newWallet.save();
     
+    }
 
       if (referredByUser) {
         const referrerWallet = await Wallet.findOne({ user: referredByUser._id });
@@ -1180,21 +1189,16 @@ const deleteAddress = async (req, res,next) => {
 const loaduserOrderDetails = async (req, res,next) => {
   try {
     const userId = req.session.userId;
-
-
+ 
     const page = parseInt(req.query.page) || 1;
     const PerPage = 10;
     const skip = (page - 1) * PerPage;
 
-    const orders = await Order.find({}).sort({ createdAt: -1 }).skip(skip).limit(PerPage)
+    const orders = await Order.find({userId:userId}).sort({ createdAt: -1 }).skip(skip).limit(PerPage)
   
 
-  
-    const total = await Order.countDocuments({});
+    const total = await Order.countDocuments({userId:userId});
     const totalPages = Math.ceil(total / PerPage);
-
-
-    console.log("addressssss", orders)
 
     for (let order of orders) {
 
@@ -1235,19 +1239,39 @@ console.log('brand',brand)
     const userId = req.session.userId;
 
     if (!req.session.userId) {
-      throw new NotFoundError( 'Unauthorized - Please log in' );
+      req.flash('error','please login');
+      return res.redirect('/Shop');
     }
 
 
 
     if (!userId || !productId || !productTitle || !productSize || !productColor || !productQuantity) {
-      throw new NotFoundError( 'Missing required fields');
+      req.flash('error','Missing required fields');
+      return res.redirect('/Shop');
     }
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate('category') 
+    .exec();
+   
+   console.log(product)
+
     if (!product) {
-      throw new NotFoundError('Product not found');
+      req.flash('error', 'Product not found');
+      return res.redirect('/Shop');
     }
+
+    if (product.isDeleted) {
+      req.flash('error', 'This Product Is Not Available Now');
+      return res.redirect('/Shop');
+    }
+
+ 
+
+    if (!product.category || !product.category.isListed) {
+      req.flash('error', 'This Product Category Is Unavailable');
+      return res.redirect('/Shop');
+    }
+
 
     const ProductVariants = await Variant.find({ productId: productId })
 

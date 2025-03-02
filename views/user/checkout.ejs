@@ -411,16 +411,16 @@
                     }
 
                     const phone = document.getElementById('phone');
-                    if (!phone.value.match(/^\+?[0-9]{10,15}$/)) {
+                    if (!phone.value.match(/^\+?[0-9]{10}$/)) {
                         isValid = false;
-                        addErrorMessage(phone, "Phone number should be between 10 to 15 digits and can start with +.");
+                        addErrorMessage(phone, "Phone number should be 10  digits.");
                     }
 
 
                     const altPhone = document.getElementById('altPhone');
-                    if (altPhone.value && !altPhone.value.match(/^\+?[0-9]{10,15}$/)) {
+                    if (altPhone.value && !altPhone.value.match(/^\+?[0-9]{10}$/)) {
                         isValid = false;
-                        addErrorMessage(altPhone, "Alternate phone number should be between 10 to 15 digits and can start with +.");
+                        addErrorMessage(altPhone, "Alternate phone number should be 10 digits.");
                     }
 
                     if (isValid) {
@@ -613,18 +613,7 @@
                                         rzp.open();
 
 
-                                        Swal.fire({
-                                            title: 'Want to pay later?',
-                                            text: 'You can proceed with your order without immediate payment.',
-                                            icon: 'info',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Pay Later',
-                                            cancelButtonText: 'Cancel',
-                                        }).then(async (result) => {
-                                            if (result.isConfirmed) {
-                                                await placeOrderWithoutPayment();
-                                            }
-                                        });
+                                      
 
                                     } catch (error) {
                                         console.error('Error initiating payment:', error);

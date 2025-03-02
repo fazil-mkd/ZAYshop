@@ -48,22 +48,23 @@
                         <p><%= order.status %></p>
                         <form id="statusForm_<%= order._id %>" onsubmit="submitStatusChange(event)">
                           <select name="status">
-                            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %> 
-                                <%= order.status !== 'Pending' ? 'disabled' : '' %>>Pending</option>
-                        
-                            <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %> 
-                                <%= order.status === 'Shipped' || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Processing</option>
-                        
-                            <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %> 
-                                <%= order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Shipped</option>
-                        
-                            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %> 
-                                <%= order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Delivered</option>
-                           
-                        </select>
+                              <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %> 
+                                  <%= order.status !== 'Pending' ? 'disabled' : '' %>>Pending</option>
+                      
+                              <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %> 
+                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Shipped' || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Processing</option>
+                      
+                              <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %> 
+                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Shipped</option>
+                      
+                              <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %> 
+                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Delivered</option>
+                          </select>
                       
                           <button type="submit" data-order-id="<%= order._id %>">Change Status</button>
-                        </form>
+                      </form>
+                      
+                      
                       </td>
                       <td><%= order.totalPrice.toFixed(2) %></td>
                       <td>

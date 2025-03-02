@@ -102,8 +102,6 @@ const loadUpdateCategory = async (req, res) => {
     const category = await Category.findById(categoryId);
     
     
-   
-
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }

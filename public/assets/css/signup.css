@@ -175,7 +175,7 @@ body {
   height: 12vw;
   max-width: 80px;
   max-height: 80px;
- 
+
 }
 
 @media (max-width: 768px) {
@@ -198,6 +198,12 @@ body {
     width: 60px;
     height: 60px;
   }
+  .button {
+    width: 100%; /* Full width on smaller screens */
+    text-align: center;
+    padding: 14px;
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -205,10 +211,69 @@ body {
     width: 50px;
     height: 50px;
   }
+  .button {
+    width: 100%; /* Full width on smaller screens */
+    text-align: center;
+    padding: 14px;
+    font-size: 18px;
+  }
 }
 
 @media (min-width: 1024px) {
   .btn {
     margin-left: 100px;
+  }
+  .button {
+    width: 100%; /* Full width on smaller screens */
+    text-align: center;
+    padding: 14px;
+    font-size: 18px;
+  }
+}
+.button {
+  background-color: #007bff; /* Blue color */
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  top: -20px; /* Moves button 20px up */
+  display: inline-block;
+  text-align: center;
+  width: auto;
+  min-width: 150px; /* Ensures button is not too small */
+}
+
+/* Hover effect */
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) { /* Tablets */
+  .button {
+    font-size: 18px;
+    padding: 14px 28px;
+  }
+}
+
+@media (max-width: 768px) { /* Small tablets & large phones */
+  .button {
+    width: 100%; /* Full width for better touch support */
+    font-size: 18px;
+    padding: 14px;
+    display: block;
+  }
+}
+
+@media (max-width: 480px) { /* Small phones */
+  .button {
+    font-size: 16px;
+    padding: 12px;
+    width: 90%; /* Slightly smaller than full width */
+    margin: 0 auto; /* Centers button */
   }
 }
