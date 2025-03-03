@@ -392,16 +392,30 @@ const updateProduct = async (req, res, next) => {
 
 
 
-
-const loadDelProductPage = async (req, res) => {
+const loadDelProductPage = async (req, res, next) => {
     try {
-        const deletedProducts = await Products.find({ isDeleted: true });
-        res.render("productDelete", { deletedProducts });
+        const page = parseInt(req.query.page) || 1;  
+        const limit = 10; 
+        const skip = (page - 1) * limit; 
+
+        const deletedProducts = await Products.find({ isDeleted: true })
+            .skip(skip)
+            .limit(limit);
+
+        const totalDeletedProducts = await Products.countDocuments({ isDeleted: true });
+        const totalPages = Math.ceil(totalDeletedProducts / limit);
+
+        res.render("productDelete", {
+            deletedProducts,
+            currentPage: page,
+            totalPages,
+        });
     } catch (error) {
         console.error("Error fetching deleted products:", error);
-        next(err);
+        next(error);
     }
-}
+};
+
 
 
 const deleteProduct = async (req, res) => {

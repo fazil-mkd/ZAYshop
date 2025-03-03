@@ -1655,13 +1655,32 @@ const placeOrder = async (req, res, next) => {
 
     const cart = await Cart.findOne({ userId }).populate({
       path: 'items.productId',
-      select: 'name price'
+      populate: { path: 'category', select: 'isListed' },
+      select: 'name price isDeleted'
     });
-
+    
+    
     console.log('Cart:', cart);
-
+    
     if (!cart || cart.items.length === 0) {
-      return res.status(400).json('Cart is empty, cannot place order.');
+      return res.status(400).json({ message: 'Cart is empty, cannot place order.' });
+    }
+    
+
+    for (const item of cart.items) {
+      const product = item.productId;
+    
+      if (!product) {
+        return res.status(400).json({ message: 'A product in your cart was not found.' });
+      }
+    
+      if (product.isDeleted) {
+        return res.status(400).json({ message: `The product "${product.name}" is no longer available.` });
+      }
+    
+      if (!product.category || !product.category.isListed) {
+        return res.status(400).json({ message: `The category of "${product.name}" is unavailable.` });
+      }
     }
 
     const addressDocument = await Address.findOne({ "address._id": selectedAddress });
@@ -1806,7 +1825,6 @@ const placeOrder = async (req, res, next) => {
     next(err);
   }
 };
-
 
 
 
@@ -2951,7 +2969,7 @@ const invoice = async (req, res) => {
 
 
 const retryPeyment = async (req, res) => {
-  console.log("......................................")
+
   try {
     const { orderId, paymentStatus } = req.body;
 
@@ -3030,6 +3048,7 @@ const retryPeyment = async (req, res) => {
     order.orderedItems.forEach((item)=>item.paymentStatus=paymentStatus ||'completed')
     order.paymentStatus = paymentStatus || 'completed';
     order.status = 'Processing';
+    order.paymentMethod='razorpay';
 
     await order.save();
 

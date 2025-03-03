@@ -326,13 +326,15 @@
                     </div>
                     <button type="submit" class="btn-reset">Send Verification Code</button>
                 </form>
-              
+                <div id="otp-timer1"></div>
                 <div id="otp-step" style="display:none;">
                     <h2>Enter OTP sent to your email</h2>
                     <form id="otp-form" action='/verify-forget-otp' method="POST">
-                        <input type="text" id="otp" name="otp" placeholder="Enter OTP"  required/>
+                        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required
+                            pattern="^\d+$" title="OTP must contain only numbers ." />
                         <button type="submit" class="btn-reset">Verify OTP</button>
                     </form>
+                    
                     <div id="otp-timer"></div>
                    
                 </div>
@@ -371,71 +373,45 @@
             startOtpTimer();
         });
     
+
     
-        let timeLeft = 100; 
+        let timeLeft = 90; 
 let timerId;
 let canResend = true;
 
 function startOtpTimer() {
     const otpTimerElement = document.getElementById('otp-timer');
-    const otpInput = document.getElementById('otpInput');
+    const otpTimerElement1 = document.getElementById('otp-timer1');
+    const otpInput = document.getElementById('otp'); 
 
     timerId = setInterval(() => {
         let minutes = Math.floor(timeLeft / 60);
         let seconds = timeLeft % 60;
         otpTimerElement.textContent = `OTP expires in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        otpTimerElement1.style.display = 'none'
 
         if (timeLeft <= 0) {
             clearInterval(timerId);
-            otpTimerElement.textContent = 'OTP expired!';
+            otpTimerElement.textContent = "OTP expired! Please verify again to request a new OTP.";
+            otpTimerElement1.textContent = "OTP expired! Please verify again to request a new OTP.";
+             otpTimerElement1.style.display = 'block'
+
             Swal.fire('Your OTP has expired. Please request a new one.');
-            otpInput.disabled = true;
-            canResend = true; 
+
+            if (otpInput) {
+                otpInput.disabled = true;
+            }
+
+            document.getElementById('email-form').style.display = 'block';
+            document.getElementById('otp-step').style.display = 'none';  
         }
 
         timeLeft--;
     }, 1000);
 }
 
-function resendOTP() {
-    if (!canResend) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Cannot resend code yet. Please wait.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
 
-    fetch('/forgotResend-otp', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: document.getElementById('email').textContent }),
-    })
-    .then(response => response.json())
-    .then(res => {
-        if (res.success) {
-            Swal.fire({
-                title: 'OTP Resent!',
-                text: 'A new OTP has been sent to your email.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-            timeLeft = 100; // Reset timer
-            document.getElementById('otpInput').value = '';
-            document.getElementById('otpInput').disabled = false;
-            clearInterval(timerId);
-            startOtpTimer(); // Restart the timer
-            canResend = false; // Prevent spamming
-        } else {
-            Swal.fire({ title: 'Error', text: res.message, icon: 'error', confirmButtonText: 'OK' });
-        }
-    })
-    .catch(() => {
-        Swal.fire({ title: 'Error', text: 'Failed to resend OTP. Please try again.', icon: 'error', confirmButtonText: 'OK' });
-    });
-}
+
 
     </script>
     

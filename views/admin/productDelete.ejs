@@ -51,6 +51,20 @@
                 </tbody>
             </table>
         </div>
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>">Previous</a>
+            <% } %>
+        
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+        
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>">Next</a>
+            <% } %>
+        </div>
+        
     </div>
     
 
@@ -101,7 +115,7 @@ document.querySelectorAll('.btn-recover').forEach(button => {
                     text: 'Product recovered successfully.',
                     icon: 'success',
                     confirmButtonText: 'OK'
-                }).then(() => document.location.reload()); // Reload after confirmation
+                }).then(() => document.location.reload()); 
             } else {
                 const data = await response.json();
                 Swal.fire({

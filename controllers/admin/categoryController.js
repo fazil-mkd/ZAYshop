@@ -287,15 +287,35 @@ const updateCategory = async (req, res) => {
 
 
 
-const loadDelCategoryPage = async(req, res)=> {
-    try {
-        const deletedCategories = await Category.find({ isListed: false });
-        return res.render("categoryDelete", { deletedProducts: deletedCategories });
-    } catch (error) {
-        console.error("Error fetching deleted categories:", error);
-        return res.status(500).send("Internal Server Error");
-    }
-}
+
+
+const loadDelCategoryPage = async (req, res) => {
+  try {
+      const page = parseInt(req.query.page) || 1; 
+      const limit = 10; 
+      const skip = (page - 1) * limit; 
+
+
+      const deletedCategories = await Category.find({ isListed: false })
+          .skip(skip)
+          .limit(limit);
+
+      const totalDeletedCategories = await Category.countDocuments({ isListed: false });
+      const totalPages = Math.ceil(totalDeletedCategories / limit);
+
+      return res.render("categoryDelete", {
+        deletedProducts:deletedCategories, 
+          currentPage: page,
+          totalPages
+      });
+  } catch (error) {
+      console.error("Error fetching deleted categories:", error);
+      return res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
 
 const recoverCategory = async (req, res) => {
   try {
