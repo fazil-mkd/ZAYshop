@@ -52,13 +52,13 @@
                                   <%= order.status !== 'Pending' ? 'disabled' : '' %>>Pending</option>
                       
                               <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %> 
-                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Shipped' || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Processing</option>
+                                  <%= (order.paymentStatus !== 'completed' && order.paymentMethod !== 'cod') || order.status === 'Shipped' || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Processing</option>
                       
                               <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %> 
-                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Shipped</option>
+                                  <%= (order.paymentStatus !== 'completed' && order.paymentMethod !== 'cod') || order.status === 'Delivered' || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Shipped</option>
                       
                               <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %> 
-                                  <%= (order.paymentStatus !== 'Completed' && order.paymentMethod !== 'cod') || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Delivered</option>
+                                  <%= (order.paymentStatus !== 'completed' && order.paymentMethod !== 'cod') || order.status === 'Returned' || order.status === 'Cancelled' ? 'disabled' : '' %>>Delivered</option>
                           </select>
                       
                           <button type="submit" data-order-id="<%= order._id %>">Change Status</button>

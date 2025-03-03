@@ -1021,9 +1021,9 @@ const sampleData = sortedData.sort((a, b) => periodLabel(b).localeCompare(period
                     <td><strong>${product.name}</strong></td>
                     <td>${product.color || "N/A"}</td>
                     <td>${product.size || "N/A"}</td>
-                         <td>₹${product.price/product.quantitySold}</td>
+                         <td>₹${product.price}</td>
                     <td>${product.quantitySold}</td>
-                    <td>₹${product.price}</td>
+                    <td>₹${product.price*product.quantitySold}</td>
                     <td>${product.productStatus}</td>
                     <td>${product.productPeyment}</td>
                 </tr>
@@ -1108,9 +1108,9 @@ doc.text("ZAY", centerX, 15);
                 product.name,    
                 product.color,
                 product.size,  
-             `${(product.price/product.quantitySold).toLocaleString()}`,
+             `${(product.price).toLocaleString()}`,
                 product.quantitySold,
-                   `${product.price.toLocaleString()}`,
+                   `${(product.price*product.quantitySold).toLocaleString()}`,
                    product.productStatus,
                    product.productPeyment,
             ]);
@@ -1180,9 +1180,9 @@ function downloadExcel() {
                 product.name,
                 product.color || "N/A",
                 product.size || "N/A",
-                product.price/product.quantitySold,
-                product.quantitySold,
                 product.price,
+                product.quantitySold,
+                product.price*product.quantitySold,
                 product.productStatus,
                 product.productPeyment,
             ]);
