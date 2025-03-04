@@ -1419,7 +1419,9 @@ const loadCart = async (req, res,next) => {
 
     const cartItems = await Promise.all(
       userCart.items.map(async (item) => {
-        const product = await Product.findById(item.productId).select('name price images  category');
+        const product = await Product.findById(item.productId).select('name price images  category isOffer offerPrice');
+ 
+        const finalPrice = product.isOffer ? product.offerPrice : product.price;
 
         if (!product) {
           console.warn(`Product with ID ${item.productId} not found`);
@@ -1454,12 +1456,14 @@ const loadCart = async (req, res,next) => {
             }
         });
 
+        console.log(finalPrice)
+
         return {
           ...product.toObject(),
           colorSizeStockMap,
           cloudinaryImages: product.images,
           quantity: item.quantity,
-          totalPrice: item.totalPrice,
+          totalPrice:finalPrice*item.quantity,
           color: item.productColor,
           size: item.productSize,
         };
@@ -2216,6 +2220,11 @@ const updateQuantity = async (req, res,next) => {
         throw new NotFoundError( `The maximum available stock for ${color} size ${size} is ${availableStock}. You can't purchase more than that.`);
       }
 
+      const product = await Product.findById(cartItem.productId);
+
+      const finalPrice = product.isOffer ? product.offerPrice : product.price;
+    
+      cartItem.price = finalPrice;
 
       cartItem.quantity = updatedQuantity;
       cartItem.totalPrice = cartItem.price * updatedQuantity;

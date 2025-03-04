@@ -535,7 +535,7 @@
           return;
         }
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8}$/;
 
         if (!passwordRegex.test(confirmPassword)) {
           messageDiv.innerHTML = '<p style="color: red;">New password must be at least 8 characters long, with at least one uppercase letter, one lowercase letter, one number, and one special character.</p>';
